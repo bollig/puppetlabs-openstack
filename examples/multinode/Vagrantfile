@@ -26,6 +26,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.vmx["memsize"] =  "1024"
         v.vmx["vhv.enable"] = "TRUE"
     end
+    puppet.vm.provider :virtualbox do |v|
+      v.name = "os-puppet-master"
+      v.customize ["modifyvm", :id, "--memory", "1024"]
+    end
+
   end
 
   config.vm.define "control" do |control|
@@ -49,6 +54,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.vmx["memsize"] =  "2048"
         v.vmx["vhv.enable"] = "TRUE"
     end
+    control.vm.provider :virtualbox do |v|
+      v.name = "os-control"
+      v.customize ["modifyvm", :id, "--memory", "2048"]
+    end
   end
 
   config.vm.define "storage" do |storage|
@@ -67,6 +76,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.vmx["memsize"] =  "1024"
         v.vmx["vhv.enable"] = "TRUE"
     end
+    storage.vm.provider :virtualbox do |v|
+      v.name = "os-storage"
+      v.customize ["modifyvm", :id, "--memory", "1024"]
+    end
   end
 
   config.vm.define "network" do |network|
@@ -84,6 +97,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     network.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "1024"
         v.vmx["vhv.enable"] = "TRUE"
+    end
+    network.vm.provider :virtualbox do |v|
+      v.name = "os-network"
+      v.customize ["modifyvm", :id, "--memory", "1024"]
     end
   end
 
@@ -104,6 +121,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.vmx["memsize"] =  "2048"
         v.vmx["vhv.enable"] = "TRUE"
     end
+    compute.vm.provider :virtualbox do |v|
+      v.name = "os-compute"
+      v.customize ["modifyvm", :id, "--memory", "2048"]
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+    end
+
   end
 
   config.vm.define "swiftstore1" do |swiftstore1|
@@ -121,6 +144,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     swiftstore1.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "256"
         v.vmx["vhv.enable"] = "TRUE"
+    end
+    swiftstore1.vm.provider :virtualbox do |v|
+      v.name = "os-swiftstore1"
+      v.customize ["modifyvm", :id, "--memory", "256"]
     end
   end
 
@@ -140,6 +167,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.vmx["memsize"] =  "256"
         v.vmx["vhv.enable"] = "TRUE"
     end
+    swiftstore2.vm.provider :virtualbox do |v|
+      v.name = "os-swiftstore2"
+      v.customize ["modifyvm", :id, "--memory", "256"]
+    end
+
   end
 
   config.vm.define "swiftstore3" do |swiftstore3|
@@ -158,6 +190,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.vmx["memsize"] =  "256"
         v.vmx["vhv.enable"] = "TRUE"
     end
+    swiftstore3.vm.provider :virtualbox do |v|
+      v.name = "os-swiftstore3"
+      v.customize ["modifyvm", :id, "--memory", "256"]
+    end
   end
 
   config.vm.define "tempest" do |tempest|
@@ -175,6 +211,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     tempest.vm.provider "vmware_fusion" do |v|
       v.vmx["memsize"] = "512"
       v.vmx["vhv.enable"] = "TRUE"
+    end
+    tempest.vm.provider :virtualbox do |v|
+      v.name = "os-tempest"
+      v.customize ["modifyvm", :id, "--memory", "512"]
     end
   end
 

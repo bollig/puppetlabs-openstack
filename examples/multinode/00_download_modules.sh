@@ -5,3 +5,4 @@
 
 cp -n ../../Puppetfile Puppetfile
 r10k -v info puppetfile install
+vagrant plugin install vagrant-hostmanager
