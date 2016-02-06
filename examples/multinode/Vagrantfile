@@ -41,6 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     control.vm.network :private_network, ip: "172.16.33.4"
     control.vm.network :private_network, ip: "172.16.44.4"
 
+# TODO: attach these ports to the private network ips above
     control.vm.network :forwarded_port, guest: 80, host: 4567
     control.vm.network :forwarded_port, guest: 443, host: 4568 
     control.vm.network :forwarded_port, guest: 8080, host: 4569 

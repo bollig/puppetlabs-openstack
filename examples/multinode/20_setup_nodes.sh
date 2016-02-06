@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Connect the agents to the master
-vagrant ssh control -c "sudo yum update -y; sudo puppet agent -t"
+vagrant up control; 
+vagrant ssh control -c "sudo yum update -y;"
+vagrant reload control; 
+vagrant ssh control -c "sudo puppet agent -t"
+
 vagrant ssh network -c "sudo yum update -y; sudo puppet agent -t"
 vagrant ssh storage -c "sudo yum update -y; sudo puppet agent -t"
 vagrant ssh compute -c "sudo yum update -y; sudo puppet agent -t"

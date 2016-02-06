@@ -15,6 +15,8 @@ define openstack::resources::user (
     email    => $email,
   }
 
+  ensure_resource( 'keystone_role', '_member_', { 'ensure' => 'present' } )
+
 # NOTE: tenants are paired with users here
   if $admin == true {
     keystone_user_role { "${name}@${tenant}":
