@@ -24,10 +24,13 @@ class openstack::common::nova {
     rabbit_password     => $::openstack::config::rabbitmq_password,
     debug               => $::openstack::config::debug,
     verbose             => $::openstack::config::verbose,
-    mysql_module        => '2.2',
+    #mysql_module        => '2.2',
   }
 
-  nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
+  #nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
+  #class { '::nova::api': 
+  #  default_floating_pool => 'public' 
+  #}
 
   class { '::nova::network::neutron':
     neutron_admin_password => $::openstack::config::neutron_password,

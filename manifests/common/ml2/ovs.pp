@@ -6,6 +6,10 @@ class openstack::common::ml2::ovs {
   $enable_tunneling    = $::openstack::config::neutron_tunneling # true
   $tunnel_types        = $::openstack::config::neutron_tunnel_types #['gre']
 
+# TODO: link the config file properly
+  file { ['/etc/neutron','/etc/neutron/plugins','/etc/neutron/plugins/ml2/']:
+    ensure=>'directory', 
+  } -> 
   class { '::neutron::agents::ml2::ovs':
     enable_tunneling => $enable_tunneling,
     local_ip         => $data_address,

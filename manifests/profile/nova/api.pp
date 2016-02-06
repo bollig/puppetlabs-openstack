@@ -25,6 +25,7 @@ class openstack::profile::nova::api {
     auth_host                            => $controller_management_address,
     neutron_metadata_proxy_shared_secret => $::openstack::config::neutron_shared_secret,
     enabled                              => true,
+    default_floating_pool                => 'public' 
   }
 
   class { '::nova::compute::neutron': }

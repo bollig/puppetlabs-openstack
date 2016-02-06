@@ -48,6 +48,28 @@ class openstack::profile::neutron::server {
     }
   }
 
+  class { '::neutron::agents::l3':
+    enabled        => false,
+    manage_service => false,
+  }
+  class { '::neutron::agents::dhcp':
+    enabled => false,
+  }
+  class { '::neutron::agents::lbaas':
+    enabled => false,
+  }
+  class { '::neutron::agents::vpnaas':
+    enabled => false,
+  }
+  class { '::neutron::agents::metering':
+    enabled => false,
+  }
+  class { '::neutron::services::fwaas':
+    enabled => false,
+  }
+
+
+
   anchor { 'neutron_common_first': } ->
   class { '::neutron::server::notifications':
     nova_url            => "http://${controller_management_address}:8774/v2/",

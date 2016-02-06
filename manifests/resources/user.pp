@@ -5,14 +5,17 @@ define openstack::resources::user (
   $admin   = false,
   $enabled = true,
 ) {
-  keystone_user { $name:
+# TODO: add domains
+# NOTE: tenant is assumed to be created before this. See hiera(openstack::keystone::tenants)
+  keystone_user { "${name}":
     ensure   => present,
     enabled  => $enabled,
     password => $password,
-    tenant   => $tenant,
+    #tenant   => $tenant,
     email    => $email,
   }
 
+# NOTE: tenants are paired with users here
   if $admin == true {
     keystone_user_role { "${name}@${tenant}":
       ensure => present,

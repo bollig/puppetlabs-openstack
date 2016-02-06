@@ -86,6 +86,7 @@ openstack::rabbitmq::hosts: ['172.16.33.4:5672']
 openstack::keystone::admin_token: 'sosp-kyl'
 openstack::keystone::admin_email: 'chris.hoge@puppetlabs.com'
 openstack::keystone::admin_password: 'fyby-tet'
+openstack::keystone::use_httpd: true
 
 openstack::keystone::tenants:
     "test":
