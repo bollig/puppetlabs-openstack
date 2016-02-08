@@ -88,11 +88,25 @@ openstack::keystone::admin_email: 'chris.hoge@puppetlabs.com'
 openstack::keystone::admin_password: 'fyby-tet'
 openstack::keystone::use_httpd: true
 
+openstack::keystone::domains: 
+    "Default":
+        description: "A default domain for all users and services"
+        is_default: true
+    "my_domain":
+        description: "Test domain1"
+    #"my_domain2":
+    #    description: "Test domain2"
+
 openstack::keystone::tenants:
     "test":
         description: "Test tenant"
+        domain: "Default"
     "test2":
         description: "Test tenant"
+        domain: "Default"
+    "test3":
+        description: "Test tenant"
+        domain: "my_domain"
 
 openstack::keystone::users:
     "test":
@@ -103,6 +117,7 @@ openstack::keystone::users:
     "demo":
         password: "abc123"
         tenant: "test"
+    #    domain: "my_domain"
         email: "demo@example.com"
         admin: false
     "demo2":
