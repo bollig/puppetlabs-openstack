@@ -1,8 +1,8 @@
 {
   "name": "puppetlabs-openstack",
   "version": "7.0.0",
-  "author": "Puppet Labs and Community Contributors",
-  "summary": "Install, configure, and manage a full installation of OpenStack Juno",
+  "author": "Based on source form Puppet Labs and Community Contributors",
+  "summary": "Install, configure, and manage a full installation of OpenStack Liberty",
   "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-openstack.git",
   "project_page": "https://github.com/puppetlabs/puppetlabs-openstack",
