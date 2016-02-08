@@ -7,8 +7,7 @@ sudo apt-get update; \
 sudo apt-get install -y puppetmaster puppet git; \
 sudo apt-get upgrade -y; \
 sudo service puppetmaster restart; \
-sudo puppet agent --enable; \
-sudo puppet agent -t;"
+sudo puppet agent --enable; "
 
 
 
