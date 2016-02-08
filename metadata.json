@@ -37,8 +37,9 @@
     { "name": "openstack/nova", "version_requirement": ">=7.0.0" },
     { "name": "openstack/openstack_extras", "version_requirement": ">=7.0.0" },
     { "name": "openstack/swift", "version_requirement": ">=7.0.0" },
-    { "name": "openstack/tempest", "version_requirement": ">=7.0.0" }
-    { "name": "puppetlabs/ntp", "version_requirement": ">=4.1.2" },
+    { "name": "openstack/tempest", "version_requirement": ">=7.0.0" },
+
+    { "name": "puppetlabs/ntp", "version_requirement": ">=4.1.2" }
 
 // These are all fetched as dependencies for the list above
     //{ "name": "puppetlabs/apache", "version_requirement": ">=2.0.0" },
