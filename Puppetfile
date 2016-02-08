@@ -2,81 +2,81 @@ forge "http://forge.puppetlabs.com"
 
 ## The core OpenStack modules
 
-mod "keystone",
-  :git => "git://github.com/stackforge/puppet-keystone",
-  :ref => "master"
+mod "openstack-keystone", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-keystone",
+#	:ref => "master"
 
-mod "swift",
-  :git => "git://github.com/stackforge/puppet-swift",
-  :ref => "master"
+mod "openstack-swift", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-swift",
+#	:ref => "master"
 
-mod "glance",
-  :git => "git://github.com/stackforge/puppet-glance",
-  :ref => "master"
+mod "openstack-glance", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-glance",
+#	:ref => "master"
 
-mod "cinder",
-  :git => "git://github.com/stackforge/puppet-cinder",
-  :ref => "master"
+mod "openstack-cinder", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-cinder",
+#	:ref => "master"
 
-mod "neutron",
-  :git => "git://github.com/stackforge/puppet-neutron",
-  :ref => "master"
+mod "openstack-neutron", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-neutron",
+#	:ref => "master"
 
-mod "nova",
-  :git => "git://github.com/stackforge/puppet-nova",
-  :ref => "master"
+mod "openstack-nova", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-nova",
+#	:ref => "master"
 
-mod "heat",
-  :git => "git://github.com/stackforge/puppet-heat",
-  :ref => "master"
+mod "openstack-heat", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-heat",
+#	:ref => "master"
 
-mod "ceilometer",
-  :git => "git://github.com/stackforge/puppet-ceilometer",
-  :ref => "master"
+mod "openstack-ceilometer", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-ceilometer",
+#	:ref => "master"
 
-mod "horizon",
-  :git => "git://github.com/stackforge/puppet-horizon",
-  :ref => "master"
+mod "openstack-horizon", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-horizon",
+#	:ref => "master"
 
-mod "openstacklib",
-  :git => "git://github.com/stackforge/puppet-openstacklib",
-  :ref => "master"
+mod "openstack-openstacklib", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-openstacklib",
+#	:ref => "master"
 
-mod "openstack_extras",
-  :git => "git://github.com/stackforge/puppet-openstack_extras",
-  :ref => "master"
+mod "openstack-openstack_extras", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-openstack_extras",
+#	:ref => "master"
 
-mod "tempest",
-  :git => "git://github.com/stackforge/puppet-tempest",
-  :ref => "master"
+mod "openstack-tempest", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-tempest",
+#	:ref => "master"
 
-mod "vswitch",
-  :git => "git://github.com/stackforge/puppet-vswitch",
-  :ref => "master"
+mod "openstack-vswitch", "7.0.0"
+#	:git => "git://github.com/stackforge/puppet-vswitch",
+#	:ref => "master"
 
 ## R10K doesn't handle dependencies, so let's handle them here
 # pointing to as many stable projects as possible
 # TODO automate this dependency list
 
-mod "apache",
-  :git => "git://github.com/puppetlabs/puppetlabs-apache",
-  :ref => "1.2.x"
+#mod "apache",
+#  :git => "git://github.com/puppetlabs/puppetlabs-apache",
+#  :ref => "1.2.x"
+#
+#mod "epel",
+#  :git => "git://github.com/stahnma/puppet-module-epel",
+#  :ref => "master"
+#
+#mod "erlang",
+#  :git => "git://github.com/garethr/garethr-erlang",
+#  :ref => "master"
 
-mod "epel",
-  :git => "git://github.com/stahnma/puppet-module-epel",
-  :ref => "master"
-
-mod "erlang",
-  :git => "git://github.com/garethr/garethr-erlang",
-  :ref => "master"
-
-mod "inifile",
-  :git => "git://github.com/puppetlabs/puppetlabs-inifile",
-  :ref => "1.0.x"
-
-mod "mysql",
-  :git => "git://github.com/puppetlabs/puppetlabs-mysql",
-  :ref => "3.3.x"
+#mod "inifile",
+#  :git => "git://github.com/puppetlabs/puppetlabs-inifile",
+#  :ref => "1.0.x"
+#
+#mod "mysql",
+#  :git => "git://github.com/puppetlabs/puppetlabs-mysql",
+#  :ref => "3.3.x"
 
 mod "stdlib",
   :git => "git://github.com/puppetlabs/puppetlabs-stdlib",
