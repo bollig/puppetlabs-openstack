@@ -40,6 +40,7 @@ class openstack::config (
   $keystone_admin_token = undef,
   $keystone_admin_email = undef,
   $keystone_admin_password = undef,
+  $keystone_domains = undef,
   $keystone_tenants = undef,
   $keystone_users = undef,
   $keystone_use_httpd = undef,

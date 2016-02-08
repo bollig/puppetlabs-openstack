@@ -25,7 +25,8 @@ class openstack::profile::neutron::router {
   class { '::neutron::agents::metadata':
     auth_password => $::openstack::config::neutron_password,
     shared_secret => $::openstack::config::neutron_shared_secret,
-    auth_url      => "http://${controller_management_address}:35357/v2.0",
+    auth_url      => "http://${controller_management_address}:35357/v3",
+    #auth_url      => "http://${controller_management_address}:35357",
     debug         => $::openstack::config::debug,
     auth_region   => $::openstack::config::region,
     metadata_ip   => $controller_management_address,

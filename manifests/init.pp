@@ -170,13 +170,18 @@
 # [*keystone_admin_password*]
 #   The password for keystone user in Keystone.
 #
+# [*keystone_domains*]
+#   (optional) The intial keystone domains to create. Should be a Hash in the form of: 
+#   {'domain_name1' => { 'description' => 'Domain Description 1'}, 
+#    'domain_name2' => {'description' => 'Domain Description 2', 'is_default' => true }}
+#
 # [*keystone_tenants*]
-#   The intial keystone tenants to create. Should be a Hash in the form of: 
+#   (optional) The intial keystone tenants to create. Should be a Hash in the form of: 
 #   {'tenant_name1' => { 'descritpion' => 'Tenant Description 1'}, 
 #    'tenant_name2' => {'description' => 'Tenant Description 2'}}
 #
 # [*keystone_users*]
-#   The intial keystone users to create. Should be a Hash in the form of:
+#   (optional) The intial keystone users to create. Should be a Hash in the form of:
 #   {'user1' => {'password' => 'somepass1', 'tenant' => 'some_preexisting_tenant',
 #                'email' => 'foo@example.com', 'admin'  =>  'true'},
 #   'user2' => {'password' => 'somepass2', 'tenant' => 'some_preexisting_tenant',
@@ -409,6 +414,7 @@ class openstack (
   $keystone_admin_token = undef,
   $keystone_admin_email = undef,
   $keystone_admin_password = undef,
+  $keystone_domains = undef,
   $keystone_tenants = undef,
   $keystone_users = undef,
   $keystone_use_httpd = false,
@@ -498,8 +504,9 @@ class openstack (
       keystone_admin_token          => hiera(openstack::keystone::admin_token),
       keystone_admin_email          => hiera(openstack::keystone::admin_email),
       keystone_admin_password       => hiera(openstack::keystone::admin_password),
-      keystone_tenants              => hiera(openstack::keystone::tenants),
-      keystone_users                => hiera(openstack::keystone::users),
+      keystone_domains              => hiera(openstack::keystone::domains, {}),
+      keystone_tenants              => hiera(openstack::keystone::tenants, {}),
+      keystone_users                => hiera(openstack::keystone::users, {}),
       keystone_use_httpd            => hiera(openstack::keystone::use_httpd, false),
       glance_password               => hiera(openstack::glance::password),
       glance_api_servers            => hiera(openstack::glance::api_servers),
@@ -592,8 +599,9 @@ class openstack (
       keystone_admin_token          => $keystone_admin_token,
       keystone_admin_email          => $keystone_admin_email,
       keystone_admin_password       => $keystone_admin_password,
-      keystone_tenants              => $keystone_tenants,
-      keystone_users                => $keystone_users,
+      keystone_domains              => pick($keystone_domains, {}),
+      keystone_tenants              => pick($keystone_tenants, {}),
+      keystone_users                => pick($keystone_users, {}),
       keystone_use_httpd            => $keystone_use_httpd,
       glance_password               => $glance_password,
       glance_api_servers            => $glance_api_servers,

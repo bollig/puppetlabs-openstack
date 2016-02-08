@@ -3,7 +3,8 @@ class openstack::profile::auth_file {
   class { '::openstack_extras::auth_file':
     tenant_name => 'admin',
     password    => $::openstack::config::keystone_admin_password,
-    auth_url    => "http://${::openstack::config::controller_address_api}:5000/v2.0/",
+    auth_url    => "http://${::openstack::config::controller_address_api}:5000/v3/",
+    #auth_url    => "http://${::openstack::config::controller_address_api}:5000",
     region_name => $::openstack::config::region,
   }
 }
