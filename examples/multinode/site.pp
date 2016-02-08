@@ -1,4 +1,9 @@
 node 'puppet' {
+
+    package {'git': 
+        ensure => latest, 
+    }
+
 #  include ::ntp
 #  class { '::puppetdb':
 #    listen_address     => '0.0.0.0',
