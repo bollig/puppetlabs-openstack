@@ -49,25 +49,28 @@ class openstack::profile::neutron::server {
     }
   }
 
-  #class { '::neutron::agents::l3':
-  #  enabled        => false,
-  #  manage_service => false,
-  #}
-  #class { '::neutron::agents::dhcp':
-  #  enabled => false,
-  #}
-  #class { '::neutron::agents::lbaas':
-  #  enabled => false,
-  #}
-  #class { '::neutron::agents::vpnaas':
-  #  enabled => false,
-  #}
-  #class { '::neutron::agents::metering':
-  #  enabled => false,
-  #}
-  #class { '::neutron::services::fwaas':
-  #  enabled => false,
-  #}
+# TODO: update puppet-neutron module to a version that does not need these
+# agents configured on the Neutron-API server (the neutron::api should
+# implicitly install python libraries for these deps 
+  class { '::neutron::agents::l3':
+    enabled        => false,
+    manage_service => false,
+  }
+  class { '::neutron::agents::dhcp':
+    enabled => false,
+  }
+  class { '::neutron::agents::lbaas':
+    enabled => false,
+  }
+  class { '::neutron::agents::vpnaas':
+    enabled => false,
+  }
+  class { '::neutron::agents::metering':
+    enabled => false,
+  }
+  class { '::neutron::services::fwaas':
+   enabled => false,
+  }
 
 
 

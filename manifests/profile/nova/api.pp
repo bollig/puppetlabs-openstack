@@ -22,7 +22,8 @@ class openstack::profile::nova::api {
 
   class { '::nova::api':
     admin_password                       => $::openstack::config::nova_password,
-    auth_host                            => $controller_management_address,
+    identity_uri                         => "http://${controller_management_address}:35357/",
+    osapi_v3                             => true,
     neutron_metadata_proxy_shared_secret => $::openstack::config::neutron_shared_secret,
     enabled                              => true,
     default_floating_pool                => 'public' 
