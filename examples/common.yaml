@@ -189,8 +189,8 @@ openstack::tempest::glance_available    : true
 openstack::tempest::horizon_available   : true
 openstack::tempest::nova_available      : true
 openstack::tempest::neutron_available   : true
-openstack::tempest::heat_available      : false
-openstack::tempest::swift_available     : false
+openstack::tempest::heat_available      : true 
+openstack::tempest::swift_available     : true 
 
 ######## Log levels
 openstack::verbose: 'True'

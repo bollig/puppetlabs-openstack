@@ -16,18 +16,8 @@ class openstack::profile::glance::api {
   openstack::resources::firewall { 'Glance API': port      => '9292', }
   openstack::resources::firewall { 'Glance Registry': port => '9191', }
 
-  class { '::glance::api':
-    keystone_password   => $::openstack::config::glance_password,
-    auth_host           => $::openstack::config::controller_address_management,
-    keystone_tenant     => 'services',
-    keystone_user       => 'glance',
-    database_connection => $database_connection,
-    registry_host       => $::openstack::config::storage_address_management,
-    verbose             => $::openstack::config::verbose,
-    debug               => $::openstack::config::debug,
-    enabled             => $::openstack::profile::base::is_storage,
-    os_region_name      => $::openstack::config::region,
-  }
+# Triggers the glance::api
+  include ::openstack::common::glance
 
   class { '::glance::backend::file': }
 

@@ -7,7 +7,7 @@ class openstack::profile::tempest {
   $alt_user   = $::openstack::config::tempest_username_alt
   $public_network_name = $::openstack::config::tempest_public_network_name
 
-  include ::openstack::common::keystone
+  #include ::openstack::common::keystone
   include ::openstack::common::glance
   include ::openstack::common::neutron
 
@@ -41,15 +41,15 @@ class openstack::profile::tempest {
     require                => Class['::neutron::keystone::auth'],
   }
 
-  Tempest_config {
-    path    => $::tempest::tempest_conf,
-    require => File[$::tempest::tempest_conf],
-  }
-
-  tempest_config {
-    'boto/ec2_url':            value => "http://${api_ip}:8773/services/Cloud";
-    'boto/s3_url':             value => "http://${api_ip}:3333";
-    'dashboard/dashboard_url': value => "http://${api_ip}/";
-    'dashboard/login_url':     value => "http://${api_ip}/dashboard";
-  }
+  #Tempest_config {
+  #  path    => $::tempest::tempest_conf,
+  #  require => File[$::tempest::tempest_conf],
+  #}
+#
+#  tempest_config {
+#    'boto/ec2_url':            value => "http://${api_ip}:8773/services/Cloud";
+##    'boto/s3_url':             value => "http://${api_ip}:3333";
+#    'dashboard/dashboard_url': value => "http://${api_ip}/";
+#    'dashboard/login_url':     value => "http://${api_ip}/dashboard";
+#  }
 }
