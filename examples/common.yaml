@@ -34,11 +34,11 @@ openstack::subnets:
     tenant_name: 'services'
     dns_nameservers: [192.168.22.2]
 openstack::routers:
-  test:
+  test_router:
     tenant_name: 'test'
     gateway_network_name: 'public'
 openstack::router_interfaces:
-  'test:10.0.0.0/24': {}
+  'test_router:10.0.0.0/24': {}
 
 openstack::network::management: '172.16.33.0/24'
 openstack::network::data: '172.16.44.0/24'

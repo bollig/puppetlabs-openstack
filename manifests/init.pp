@@ -562,7 +562,7 @@ class openstack (
     class { '::openstack::config':
       region                        => $region,
       network_api                   => $network_api,
-      networks                      => $networks,
+      networks                      => pick($networks, {})
       subnets                       => $subnets,
       routers                       => $routers,
       router_interfaces             => $router_interfaces,
