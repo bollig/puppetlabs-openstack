@@ -5,15 +5,9 @@ class openstack::profile::ceilometer::api {
 
   $mongo_username                = $::openstack::config::ceilometer_mongo_username
   $mongo_password                = $::openstack::config::ceilometer_mongo_password
+
   $ceilometer_management_address = $::openstack::config::ceilometer_address_management
   $controller_management_address = $::openstack::config::controller_address_management
-
-
-  if ! $mongo_username or ! $mongo_password {
-    $mongo_connection = "mongodb://${ceilometer_management_address}:27017/ceilometer"
-  } else {
-    $mongo_connection = "mongodb://${mongo_username}:${mongo_password}@${ceilometer_management_address}:27017/ceilometer"
-  }
 
   openstack::resources::firewall { 'Ceilometer API': port => '8777' }
 
@@ -39,10 +33,6 @@ class openstack::profile::ceilometer::api {
 # follow httpd cycles
     manage_service        => false,
     enabled               => false,
-  }
-
-  class { '::ceilometer::db':
-    database_connection => $mongo_connection,
   }
 
   class { '::ceilometer::agent::central':
@@ -84,6 +74,7 @@ class openstack::profile::ceilometer::api {
       $pass                = $::openstack::config::mysql_pass_aodh
       $database_connection = "mysql://${user}:${pass}@${management_address}/aodh"
       
+	# Make the mysql db user 'aodh' exists
       openstack::resources::database { 'aodh': }
       openstack::resources::firewall { 'AODH API': port => '8042', }
 
@@ -94,14 +85,8 @@ class openstack::profile::ceilometer::api {
         debug               => true,
         rabbit_hosts         => $::openstack::config::rabbitmq_hosts,
 # TODO: update to mongo when possible
-        #database_connection => $mongo_connection,
 	database_connection => $database_connection,
       }
-	# Make the mysql db user 'aodh'
-      #class { '::aodh::db::mysql':
-#	user     => $user,
-#	password => $pass,
-#      }
 	# Make the 'aodh' user in keystone: 
       class { '::aodh::keystone::auth':
         password => $::openstack::config::aodh_password,

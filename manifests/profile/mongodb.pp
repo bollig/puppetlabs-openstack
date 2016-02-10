@@ -10,5 +10,6 @@ class openstack::profile::mongodb {
     bind_ip => ['127.0.0.1', $::openstack::config::controller_address_management],
   }
 
-  class { '::mongodb::client': }
+# THIS IS NOW PART OF THE common/ceilometer.pp
+#  class { '::mongodb::client': }
 }
