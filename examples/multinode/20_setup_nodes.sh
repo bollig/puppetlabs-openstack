@@ -11,7 +11,8 @@ sudo puppet agent -t;"
 vagrant ssh control -c "$CMDS"
 vagrant ssh network -c "$CMDS"
 vagrant ssh storage -c "$CMDS"
-vagrant ssh compute -c "$CMDS"
+vagrant ssh compute01 -c "$CMDS"
+vagrant ssh compute02 -c "$CMDS"
 
 # sign the certs
 vagrant ssh puppet -c "sudo puppet cert sign --all"

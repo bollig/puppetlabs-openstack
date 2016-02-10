@@ -1,1 +1,1 @@
-vagrant destroy -f puppet control storage network compute
+vagrant destroy -f puppet control storage network compute01 compute02

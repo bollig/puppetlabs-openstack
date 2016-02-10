@@ -109,25 +109,49 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "compute" do |compute|
-    compute.vm.box = "puppetlabs/centos-7.0-64-puppet"
-    compute.vm.box_version = "= 1.0.0"
-    compute.vm.network :private_network, ip: "192.168.11.7"
-    compute.vm.network :private_network, ip: "192.168.22.7"
-    compute.vm.network :private_network, ip: "172.16.33.7"
-    compute.vm.network :private_network, ip: "172.16.44.7"
+  config.vm.define "compute01" do |compute01|
+    compute01.vm.box = "puppetlabs/centos-7.0-64-puppet"
+    compute01.vm.box_version = "= 1.0.0"
+    compute01.vm.network :private_network, ip: "192.168.11.7"
+    compute01.vm.network :private_network, ip: "192.168.22.7"
+    compute01.vm.network :private_network, ip: "172.16.33.7"
+    compute01.vm.network :private_network, ip: "172.16.44.7"
 
-    compute.vm.hostname = "compute"
+    compute01.vm.hostname = "compute01"
 
-    compute.vm.synced_folder "../../", "/openstack"
+    compute01.vm.synced_folder "../../", "/openstack"
 
-    compute.vm.provider "vmware_fusion" do |v|
+    compute01.vm.provider "vmware_fusion" do |v|
         v.vmx["numvcpus"] = "2"
         v.vmx["memsize"] =  "2048"
         v.vmx["vhv.enable"] = "TRUE"
     end
-    compute.vm.provider :virtualbox do |v|
-      v.name = "os-compute"
+    compute01.vm.provider :virtualbox do |v|
+      v.name = "os-compute01"
+      v.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "2"]
+    end
+
+  end
+
+ config.vm.define "compute02" do |compute02|
+    compute02.vm.box = "puppetlabs/centos-7.0-64-puppet"
+    compute02.vm.box_version = "= 1.0.0"
+    compute02.vm.network :private_network, ip: "192.168.11.7"
+    compute02.vm.network :private_network, ip: "192.168.22.7"
+    compute02.vm.network :private_network, ip: "172.16.33.7"
+    compute02.vm.network :private_network, ip: "172.16.44.7"
+
+    compute02.vm.hostname = "compute02"
+
+    compute02.vm.synced_folder "../../", "/openstack"
+
+    compute02.vm.provider "vmware_fusion" do |v|
+        v.vmx["numvcpus"] = "2"
+        v.vmx["memsize"] =  "2048"
+        v.vmx["vhv.enable"] = "TRUE"
+    end
+    compute02.vm.provider :virtualbox do |v|
+      v.name = "os-compute02"
       v.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "2"]
     end
 

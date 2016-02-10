@@ -26,7 +26,11 @@ node 'network.msi.umn.edu' {
   include ::openstack::role::network
 }
 
-node 'compute.msi.umn.edu' {
+node 'compute01.msi.umn.edu' {
+  include ::openstack::role::compute
+}
+
+node 'compute02.msi.umn.edu' {
   include ::openstack::role::compute
 }
 
