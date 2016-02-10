@@ -6,6 +6,10 @@ mod "openstack-keystone",
 	:git => "git://github.com/openstack/puppet-keystone",
 	:ref => "stable/liberty"
 
+mod "openstack-aodh",
+	:git => "git://github.com/openstack/puppet-aodh",
+	:ref => "stable/liberty"
+
 mod "openstack-swift",
 	:git => "git://github.com/openstack/puppet-swift",
 	:ref => "stable/liberty"

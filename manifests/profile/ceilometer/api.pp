@@ -46,14 +46,14 @@ class openstack::profile::ceilometer::api {
        ssl => false,
   }
 
-  #ceilometer_config {
-    #'keystone_authtoken/auth_version': value => 'v2.0';
-    #'service_credentials/os_endpoint_type': value => 'publicURL';
-    #'service_credentials/os_auth_url': value => "http://${::openstack::config::controller_address_management}:35357/v2.0";
-    #'service_credentials/os_tenant_name': value => 'services';
-    #'service_credentials/os_password': value => $::openstack::config::ceilometer_password;
-    #'service_credentials/os_username': value => 'ceilometer';
-  #}
+  ceilometer_config {
+    'keystone_authtoken/auth_version': value => 'v2.0';
+    'service_credentials/os_endpoint_type': value => 'publicURL';
+    'service_credentials/os_auth_url': value => "http://${::openstack::config::controller_address_management}:35357/v2.0";
+    'service_credentials/os_tenant_name': value => 'services';
+    'service_credentials/os_password': value => $::openstack::config::ceilometer_password;
+    'service_credentials/os_username': value => 'ceilometer';
+  }
 
   # For the time being no upstart script are provided
   # in Ubuntu 12.04 Cloud Archive. Bug report filed
