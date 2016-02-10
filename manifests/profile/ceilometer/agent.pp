@@ -7,7 +7,7 @@ class openstack::profile::ceilometer::agent {
     auth_url      => "http://${controller_management_address}:5000/v2.0",
     auth_password => $::openstack::config::ceilometer_password,
     auth_region   => $::openstack::config::region,
-    $auth_endpoint_type => 'publicURL',
+    auth_endpoint_type => 'publicURL',
   }
 
   ceilometer_config {
