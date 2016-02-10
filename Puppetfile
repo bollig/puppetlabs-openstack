@@ -1,5 +1,11 @@
 forge "http://forge.puppetlabs.com"
 
+# THIS MODULE
+mod "puppetlabs-openstack",
+	:git => "git://github.com/bollig/puppetlabs-openstack",
+	:ref => "liberty"
+
+
 ## The core OpenStack modules
 
 mod "openstack-keystone",
@@ -67,11 +73,11 @@ mod "stahnma/epel", :latest
 mod "garethr/erlang", :latest
 mod "puppetlabs/inifile", :latest
 mod "puppetlabs/mysql", :latest
-mod "puppetlabs/postgresql", :latest
+mod "puppetlabs/postgresql", "3.4.2"
 mod "puppetlabs/stdlib", :latest
 mod "puppetlabs/rsync", :latest
 mod "puppetlabs/xinetd", :latest
-mod "puppetlabs/concat", :latest
+mod "puppetlabs/concat", "1.2.5"
 mod "saz/memcached", :latest
 mod "dprince/qpid", :latest
 mod "duritong/sysctl", :latest 
@@ -82,7 +88,7 @@ mod "puppetlabs/vcsrepo", :latest
 # indirect dependencies
 
 mod "puppetlabs/firewall", :latest
-mod "puppetlabs/apt", :latest
+mod "puppetlabs/apt", "1.8.0"
 mod "puppetlabs/corosync", :latest
 mod "puppetlabs/mongodb", :latest
 mod "puppetlabs/ntp", :latest
