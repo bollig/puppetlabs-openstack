@@ -15,9 +15,7 @@ class openstack::profile::ceilometer::api {
     $mongo_connection = "mongodb://${mongo_username}:${mongo_password}@${ceilometer_management_address}:27017/ceilometer"
   }
 
-  openstack::resources::firewall { 'Ceilometer API':
-    port => '8777',
-  }
+  openstack::resources::firewall { 'Ceilometer API': port => '8777' }
 
   include ::openstack::common::ceilometer
 
@@ -30,9 +28,17 @@ class openstack::profile::ceilometer::api {
   }
 
   class { '::ceilometer::api':
-   # keystone_host     => $controller_management_address,
+# TODO: drop update this to handle SSL
+    keystone_protocol	  => 'http', 
+    keystone_password     => $::openstack::config::ceilometer_password,
     keystone_identity_uri => "http://${controller_management_address}:35357/",
-    keystone_password => $::openstack::config::ceilometer_password,
+    keystone_auth_uri     => "http://${::openstack::config::controller_address_management}:5000/",
+    #service_name          => 'httpd',
+# TODO: on new version of ceilometer puppet module we should be able to track
+# the httpd service (see aodh below). Until then, assume that ceilometer will
+# follow httpd cycles
+    manage_service        => false,
+    enabled               => false,
   }
 
   class { '::ceilometer::db':
@@ -45,6 +51,19 @@ class openstack::profile::ceilometer::api {
   class { '::ceilometer::expirer':
     time_to_live => '2592000'
   }
+
+  class { '::ceilometer::wsgi::apache':
+       ssl => false,
+  }
+
+  #ceilometer_config {
+    #'keystone_authtoken/auth_version': value => 'v2.0';
+    #'service_credentials/os_endpoint_type': value => 'publicURL';
+    #'service_credentials/os_auth_url': value => "http://${::openstack::config::controller_address_management}:35357/v2.0";
+    #'service_credentials/os_tenant_name': value => 'services';
+    #'service_credentials/os_password': value => $::openstack::config::ceilometer_password;
+    #'service_credentials/os_username': value => 'ceilometer';
+  #}
 
   # For the time being no upstart script are provided
   # in Ubuntu 12.04 Cloud Archive. Bug report filed
@@ -139,6 +158,7 @@ class openstack::profile::ceilometer::api {
       before        => Exec['ceilometer-dbsync'],
     }
   }
+
 
   Class['::mongodb::server'] -> Class['::mongodb::client'] -> Exec['ceilometer-dbsync']
 }
