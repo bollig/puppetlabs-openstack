@@ -23,9 +23,9 @@ class openstack::profile::ceilometer::api {
 
   class { '::ceilometer::keystone::auth':
     password         => $::openstack::config::ceilometer_password,
-    public_address   => $::openstack::config::controller_address_api,
-    admin_address    => $::openstack::config::controller_address_management,
-    internal_address => $::openstack::config::controller_address_management,
+    public_url   => "http://${::openstack::config::controller_address_api}:8777",
+    admin_url    => "http://${::openstack::config::controller_address_management}:8777",
+    internal_url => "http://${::openstack::config::controller_address_management}:8777",
     region           => $::openstack::config::region,
   }
 
@@ -86,6 +86,10 @@ class openstack::profile::ceilometer::api {
 	# Make the 'aodh' user in keystone: 
       class { '::aodh::keystone::auth':
         password => $::openstack::config::aodh_password,
+	public_url   => "http://${::openstack::config::controller_address_api}:8042",
+	admin_url    => "http://${::openstack::config::controller_address_management}:8042",
+	internal_url => "http://${::openstack::config::controller_address_management}:8042",
+	region           => $::openstack::config::region,
       }
         # Setup the aodh api endpoint
       class { '::aodh::api':
