@@ -56,7 +56,7 @@ class openstack::profile::ceilometer::api {
   class { '::ceilometer::agent::polling':
     central_namespace => true,
     compute_namespace => true,
-    ipmi_namespace    => false,
+    ipmi_namespace    => true,
   }
 
   # Install compute agent (deprecated)
