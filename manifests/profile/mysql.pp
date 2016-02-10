@@ -10,6 +10,9 @@ class openstack::profile::mysql {
       'mysqld' => {
                     'bind_address'           => $::openstack::config::controller_address_management,
                     'default-storage-engine' => 'innodb',
+# TODO: comment this out when we have a proper set of IPs. Until then, avoid
+# DNS resolution from preventing mysql client connections
+		    'skip-name-resolve'      => true,
                   }
     }
   }

@@ -150,6 +150,12 @@
 # [*mysql_pass_heat*]
 #   The database password for heat service.
 #
+# [*mysql_user_aodh*]
+#   The database username for aodh service.
+#
+# [*mysql_pass_aodh*]
+#   The database password for aodh service.
+#
 # == RabbitMQ
 # [*rabbitmq_hosts*]
 #   The host list for the RabbitMQ service.
@@ -408,6 +414,8 @@ class openstack (
   $mysql_pass_neutron = undef,
   $mysql_user_heat = undef,
   $mysql_pass_heat = undef,
+  $mysql_user_aodh = undef,
+  $mysql_pass_aodh = undef,
   $rabbitmq_hosts = undef,
   $rabbitmq_user = undef,
   $rabbitmq_password = undef,
@@ -445,6 +453,7 @@ class openstack (
   $ceilometer_mongo_password = undef,
   $ceilometer_password = undef,
   $ceilometer_meteringsecret = undef,
+  $aodh_password = undef,
   $heat_password = undef,
   $heat_encryption_key = undef,
   $horizon_secret_key = undef,
@@ -498,6 +507,8 @@ class openstack (
       mysql_pass_neutron            => pick(hiera(openstack::mysql::neutron::pass, undef), hiera(openstack::mysql::service_password)),
       mysql_user_heat               => pick(hiera(openstack::mysql::heat::user, undef), 'heat'),
       mysql_pass_heat               => pick(hiera(openstack::mysql::heat::pass, undef), hiera(openstack::mysql::service_password)),
+      mysql_user_aodh               => pick(hiera(openstack::mysql::aodh::user, undef), 'aodh'),
+      mysql_pass_aodh               => pick(hiera(openstack::mysql::aodh::pass, undef), hiera(openstack::mysql::service_password)),
       rabbitmq_hosts                => hiera(openstack::rabbitmq::hosts),
       rabbitmq_user                 => hiera(openstack::rabbitmq::user),
       rabbitmq_password             => hiera(openstack::rabbitmq::password),
@@ -535,6 +546,7 @@ class openstack (
       ceilometer_mongo_password     => hiera(openstack::ceilometer::mongo::password),
       ceilometer_password           => hiera(openstack::ceilometer::password),
       ceilometer_meteringsecret     => hiera(openstack::ceilometer::meteringsecret),
+      aodh_password           	    => hiera(openstack::aodh::password),
       heat_password                 => hiera(openstack::heat::password),
       heat_encryption_key           => hiera(openstack::heat::encryption_key),
       horizon_secret_key            => hiera(openstack::horizon::secret_key),
@@ -593,6 +605,8 @@ class openstack (
       mysql_pass_neutron            => pick($mysql_pass_neutron, $mysql_service_password),
       mysql_user_heat               => pick($mysql_user_heat, 'heat'),
       mysql_pass_heat               => pick($mysql_pass_heat, $mysql_service_password),
+      mysql_user_aodh               => pick($mysql_user_aodh, 'aodh'),
+      mysql_pass_aodh               => pick($mysql_pass_aodh, $mysql_service_password),
       rabbitmq_hosts                => $rabbitmq_hosts,
       rabbitmq_user                 => $rabbitmq_user,
       rabbitmq_password             => $rabbitmq_password,
@@ -630,6 +644,7 @@ class openstack (
       ceilometer_mongo_password     => $ceilometer_mongo_password,
       ceilometer_password           => $ceilometer_password,
       ceilometer_meteringsecret     => $ceilometer_meteringsecret,
+      aodh_password                 => $aodh_password,
       heat_password                 => $heat_password,
       heat_encryption_key           => $heat_encryption_key,
       horizon_secret_key            => $horizon_secret_key,

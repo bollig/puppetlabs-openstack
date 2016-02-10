@@ -30,7 +30,8 @@ class openstack::profile::ceilometer::api {
   }
 
   class { '::ceilometer::api':
-    keystone_host     => $controller_management_address,
+   # keystone_host     => $controller_management_address,
+    keystone_identity_uri => "http://${controller_management_address}:35357/",
     keystone_password => $::openstack::config::ceilometer_password,
   }
 
@@ -49,13 +50,71 @@ class openstack::profile::ceilometer::api {
   # in Ubuntu 12.04 Cloud Archive. Bug report filed
   # https://bugs.launchpad.net/cloud-archive/+bug/1281722
   # https://bugs.launchpad.net/ubuntu/+source/ceilometer/+bug/1250002/comments/5
-  if $::osfamily != 'Debian' {
-    class { '::ceilometer::alarm::notifier':
-    }
+  case $::osfamily {
+    'Debian': {
+      class { '::ceilometer::alarm::notifier':
+      }
 
-    class { '::ceilometer::alarm::evaluator':
+      class { '::ceilometer::alarm::evaluator':
+      }
+    }
+    'RedHat': {
+
+      $management_address  = $::openstack::config::controller_address_management
+      $user                = $::openstack::config::mysql_user_aodh
+      $pass                = $::openstack::config::mysql_pass_aodh
+      $database_connection = "mysql://${user}:${pass}@${management_address}/aodh"
+      
+      openstack::resources::database { 'aodh': }
+      openstack::resources::firewall { 'AODH API': port => '8042', }
+
+      class { '::aodh':
+        rabbit_userid       => $::openstack::config::rabbitmq_user,
+        rabbit_password     => $::openstack::config::rabbitmq_password,
+        verbose             => true,
+        debug               => true,
+        rabbit_hosts         => $::openstack::config::rabbitmq_hosts,
+# TODO: update to mongo when possible
+        #database_connection => $mongo_connection,
+	database_connection => $database_connection,
+      }
+	# Make the mysql db user 'aodh'
+      #class { '::aodh::db::mysql':
+#	user     => $user,
+#	password => $pass,
+#      }
+	# Make the 'aodh' user in keystone: 
+      class { '::aodh::keystone::auth':
+        password => $::openstack::config::aodh_password,
+      }
+        # Setup the aodh api endpoint
+      class { '::aodh::api':
+        enabled               => true,
+        keystone_password     => $::openstack::config::aodh_password,
+        keystone_identity_uri => "http://${::openstack::config::controller_address_management}:35357/",
+        keystone_auth_uri     => "http://${::openstack::config::controller_address_management}:35357/",
+        service_name          => 'httpd',
+      }
+        # Setup the aodh service behind apache wsgi
+      class { '::aodh::wsgi::apache':
+        ssl => false,
+      }
+	# Configure aodh to point to keystone
+      class { '::aodh::auth':
+        auth_url      => "https://${::openstack::config::controller_address_management}:5000/v2.0",
+        auth_password => $::openstack::config::aodh_password,
+      }
+      class { '::aodh::client': }
+      class { '::aodh::notifier': }
+      class { '::aodh::listener': }
+      class { '::aodh::evaluator': }
+      class { '::aodh::db::sync': }
+    }
+    default: {
+      fail("Unsupported osfamily (${::osfamily})")
     }
   }
+
 
   class { '::ceilometer::collector': }
 

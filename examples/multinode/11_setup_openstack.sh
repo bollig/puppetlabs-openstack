@@ -3,6 +3,8 @@
 vagrant ssh puppet -c "sudo ln -sf /openstack/examples/hiera.yaml /etc/puppet/hiera.yaml; \
 sudo mkdir -p /etc/puppet/hieradata; \
 sudo ln -sf /openstack/examples/common.yaml /etc/puppet/hieradata/common.yaml; \
+sudo rmdir /etc/puppet/modules || sudo unlink /etc/puppet/modules; \
+sudo ln -sf /vagrant/modules /etc/puppet/modules; \
 sudo ln -sf /vagrant/site.pp /etc/puppet/manifests/site.pp; \
 cd /opt && sudo git clone https://github.com/bollig/puppetlabs-openstack.git -b liberty; \
 cd /opt/puppetlabs-openstack && sudo git pull origin liberty; \

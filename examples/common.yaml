@@ -75,6 +75,9 @@ openstack::mysql::neutron::pass: 'fuva-wax'
 openstack::mysql::heat::user: 'heat'
 openstack::mysql::heat::pass: 'fuva-wax'
 
+openstack::mysql::aodh::user: 'aodh'
+openstack::mysql::aodh::pass: 'fuva-wax'
+
 ######## RabbitMQ
 
 openstack::rabbitmq::user: 'openstack'
@@ -84,7 +87,7 @@ openstack::rabbitmq::hosts: ['172.16.33.4:5672']
 ######## Keystone
 
 openstack::keystone::admin_token: 'sosp-kyl'
-openstack::keystone::admin_email: 'chris.hoge@puppetlabs.com'
+openstack::keystone::admin_email: 'evan@msi.umn.edu'
 openstack::keystone::admin_password: 'fyby-tet'
 openstack::keystone::use_httpd: true
 
@@ -164,6 +167,9 @@ openstack::ceilometer::mongo::username: 'mongo'
 openstack::ceilometer::mongo::password: 'mongosecretkey123'
 openstack::ceilometer::password: 'whi-truz'
 openstack::ceilometer::meteringsecret: 'ceilometersecretkey'
+
+######## AODH
+openstack::aodh::password: 'whi-truz'
 
 ######## Heat
 openstack::heat::password: 'zap-bang'

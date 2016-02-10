@@ -1,4 +1,5 @@
-
+# Common class for cinder installation
+# Private, and should not be used on its own
 class openstack::common::glance {
 
   $controller_address  = $::openstack::config::controller_address_management

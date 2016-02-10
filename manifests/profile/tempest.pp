@@ -8,11 +8,17 @@ class openstack::profile::tempest {
   $public_network_name = $::openstack::config::tempest_public_network_name
 
   #include ::openstack::common::keystone
-  include ::openstack::common::glance
+# NOTE: order of includes matter here. 
+# TODO: update to newer neutron puppet module to avoid headache
   include ::openstack::common::neutron
+  include ::openstack::common::glance
 
   class { '::tempest':
+    install_from_source    => true,
+    debug		   => false,
+    use_stderr		   => false,
     setup_venv             => true,
+    git_clone 		   => true,
     tempest_repo_revision  => 'master',
     cinder_available       => $::openstack::config::tempest_cinder_available,
     glance_available       => $::openstack::config::tempest_glance_available,
@@ -21,12 +27,21 @@ class openstack::profile::tempest {
     neutron_available      => $::openstack::config::tempest_neutron_available,
     nova_available         => $::openstack::config::tempest_nova_available,
     swift_available        => $::openstack::config::tempest_swift_available,
+
+        ceilometer_available => true,
+	aodh_available       => false,
+	trove_available      => false,
+    	sahara_available     => false,
+	#ironic_available     => false,
+
+
     configure_images       => $::openstack::config::tempest_configure_images,
     image_name             => $::openstack::config::tempest_image_name,
     image_name_alt         => $::openstack::config::tempest_image_name_alt,
     configure_networks     => $::openstack::config::tempest_configure_network,
     public_network_name    => $public_network_name,
-    identity_uri           => "http://${api_ip}:5000/v3/",
+    identity_uri           => "http://${api_ip}:5000/v2.0/",
+    identity_uri_v3        => "http://${api_ip}:5000/v3/",
     #identity_uri           => "http://${api_ip}:5000",
     admin_username         => $admin_user,
     admin_password         => $users[$admin_user]['password'],
