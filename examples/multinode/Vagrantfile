@@ -136,10 +136,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
  config.vm.define "compute02" do |compute02|
     compute02.vm.box = "puppetlabs/centos-7.0-64-puppet"
     compute02.vm.box_version = "= 1.0.0"
-    compute02.vm.network :private_network, ip: "192.168.11.7"
-    compute02.vm.network :private_network, ip: "192.168.22.7"
-    compute02.vm.network :private_network, ip: "172.16.33.7"
-    compute02.vm.network :private_network, ip: "172.16.44.7"
+    compute02.vm.network :private_network, ip: "192.168.11.12"
+    compute02.vm.network :private_network, ip: "192.168.22.12"
+    compute02.vm.network :private_network, ip: "172.16.33.12"
+    compute02.vm.network :private_network, ip: "172.16.44.12"
 
     compute02.vm.hostname = "compute02"
 
