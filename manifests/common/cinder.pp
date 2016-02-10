@@ -23,4 +23,6 @@ class openstack::common::cinder {
   class { '::cinder::glance':
     glance_api_servers => [ $glance_api_server ],
   }
+
+  class { 'cinder::ceilometer': }
 }

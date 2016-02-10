@@ -21,4 +21,5 @@ class openstack::profile::cinder::volume {
     iscsi_ip_address => $management_address,
     volume_group     => 'cinder-volumes',
   }
+
 }

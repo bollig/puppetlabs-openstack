@@ -35,11 +35,46 @@ class openstack::profile::ceilometer::api {
     enabled               => false,
   }
 
-  class { '::ceilometer::agent::central':
+  # Install polling agent
+  # Can be used instead of central, compute or ipmi agent
+  # class { 'ceilometer::agent::polling':
+  #   central_namespace => true,
+  #   compute_namespace => false,
+  #   ipmi_namespace    => false
+  # }
+  # class { 'ceilometer::agent::polling':
+  #   central_namespace => false,
+  #   compute_namespace => true,
+  #   ipmi_namespace    => false
+  # }
+  # class { 'ceilometer::agent::polling':
+  #   central_namespace => false,
+  #   compute_namespace => false,
+  #   ipmi_namespace    => true
+  # }
+  # As default use central and compute polling namespaces
+  class { '::ceilometer::agent::polling':
+    central_namespace => true,
+    compute_namespace => true,
+    ipmi_namespace    => false,
   }
 
+  # Install compute agent (deprecated)
+  # default: enable
+  # class { 'ceilometer::agent::compute':
+  # }
+
+  # Install central agent (deprecated)
+  # class { 'ceilometer::agent::central':
+  # }
+
+  # Purge 1 month old meters
   class { '::ceilometer::expirer':
     time_to_live => '2592000'
+  }
+
+  # Install notification agent
+  class { '::ceilometer::agent::notification':
   }
 
   class { '::ceilometer::wsgi::apache':
@@ -122,9 +157,6 @@ class openstack::profile::ceilometer::api {
       fail("Unsupported osfamily (${::osfamily})")
     }
   }
-
-
-  class { '::ceilometer::collector': }
 
   mongodb_database { 'ceilometer':
     ensure  => present,
