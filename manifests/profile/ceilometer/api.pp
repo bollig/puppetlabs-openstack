@@ -13,6 +13,7 @@ class openstack::profile::ceilometer::api {
 
   include ::openstack::common::ceilometer
 
+  # Setup the ceilometer user in keystone and register endpoints (control)
   class { '::ceilometer::keystone::auth':
     password         => $::openstack::config::ceilometer_password,
     public_url   => "http://${::openstack::config::controller_address_api}:8777",
@@ -21,37 +22,23 @@ class openstack::profile::ceilometer::api {
     region           => $::openstack::config::region,
   }
 
+  # Setup ceilometer API service (control)
   class { '::ceilometer::api':
 # TODO: drop update this to handle SSL
     keystone_protocol	  => 'http', 
     keystone_password     => $::openstack::config::ceilometer_password,
     keystone_identity_uri => "http://${controller_management_address}:35357/",
-    keystone_auth_uri     => "http://${::openstack::config::controller_address_management}:5000/",
+    keystone_auth_uri     => "http://${controller_management_address}:5000/",
     #service_name          => 'httpd',
 # TODO: on new version of ceilometer puppet module we should be able to track
 # the httpd service (see aodh below). Until then, assume that ceilometer will
 # follow httpd cycles
-    manage_service        => false,
-    enabled               => false,
+    manage_service        => true,
+    enabled               => true,
   }
 
-  # Install polling agent
+  # Install polling agent (control)
   # Can be used instead of central, compute or ipmi agent
-  # class { 'ceilometer::agent::polling':
-  #   central_namespace => true,
-  #   compute_namespace => false,
-  #   ipmi_namespace    => false
-  # }
-  # class { 'ceilometer::agent::polling':
-  #   central_namespace => false,
-  #   compute_namespace => true,
-  #   ipmi_namespace    => false
-  # }
-  # class { 'ceilometer::agent::polling':
-  #   central_namespace => false,
-  #   compute_namespace => false,
-  #   ipmi_namespace    => true
-  # }
   # As default use central and compute polling namespaces
   class { '::ceilometer::agent::polling':
     central_namespace => true,
@@ -68,26 +55,26 @@ class openstack::profile::ceilometer::api {
   # class { 'ceilometer::agent::central':
   # }
 
-  # Purge 1 month old meters
+  # CRITICAL: The collector service sends data to mongodb
+  class { '::ceilometer::collector': }                                                                                                         
+
+  # Purge 1 month old meters (wherever mongo service is (control))
   class { '::ceilometer::expirer':
     time_to_live => '2592000'
   }
 
-  # Install notification agent
+  # Install notification agent (with API (control))
   class { '::ceilometer::agent::notification':
   }
 
-  class { '::ceilometer::wsgi::apache':
-       ssl => false,
-  }
+  #class { '::ceilometer::wsgi::apache':
+  #     ssl => false,
+  #}
 
+    # See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty2&f=13
+    # auth_strategy is not set by any parameter in the ceilometer puppet module
   ceilometer_config {
-    'keystone_authtoken/auth_version': value => 'v2.0';
-    'service_credentials/os_endpoint_type': value => 'publicURL';
-    'service_credentials/os_auth_url': value => "http://${::openstack::config::controller_address_management}:35357/v2.0";
-    'service_credentials/os_tenant_name': value => 'services';
-    'service_credentials/os_password': value => $::openstack::config::ceilometer_password;
-    'service_credentials/os_username': value => 'ceilometer';
+    'DEFAULT/auth_strategy': value => 'keystone';
   }
 
   # For the time being no upstart script are provided
@@ -144,7 +131,7 @@ class openstack::profile::ceilometer::api {
       }
 	# Configure aodh to point to keystone
       class { '::aodh::auth':
-        auth_url      => "https://${::openstack::config::controller_address_management}:5000/v2.0",
+        auth_url      => "http://${::openstack::config::controller_address_management}:5000/v2.0",
         auth_password => $::openstack::config::aodh_password,
       }
       class { '::aodh::client': }

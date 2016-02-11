@@ -24,6 +24,9 @@ class openstack::common::nova {
     rabbit_password     => $::openstack::config::rabbitmq_password,
     debug               => $::openstack::config::debug,
     verbose             => $::openstack::config::verbose,
+# FOR CEILOMETER NOTIFICATIONS: 
+    notify_on_state_change => 'vm_and_task_state', 
+    notification_driver    => 'messagingv2',
     #mysql_module        => '2.2',
   }
 
