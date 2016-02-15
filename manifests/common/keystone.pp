@@ -27,6 +27,9 @@ class openstack::common::keystone {
     service_name        => $service_name,
 # Needed to enforce the creation of the default role, _member_
     sync_db             => true,
+# FOR CEILOMETER:
+    #notification_format => 'cadf',  
+    #notification_driver => 'messagingv2',
   }
 
 }

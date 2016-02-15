@@ -10,6 +10,7 @@ class openstack::profile::neutron::server {
   $type_drivers                  = $::openstack::config::neutron_type_drivers # ['gre']
   $mechanism_drivers             = $::openstack::config::neutron_mechanism_drivers # ['openvswitch']
   $tunnel_id_ranges              = $::openstack::config::neutron_tunnel_id_ranges # ['1:1000']
+  $network_management_address = $::openstack::config::network_address_management
   $controller_management_address = $::openstack::config::controller_address_management
 
   if ($::openstack::config::neutron_core_plugin == 'ml2') {
@@ -48,31 +49,6 @@ class openstack::profile::neutron::server {
       enabled       => true,
     }
   }
-
-# TODO: update puppet-neutron module to a version that does not need these
-# agents configured on the Neutron-API server (the neutron::api should
-# implicitly install python libraries for these deps 
-  class { '::neutron::agents::l3':
-    enabled        => false,
-    manage_service => false,
-  }
-  class { '::neutron::agents::dhcp':
-    enabled => false,
-  }
-  class { '::neutron::agents::lbaas':
-    enabled => false,
-  }
-  class { '::neutron::agents::vpnaas':
-    enabled => false,
-  }
-  class { '::neutron::agents::metering':
-    enabled => false,
-  }
-  class { '::neutron::services::fwaas':
-   enabled => false,
-  }
-
-
 
   anchor { 'neutron_common_first': } ->
   class { '::neutron::server::notifications':

@@ -47,8 +47,18 @@ openstack::network::data: '172.16.44.0/24'
 
 openstack::controller::address::api: '192.168.11.4'
 openstack::controller::address::management: '172.16.33.4'
+
+#openstack::storage::address::api: '192.168.11.4'
+#openstack::storage::address::management: '172.16.33.4'
+# For a separate storage node:
 openstack::storage::address::api: '192.168.11.5'
 openstack::storage::address::management: '172.16.33.5'
+
+#openstack::network::address::api: '192.168.11.4'
+#openstack::network::address::management: '172.16.33.4'
+# For a separate network router: 
+#openstack::network::address::api: '192.168.11.6'
+#openstack::network::address::management: '172.16.33.6'
 
 ######## Database
 
@@ -64,6 +74,9 @@ openstack::mysql::cinder::pass: 'fuva-wax'
 
 openstack::mysql::glance::user: 'glance'
 openstack::mysql::glance::pass: 'fuva-wax'
+
+#openstack::glance::api_servers: ['172.16.33.4:9292']
+# For a separate storage node: 
 openstack::glance::api_servers: ['172.16.33.5:9292']
 
 openstack::mysql::nova::user: 'nova'

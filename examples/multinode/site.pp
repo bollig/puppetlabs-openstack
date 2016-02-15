@@ -15,22 +15,29 @@ node 'puppet' {
 }
 
 node 'control.msi.umn.edu' {
+  include ::openstack::role::common
   include ::openstack::role::controller
+  #include ::openstack::role::network
+  #include ::openstack::role::storage
 }
 
 node 'storage.msi.umn.edu' {
+  include ::openstack::role::common
   include ::openstack::role::storage
 }
 
 node 'network.msi.umn.edu' {
+  include ::openstack::role::common
   include ::openstack::role::network
 }
 
 node 'compute01.msi.umn.edu' {
+  include ::openstack::role::common
   include ::openstack::role::compute
 }
 
 node 'compute02.msi.umn.edu' {
+  include ::openstack::role::common
   include ::openstack::role::compute
 }
 
