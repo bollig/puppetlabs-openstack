@@ -15,7 +15,7 @@ node 'puppet' {
 }
 
 node 'control.msi.umn.edu' {
-  $node_type = 'control, network, storage'
+  $node_type = 'control|network|storage'
   include ::openstack::role::common
   include ::openstack::role::controller
   include ::openstack::role::network
@@ -29,7 +29,7 @@ node 'storage.msi.umn.edu' {
 }
 
 node 'network.msi.umn.edu' {
-  $node_type = 'network'
+  $node_type = "network"
   include ::openstack::role::common
   include ::openstack::role::network
 }

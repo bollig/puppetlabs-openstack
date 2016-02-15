@@ -1,5 +1,4 @@
 class openstack::role::swiftcontroller inherits ::openstack::role {
-  $node_type = "${node_type}|swiftcontrol"
   class { '::openstack::profile::firewall': }
   class { '::openstack::profile::rabbitmq': } ->
   class { '::openstack::profile::memcache': } ->
