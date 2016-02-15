@@ -1,4 +1,5 @@
 class openstack::role::controller inherits ::openstack::role {
+  $node_type = "${node_type}|control"
   class { '::openstack::profile::rabbitmq': } ->
   class { '::openstack::profile::memcache': } ->
   class { '::openstack::profile::mysql': } ->

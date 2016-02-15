@@ -50,6 +50,35 @@ class openstack::profile::neutron::server {
     }
   }
 
+# The following installs python-neutron-plugin packages 
+#
+# TODO: update puppet-neutron module to a version that does not need these
+# agents configured on the Neutron-API server (the neutron::api should
+# implicitly install python libraries for these deps 
+   if 'network' in $node_type { 
+    notify{'network': message => "Node type prevents neutron agents and services from being installed via profile/neutron/server.pp"}
+   } else {
+    ensure_resource('class', '::neutron::agents::l3', {
+        'enabled'        => 'false',
+        'manage_service' => 'false',
+      })
+    ensure_resource('class', '::neutron::agents::dhcp', {
+        'enabled' => 'false',
+      })
+    ensure_resource('class', '::neutron::agents::lbaas', {
+        'enabled' => 'false',
+      })
+    ensure_resource('class', '::neutron::agents::vpnaas', {
+        'enabled' => 'false',
+      })
+    ensure_resource('class', '::neutron::agents::metering', {
+        'enabled' => 'false',
+      })
+    ensure_resource('class', '::neutron::services::fwaas', {
+       'enabled' => 'false',
+      })
+   }
+
   anchor { 'neutron_common_first': } ->
   class { '::neutron::server::notifications':
     nova_url            => "http://${controller_management_address}:8774/v2/",
