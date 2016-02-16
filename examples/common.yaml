@@ -187,6 +187,9 @@ openstack::ceilometer::meteringsecret: 'ceilometersecretkey'
 ######## AODH
 openstack::aodh::password: 'whi-truz'
 
+######## GNOCCHI 
+openstack::gnocchi::password: 'whi-truz'
+
 ######## Heat
 openstack::heat::password: 'zap-bang'
 openstack::heat::encryption_key: 'heatsecretkey123'

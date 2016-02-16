@@ -90,8 +90,9 @@ class openstack::profile::ceilometer::api {
       }
     }
     'RedHat': {
-      class { '::openstack::profile::ceilometer::aodh': }
-      class { '::openstack::profile::ceilometer::gnocchi': }
+      $gnocchi_enabled = true
+      class { '::openstack::profile::ceilometer::aodh': gnocchi_enabled => $gnocchi_enabled }
+      class { '::openstack::profile::ceilometer::gnocchi': enabed => $gnocchi_enabled }
     }
     default: {
       fail("Unsupported osfamily (${::osfamily})")
