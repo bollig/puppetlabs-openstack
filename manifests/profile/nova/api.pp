@@ -12,9 +12,15 @@ class openstack::profile::nova::api {
 
   class { '::nova::keystone::auth':
     password         => $::openstack::config::nova_password,
+# TODO: in subsequent versions of the puppet nova module we wont be able to
+# specify public_address. Use public_uri, or public_url and ec2_public_url
     public_address   => $::openstack::config::controller_address_api,
-    admin_address    => $::openstack::config::controller_address_management,
     internal_address => $::openstack::config::controller_address_management,
+    admin_address    => $::openstack::config::controller_address_management,
+# TODO: if needed replace the following 3 lines with public_uri
+    public_url_v3    => "http://${::openstack::config::controller_address_api}:8774/v3",
+    internal_url_v3  => "http://${::openstack::config::controller_address_api}:8774/v3",
+    admin_url_v3     => "http://${::openstack::config::controller_address_api}:8774/v3",
     region           => $::openstack::config::region,
   }
 
