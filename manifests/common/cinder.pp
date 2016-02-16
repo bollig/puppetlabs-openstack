@@ -12,15 +12,17 @@ class openstack::common::cinder {
     rabbit_host         => $::openstack::config::controller_address_management,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
-    debug               => $::openstack::config::debug,
-    verbose             => $::openstack::config::verbose,
+#    debug               => $::openstack::config::debug,
+#    verbose             => $::openstack::config::verbose,
+    debug => true,
+    verbose => true,
   }
 
-  $storage_server = $::openstack::config::storage_address_api
-  $glance_api_server = "${storage_server}:9292"
+  #$storage_server = $::openstack::config::storage_address_api
+  #$glance_api_server = "${storage_server}:9292"
 
   class { '::cinder::glance':
-    glance_api_servers => [ $glance_api_server ],
+    glance_api_servers => [ $::openstack::config::glance_api_servers ],
   }
 
   class { 'cinder::ceilometer': }

@@ -1,0 +1,19 @@
+
+########
+
+Live Migration fails due to: 
+
+    InvalidSharedStorage: compute02 is not on shared storage: Live migration can not be used without shared storage except a booted from volume VM which does not have a local disk.
+
+########
+
+Cinder Volume Manager fails to load driver (after vagrant reload): 
+
+2016-02-16 03:41:51.005 31717 WARNING cinder.volume.manager [req-f286b8d1-7eec-44d7-8185-f227afcc032b - - - - -] Update driver status failed:  is uninitialized.
+2016-02-16 03:41:55.031 31717 ERROR cinder.service [-] Manager for service cinder-volume control is reporting problems, not sending heartbeat. Service will appear "down".
+
+
+    control|storage $> losetup /dev/loop1 /var/lib/cinder/cinder-volumes 
+    control|storage $> pvcreate /dev/loop1
+    control|storage $> vgcfgrestore cinder-volumes
+    control|storage $> systemctl restart openstack-cinder*
