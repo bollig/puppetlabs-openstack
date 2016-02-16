@@ -72,7 +72,7 @@ openstack::mysql::glance::user: 'glance'
 openstack::mysql::glance::pass: 'fuva-wax'
 
 # For a multiple glance nodes: 
-openstack::glance::api_servers: ['172.16.33.5:9292', '172.16.33.4:9292']
+openstack::glance::api_servers: ['172.16.33.5:9292']
 
 openstack::mysql::nova::user: 'nova'
 openstack::mysql::nova::pass: 'fuva-wax'
