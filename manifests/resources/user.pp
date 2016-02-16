@@ -1,3 +1,4 @@
+# Create a user generically
 define openstack::resources::user (
   $tenant = undef,
   $email = undef,

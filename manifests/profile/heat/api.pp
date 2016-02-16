@@ -16,6 +16,10 @@ class openstack::profile::heat::api {
     admin_address    => $::openstack::config::controller_address_management,
     internal_address => $::openstack::config::controller_address_management,
     region           => $::openstack::config::region,
+#NOTE: this is required to create the heat_stack_owner role. This role is
+# required to allow users to create orchestration stacks. Option will default
+# to true in Mikasa or later
+    configure_delegated_roles => true,
   }
 
   class { '::heat::keystone::auth_cfn':
