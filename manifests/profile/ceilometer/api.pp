@@ -29,12 +29,12 @@ class openstack::profile::ceilometer::api {
     keystone_password     => $::openstack::config::ceilometer_password,
     keystone_identity_uri => "http://${controller_management_address}:35357/",
     keystone_auth_uri     => "http://${controller_management_address}:5000/",
-    #service_name          => 'httpd',
 # TODO: on new version of ceilometer puppet module we should be able to track
 # the httpd service (see aodh below). Until then, assume that ceilometer will
 # follow httpd cycles
-    manage_service        => true,
-    enabled               => true,
+    #service_name          => 'httpd',
+    manage_service        => false,
+    enabled               => false,
   }
 
   # Install polling agent (control)
@@ -67,9 +67,10 @@ class openstack::profile::ceilometer::api {
   class { '::ceilometer::agent::notification':
   }
 
-  #class { '::ceilometer::wsgi::apache':
-  #     ssl => false,
-  #}
+  include ::apache
+  class { '::ceilometer::wsgi::apache':
+       ssl => false,
+  }
 
     # See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty2&f=13
     # auth_strategy is not set by any parameter in the ceilometer puppet module
@@ -90,9 +91,12 @@ class openstack::profile::ceilometer::api {
       }
     }
     'RedHat': {
-      $gnocchi_enabled = true
-      class { '::openstack::profile::ceilometer::aodh': gnocchi_enabled => $gnocchi_enabled }
-      class { '::openstack::profile::ceilometer::gnocchi': enabed => $gnocchi_enabled }
+      $gnocchi_enabled = false
+      if $gnocchi_enabled { 
+        aodh_config { 'DEFAULT/gnocchi_url': value => "http://{::controller_management_address}:8041"; }
+        class { '::openstack::profile::ceilometer::gnocchi': }
+      }
+      class { '::openstack::profile::ceilometer::aodh': }
     }
     default: {
       fail("Unsupported osfamily (${::osfamily})")
