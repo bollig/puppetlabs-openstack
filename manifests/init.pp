@@ -156,6 +156,12 @@
 # [*mysql_pass_aodh*]
 #   The database password for aodh service.
 #
+# [*mysql_user_gnocchi*]
+#   The database username for gnocchi service.
+#
+# [*mysql_pass_gnocchi*]
+#   The database password for gnocchi service.
+#
 # == RabbitMQ
 # [*rabbitmq_hosts*]
 #   The host list for the RabbitMQ service.
@@ -416,6 +422,9 @@ class openstack (
   $mysql_pass_heat = undef,
   $mysql_user_aodh = undef,
   $mysql_pass_aodh = undef,
+  $mysql_user_gnocchi = undef,
+  $mysql_pass_gnocchi = undef,
+  $rabbitmq_hosts = undef,
   $rabbitmq_hosts = undef,
   $rabbitmq_user = undef,
   $rabbitmq_password = undef,
@@ -454,6 +463,7 @@ class openstack (
   $ceilometer_password = undef,
   $ceilometer_meteringsecret = undef,
   $aodh_password = undef,
+  $gnocchi_password = undef,
   $heat_password = undef,
   $heat_encryption_key = undef,
   $horizon_secret_key = undef,
@@ -509,6 +519,8 @@ class openstack (
       mysql_pass_heat               => pick(hiera(openstack::mysql::heat::pass, undef), hiera(openstack::mysql::service_password)),
       mysql_user_aodh               => pick(hiera(openstack::mysql::aodh::user, undef), 'aodh'),
       mysql_pass_aodh               => pick(hiera(openstack::mysql::aodh::pass, undef), hiera(openstack::mysql::service_password)),
+      mysql_user_gnocchi            => pick(hiera(openstack::mysql::gnocchi::user, undef), 'gnocchi'),
+      mysql_pass_gnocchi            => pick(hiera(openstack::mysql::gnocchi::pass, undef), hiera(openstack::mysql::service_password)),
       rabbitmq_hosts                => hiera(openstack::rabbitmq::hosts),
       rabbitmq_user                 => hiera(openstack::rabbitmq::user),
       rabbitmq_password             => hiera(openstack::rabbitmq::password),
@@ -547,6 +559,7 @@ class openstack (
       ceilometer_password           => hiera(openstack::ceilometer::password),
       ceilometer_meteringsecret     => hiera(openstack::ceilometer::meteringsecret),
       aodh_password           	    => hiera(openstack::aodh::password),
+      gnocchi_password           	=> hiera(openstack::gnocchi::password),
       heat_password                 => hiera(openstack::heat::password),
       heat_encryption_key           => hiera(openstack::heat::encryption_key),
       horizon_secret_key            => hiera(openstack::horizon::secret_key),

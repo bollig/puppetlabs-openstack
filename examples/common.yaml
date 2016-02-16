@@ -91,6 +91,9 @@ openstack::mysql::heat::pass: 'fuva-wax'
 openstack::mysql::aodh::user: 'aodh'
 openstack::mysql::aodh::pass: 'fuva-wax'
 
+openstack::mysql::gnocchi::user: 'gnocchi'
+openstack::mysql::gnocchi::pass: 'fuva-wax'
+
 ######## RabbitMQ
 
 openstack::rabbitmq::user: 'openstack'
