@@ -16,6 +16,12 @@ class openstack::common::cinder {
     verbose             => $::openstack::config::verbose,
   }
 
+  class { '::cinder::api':
+    keystone_password  => $::openstack::config::cinder_password,
+    keystone_auth_host => $::openstack::config::controller_address_management,
+    enabled            => true,
+  }
+
   #$storage_server = $::openstack::config::storage_address_api
   #$glance_api_server = "${storage_server}:9292"
 
