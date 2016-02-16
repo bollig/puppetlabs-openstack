@@ -1,6 +1,12 @@
 
 ########
 
+Pacemaker
+
+Pacemaker can be used for HA distribution of nova services. See modules/nova/examples/*.pp for details. The nova services are not tracked by puppet, allowing pacemaker to launch them as needed across nodes
+
+########
+
 Live Migration fails due to: 
 
     InvalidSharedStorage: compute02 is not on shared storage: Live migration can not be used without shared storage except a booted from volume VM which does not have a local disk.
