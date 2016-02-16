@@ -12,10 +12,8 @@ class openstack::common::cinder {
     rabbit_host         => $::openstack::config::controller_address_management,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
-#    debug               => $::openstack::config::debug,
-#    verbose             => $::openstack::config::verbose,
-    debug => true,
-    verbose => true,
+    debug               => $::openstack::config::debug,
+    verbose             => $::openstack::config::verbose,
   }
 
   #$storage_server = $::openstack::config::storage_address_api

@@ -1,3 +1,5 @@
+# All nodes: 
+
 node 'puppet' {
 
     package {'git': 
