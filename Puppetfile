@@ -16,6 +16,10 @@ mod "openstack-aodh",
 	:git => "git://github.com/openstack/puppet-aodh",
 	:ref => "stable/liberty"
 
+mod "openstack-trove",
+	:git => "git://github.com/openstack/puppet-trove",
+	:ref => "stable/liberty"
+
 mod "openstack-gnocchi",
 	:git => "git://github.com/openstack/puppet-gnocchi",
 	:ref => "stable/liberty"
