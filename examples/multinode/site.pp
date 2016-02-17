@@ -20,7 +20,7 @@ node 'control.msi.umn.edu' {
   $node_type = 'control|network|storage'
   class { '::openstack::role::common': }
   class { '::openstack::role::controller': }
-#  class { '::openstack::role::network': }
+  class { '::openstack::role::network': }
   class { '::openstack::role::storage': } 
 }
 
@@ -67,6 +67,7 @@ node 'swiftstore3.msi.umn.edu' {
 }
 
 node 'tempest.msi.umn.edu' {
+  class { '::openstack::role::common': }
   class { '::openstack::role::tempest': }
 }
 

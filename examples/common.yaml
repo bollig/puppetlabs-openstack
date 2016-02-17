@@ -52,8 +52,8 @@ openstack::controller::address::management: '172.16.33.4'
 # This points to the endpoint for Glance API (NOT CINDER)
 # TODO: decide if all services run on control or if we distribute. Use this as
 # an example
-openstack::storage::address::api: '192.168.11.5'
-openstack::storage::address::management: '172.16.33.5'
+openstack::storage::address::api: '192.168.11.4'
+openstack::storage::address::management: '172.16.33.4'
 
 
 ######## Database
@@ -72,7 +72,7 @@ openstack::mysql::glance::user: 'glance'
 openstack::mysql::glance::pass: 'fuva-wax'
 
 # For a multiple glance nodes: 
-openstack::glance::api_servers: ['172.16.33.5:9292']
+openstack::glance::api_servers: ['172.16.33.4:9292']
 
 openstack::mysql::nova::user: 'nova'
 openstack::mysql::nova::pass: 'fuva-wax'
