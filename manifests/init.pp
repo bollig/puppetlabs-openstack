@@ -162,6 +162,12 @@
 # [*mysql_pass_gnocchi*]
 #   The database password for gnocchi service.
 #
+# [*mysql_user_trove*]
+#   The database username for trove service.
+#
+# [*mysql_pass_trove*]
+#   The database password for trove service.
+#
 # == RabbitMQ
 # [*rabbitmq_hosts*]
 #   The host list for the RabbitMQ service.
@@ -424,6 +430,8 @@ class openstack (
   $mysql_pass_aodh = undef,
   $mysql_user_gnocchi = undef,
   $mysql_pass_gnocchi = undef,
+  $mysql_user_trove = undef,
+  $mysql_pass_trove = undef,
   $rabbitmq_hosts = undef,
   $rabbitmq_hosts = undef,
   $rabbitmq_user = undef,
@@ -464,6 +472,7 @@ class openstack (
   $ceilometer_meteringsecret = undef,
   $aodh_password = undef,
   $gnocchi_password = undef,
+  $trove_password = undef,
   $heat_password = undef,
   $heat_encryption_key = undef,
   $horizon_secret_key = undef,
@@ -521,6 +530,8 @@ class openstack (
       mysql_pass_aodh               => pick(hiera(openstack::mysql::aodh::pass, undef), hiera(openstack::mysql::service_password)),
       mysql_user_gnocchi            => pick(hiera(openstack::mysql::gnocchi::user, undef), 'gnocchi'),
       mysql_pass_gnocchi            => pick(hiera(openstack::mysql::gnocchi::pass, undef), hiera(openstack::mysql::service_password)),
+      mysql_user_trove            => pick(hiera(openstack::mysql::trove::user, undef), 'trove'),
+      mysql_pass_trove            => pick(hiera(openstack::mysql::trove::pass, undef), hiera(openstack::mysql::service_password)),
       rabbitmq_hosts                => hiera(openstack::rabbitmq::hosts),
       rabbitmq_user                 => hiera(openstack::rabbitmq::user),
       rabbitmq_password             => hiera(openstack::rabbitmq::password),
@@ -560,6 +571,7 @@ class openstack (
       ceilometer_meteringsecret     => hiera(openstack::ceilometer::meteringsecret),
       aodh_password           	    => hiera(openstack::aodh::password),
       gnocchi_password           	=> hiera(openstack::gnocchi::password),
+      trove_password           	=> hiera(openstack::trove::password),
       heat_password                 => hiera(openstack::heat::password),
       heat_encryption_key           => hiera(openstack::heat::encryption_key),
       horizon_secret_key            => hiera(openstack::horizon::secret_key),

@@ -9,8 +9,7 @@ class openstack::profile::trove::api {
 
   class { '::trove::api':
     keystone_password  => $::openstack::config::trove_password,
-    keystone_auth_host => $::openstack::config::controller_address_management,
-# TODO: use identity_uri (?)
+    auth_host          => $::openstack::config::controller_address_management,
     enabled            => true,
     debug              => true, 
     verbose            => true, 

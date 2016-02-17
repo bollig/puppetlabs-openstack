@@ -14,8 +14,9 @@ class openstack::common::trove {
     rabbit_host         => $::openstack::config::controller_address_management,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
-    debug               => $::openstack::config::debug,
-    verbose             => $::openstack::config::verbose,
+    nova_proxy_admin_pass => $::openstack::config::nova_password,
+#    debug               => $::openstack::config::debug,
+#    verbose             => $::openstack::config::verbose,
   }
 
 }

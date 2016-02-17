@@ -89,6 +89,9 @@ openstack::mysql::aodh::pass: 'fuva-wax'
 openstack::mysql::gnocchi::user: 'gnocchi'
 openstack::mysql::gnocchi::pass: 'fuva-wax'
 
+openstack::mysql::trove::user: 'trove'
+openstack::mysql::trove::pass: 'fuva-wax'
+
 ######## RabbitMQ
 
 openstack::rabbitmq::user: 'openstack'
@@ -184,6 +187,9 @@ openstack::aodh::password: 'whi-truz'
 
 ######## GNOCCHI 
 openstack::gnocchi::password: 'whi-truz'
+
+######## TROVE
+openstack::trove::password: 'whi-truz'
 
 ######## Heat
 openstack::heat::password: 'zap-bang'
