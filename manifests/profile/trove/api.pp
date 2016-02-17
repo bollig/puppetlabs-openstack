@@ -18,12 +18,12 @@ class openstack::profile::trove::api {
   class { '::trove::conductor':
     debug    => true,
     verbose  => true,
-    auth_url => 'http://127.0.0.1:5000/',
+    auth_url => "http://${::openstack::config::controller_address_management}:5000/",
   }
   class { '::trove::taskmanager':
     debug    => true,
     verbose  => true,
-    auth_url => 'http://127.0.0.1:5000/',
+    auth_url => "http://${::openstack::config::controller_address_management}:5000/",
   }
 
 }
