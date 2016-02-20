@@ -20,15 +20,17 @@ node 'control.msi.umn.edu' {
   $node_type = 'control|network|storage'
   class { '::openstack::role::common': }
   class { '::openstack::role::controller': }
-  class { '::openstack::role::experimental': }
   class { '::openstack::role::network': }
   class { '::openstack::role::storage': } 
+  class { '::openstack::profile::trove::auth': }
+  class { '::openstack::profile::trove::api': }
 }
 
 node 'storage.msi.umn.edu' {
   $node_type = 'storage'
   class { '::openstack::role::common': }
   class { '::openstack::role::storage': }
+  class { '::openstack::profile::trove::api': }
 }
 
 node 'network.msi.umn.edu' {

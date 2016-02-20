@@ -13,8 +13,8 @@ class openstack::profile::neutron::router {
   ### Router service installation
   class { '::neutron::agents::l3':
     debug                   => $::openstack::config::debug,
-    external_network_bridge => 'brex',
-    enabled                 => true,
+    #external_network_bridge => 'br-ex',
+    enabled                 => false,
   }
 
   class { '::neutron::agents::dhcp':
@@ -26,36 +26,40 @@ class openstack::profile::neutron::router {
     auth_password => $::openstack::config::neutron_password,
     shared_secret => $::openstack::config::neutron_shared_secret,
     auth_url      => "http://${controller_management_address}:35357/v3",
-    #auth_url      => "http://${controller_management_address}:35357",
     debug         => $::openstack::config::debug,
     auth_region   => $::openstack::config::region,
+# TODO: Offload metadata to network address
     metadata_ip   => $controller_management_address,
     enabled       => true,
   }
 
   class { '::neutron::agents::lbaas':
     debug   => $::openstack::config::debug,
-    enabled => true,
+    #enabled => true,
+    enabled => false,
   }
 
   class { '::neutron::agents::vpnaas':
-    enabled => true,
+    #enabled => true,
+    enabled => false,
   }
 
   class { '::neutron::agents::metering':
     enabled => true,
+    debug   => $::openstack::config::debug,
   }
 
   class { '::neutron::services::fwaas':
-    enabled => true,
+    enabled => false,
   }
 
-  $external_bridge = 'brex'
+  $external_bridge = 'br-ex'
   $external_network = $::openstack::config::network_external
   $external_device = device_for_network($external_network)
   vs_bridge { $external_bridge:
     ensure => present,
   }
+#  notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
   if $external_device != $external_bridge {
     vs_port { $external_device:
       ensure => present,

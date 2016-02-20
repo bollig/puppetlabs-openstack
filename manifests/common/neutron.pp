@@ -13,6 +13,7 @@ class openstack::common::neutron {
 
   # neutron auth depends upon a keystone configuration
   include ::openstack::common::keystone
+  include ::vswitch::ovs
 
   $user                = $::openstack::config::mysql_user_neutron
   $pass                = $::openstack::config::mysql_pass_neutron
@@ -49,10 +50,10 @@ class openstack::common::neutron {
     #mysql_module        => '2.2',
   }
 
-  if $::osfamily == 'redhat' {
-    package { 'iproute':
-        ensure => latest,
-        before => Class['::neutron']
-    }
-  }
+  #if $::osfamily == 'redhat' {
+  #  package { 'iproute':
+  #      ensure => latest,
+  #      before => Class['::neutron']
+  #  }
+  #}
 }

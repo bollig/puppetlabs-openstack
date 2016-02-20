@@ -4,7 +4,10 @@ CMDS="sudo yum update -y; \
 sudo yum install -y https://www.rdoproject.org/repos/rdo-release.rpm; \
 sudo yum update -y; \
 sudo yum update -y; \
-sudo yum remove -y firewalld; \
+sudo yum remove -y firewalld NetworkManager; \
+sudo systemctl stop NetworkManager; \
+sudo systemctl disable NetworkManager; \
+sudo systemctl start network; \
 sudo puppet agent -t;"
 
 # Connect the agents to the master
