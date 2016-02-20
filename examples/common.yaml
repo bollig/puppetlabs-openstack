@@ -20,19 +20,19 @@ openstack::subnets:
   '192.168.22.0/24':
     cidr: '192.168.22.0/24'
     ip_version: '4'
-    gateway_ip: 192.168.22.2
-    enable_dhcp: true 
+    gateway_ip: 192.168.22.4
+    enable_dhcp: false 
     network_name: 'public'
     tenant_name: 'services'
     allocation_pools: ['start=192.168.22.100,end=192.168.22.200']
-    dns_nameservers: [192.168.22.2]
+    dns_nameservers: [192.168.22.4]
   '10.0.0.0/24':
     cidr: '10.0.0.0/24'
     ip_version: '4'
     enable_dhcp: true 
     network_name: 'private'
     tenant_name: 'services'
-    dns_nameservers: [192.168.22.2]
+    dns_nameservers: [192.168.22.4]
 openstack::routers:
   test_router:
     tenant_name: 'test'
@@ -173,9 +173,9 @@ openstack::nova::password: 'quuk-paj'
 openstack::neutron::password: 'whi-rtuz'
 openstack::neutron::shared_secret: 'by-sa-bo'
 openstack::neutron::core_plugin: 'ml2'
-openstack::neutron::service_plugins: ['router', 'metering']
-#, 'firewall', 'vpnaas', 'lbaas']
-#, 'lbaas',
+# can be: [ 'dummy', 'lbaas', 'lbaasv2', 'fwaas', 'vpnaas', 'metering', 'router', 'flavors', 'qos' ]
+# See /usr/lib/python2.7/site-packages/neutron/plugins/common/constants.py for the complete list
+openstack::neutron::service_plugins: ['router', 'metering', 'lbaas', 'vpnaas', 'firewall']
 
 ######## Ceilometer
 openstack::ceilometer::address::management: '172.16.33.4'
@@ -222,4 +222,4 @@ openstack::tempest::swift_available     : true
 
 ######## Log levels
 openstack::verbose: 'True'
-openstack::debug: 'False'
+openstack::debug: 'True'

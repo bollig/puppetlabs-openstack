@@ -4,6 +4,17 @@
 # Flags install individual services as needed
 # This follows the suggest deployment from the neutron Administrator Guide.
 class openstack::common::neutron {
+
+# What it does: https://access.redhat.com/solutions/53031
+# See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty&f=13
+  #::sysctl::value { 'net.ipv4.conf.default.rp_filter':
+    #value     => '0',
+  #}
+  #::sysctl::value { 'net.ipv4.conf.all.rp_filter':
+  #  value     => '0',
+  #}
+
+
   $is_controller = $::openstack::profile::base::is_controller
 
   $controller_management_address = $::openstack::config::controller_address_management
@@ -15,11 +26,8 @@ class openstack::common::neutron {
   include ::openstack::common::keystone
   include ::vswitch::ovs
 
-  $user                = $::openstack::config::mysql_user_neutron
-  $pass                = $::openstack::config::mysql_pass_neutron
-  $database_connection = "mysql://${user}:${pass}@${controller_management_address}/neutron"
 
-
+# Base Neutron config. No server, no agents. 
   class { '::neutron':
     rabbit_host           => $controller_management_address,
     core_plugin           => $::openstack::config::neutron_core_plugin,
@@ -32,22 +40,13 @@ class openstack::common::neutron {
     service_plugins       => $::openstack::config::neutron_service_plugins,
   }
 
+# Base Neutron authentication config (pointing to Keystone)
   class { '::neutron::keystone::auth':
     password         => $::openstack::config::neutron_password,
     public_url       => "http://${::openstack::config::controller_address_api}:9696",
     admin_url        => "http://${::openstack::config::controller_address_management}:9696",
     internal_url     => "http://${::openstack::config::controller_address_management}:9696",
     region           => $::openstack::config::region,
-  }
-
-  class { '::neutron::server':
-    auth_uri            => "http://${::openstack::config::controller_address_management}:5000",
-    identity_uri        => "http://${::openstack::config::controller_address_management}:35357",
-    auth_password       => $::openstack::config::neutron_password,
-    database_connection => $database_connection,
-    enabled             => $is_controller,
-    sync_db             => $is_controller,
-    #mysql_module        => '2.2',
   }
 
   #if $::osfamily == 'redhat' {

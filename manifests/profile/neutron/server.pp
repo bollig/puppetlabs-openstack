@@ -1,6 +1,7 @@
 # The profile to set up the neutron server
 class openstack::profile::neutron::server {
-
+  
+    # Defines ::neutron::db::mysql
   openstack::resources::database { 'neutron': }
   openstack::resources::firewall { 'Neutron API': port => '9696', }
 
@@ -12,7 +13,24 @@ class openstack::profile::neutron::server {
   $tunnel_id_ranges              = $::openstack::config::neutron_tunnel_id_ranges # ['1:1000']
   $network_management_address = $::openstack::config::network_address_management
   $controller_management_address = $::openstack::config::controller_address_management
+  $is_controller = $::openstack::profile::base::is_controller
 
+  $user                = $::openstack::config::mysql_user_neutron
+  $pass                = $::openstack::config::mysql_pass_neutron
+  $database_connection = "mysql://${user}:${pass}@${controller_management_address}/neutron"
+
+    # Neutron API
+  class { '::neutron::server':
+    auth_uri            => "http://${::openstack::config::controller_address_management}:5000",
+    identity_uri        => "http://${::openstack::config::controller_address_management}:35357",
+    auth_password       => $::openstack::config::neutron_password,
+    database_connection => $database_connection,
+    enabled             => $is_controller,
+    sync_db             => $is_controller,
+    #mysql_module        => '2.2',
+  }
+
+   # Connect the L2 Plugin but do not setup the L2 Agent**
   if ($::openstack::config::neutron_core_plugin == 'ml2') {
     class  { '::neutron::plugins::ml2':
       type_drivers         => $type_drivers,
@@ -21,9 +39,6 @@ class openstack::profile::neutron::server {
       tunnel_id_ranges     => $tunnel_id_ranges
     }
   } elsif ($::openstack::config::neutron_core_plugin == 'plumgrid') {
-    $user = $::openstack::config::mysql_user_neutron
-    $pass = $::openstack::config::mysql_pass_neutron
-    $db_connection = "mysql://${user}:${pass}@${controller_management_address}/neutron"
 
     neutron_config {
       'DEFAULT/service_plugins': ensure => absent,
@@ -72,4 +87,5 @@ class openstack::profile::neutron::server {
   anchor { 'neutron_common_last': }
 
   Class['::neutron::db::mysql'] -> Exec['neutron-db-sync']
+  #Class['::neutron::db::mysql'] -> Class['::neutron::server']
 }
