@@ -123,12 +123,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     compute01.vm.provider "vmware_fusion" do |v|
         v.vmx["numvcpus"] = "2"
-        v.vmx["memsize"] =  "6144"
+        v.vmx["memsize"] =  "2048"
         v.vmx["vhv.enable"] = "TRUE"
     end
     compute01.vm.provider :virtualbox do |v|
       v.name = "os-compute01"
-      v.customize ["modifyvm", :id, "--memory", "6144"]
+      v.customize ["modifyvm", :id, "--memory", "2048"]
       v.customize ["modifyvm", :id, "--cpus", "2"]
       v.customize ["modifyvm", :id, "--ioapic", "on"]
     end

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install RDO
+# Remove Firewall
+# Remove NetworkManager
 CMDS="sudo yum update -y; \
 sudo yum install -y https://www.rdoproject.org/repos/rdo-release.rpm; \
 sudo yum update -y; \
