@@ -1,3 +1,12 @@
+On atmosphere* (add to puppet): 
+
+# Where 28 is provided by 
+# Should be a line that starts with 9999
+iptables -L -n --line-numbers | grep REJECT
+iptables -D INPUT 28 
+iptables -A INPUT -p gre -s 10.31.13.128/26 -j ACCEPT
+iptables -A INPUT -j REJECT
+
 
 To enable ping of VMs: 
 
