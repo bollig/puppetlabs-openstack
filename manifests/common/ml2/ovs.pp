@@ -26,10 +26,10 @@ class openstack::common::ml2::ovs {
     local_ip         => $data_address,
     enabled          => true,
     tunnel_types     => $tunnel_types,
-    bridge_mappings  => $bridge_mappings,
-    bridge_uplinks   => $bridge_uplinks,
-    vxlan_udp_port   => '4789', 
+ #   bridge_mappings  => $bridge_mappings,
+ #   bridge_uplinks   => $bridge_uplinks,
+ #   vxlan_udp_port   => '4789', 
 # enable this if ml2 has l2population driver enabled
-    l2_population    => false,
+ #   l2_population    => false,
   }
 }

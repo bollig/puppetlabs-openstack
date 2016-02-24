@@ -20,8 +20,8 @@ class openstack::profile::neutron::server {
       type_drivers         => $type_drivers,
       tenant_network_types => $tenant_network_type,
       mechanism_drivers    => $mechanism_drivers,
-      tunnel_id_ranges     => $tunnel_id_ranges
-      vni_ranges           => '10:100',
+      tunnel_id_ranges     => $tunnel_id_ranges,
+#      vni_ranges           => '10:100',
       enable_security_group => true, 
     }
 

@@ -24,7 +24,7 @@ class openstack::common::neutron {
 
   # neutron auth depends upon a keystone configuration
   include ::openstack::common::keystone
-  include ::vswitch::ovs
+  class { '::vswitch::ovs': }
 
 
 # Base Neutron config. No server, no agents. 
@@ -66,10 +66,10 @@ class openstack::common::neutron {
   }
 
 
-  #if $::osfamily == 'redhat' {
-  #  package { 'iproute':
-  #      ensure => latest,
-  #      before => Class['::neutron']
-  #  }
-  #}
+  if $::osfamily == 'redhat' {
+    package { 'iproute':
+        ensure => latest,
+        before => Class['::neutron']
+    }
+  }
 }

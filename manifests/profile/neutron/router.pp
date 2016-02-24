@@ -21,7 +21,7 @@ class openstack::profile::neutron::router {
 
   if 'vpnaas' in $::openstack::config::neutron_service_plugins {
       $vpnaas_enabled = true
-      $start_l3_agent = false
+      $start_l3_agent = true
   } else { 
       $vpnaas_enabled = false
       $start_l3_agent = true
@@ -30,7 +30,7 @@ class openstack::profile::neutron::router {
      # L3 Agent  (required)
   class { '::neutron::agents::l3':
     debug                   => $::openstack::config::debug,
-    #external_network_bridge => 'br-ex',
+    external_network_bridge => 'br-ex',
     enabled                 => $start_l3_agent,
     manage_service          => $start_l3_agent, 
   }
@@ -102,12 +102,13 @@ class openstack::profile::neutron::router {
     ensure => present,
     require => Service['neutron-ovs-agent-service'],
   }
-    #  notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
+   notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
   if $external_device != $external_bridge {
-    #vs_port { $external_device:
-    #  ensure => present,
-    #  bridge => $external_bridge,
-    #}
+    vs_port { $external_device:
+      ensure => present,
+      bridge => $external_bridge,
+      require => Service['neutron-ovs-agent-service'],
+    }
   } else {
     # External bridge already has the external device's IP, thus the external
     # device has already been linked
