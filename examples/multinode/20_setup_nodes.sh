@@ -15,10 +15,13 @@ sudo puppet agent -t;"
 
 # Connect the agents to the master
 vagrant ssh control -c "$CMDS"
-vagrant ssh network -c "$CMDS"
-vagrant ssh storage -c "$CMDS"
+#vagrant ssh network -c "$CMDS"
+#vagrant ssh storage -c "$CMDS"
 vagrant ssh compute01 -c "$CMDS"
-vagrant ssh compute02 -c "$CMDS"
+#vagrant ssh compute02 -c "$CMDS"
 
 # sign the certs
 vagrant ssh puppet -c "sudo puppet cert sign --all"
+
+# Gives us a snapshot to roll everything back in time
+vagrant sandbox on 

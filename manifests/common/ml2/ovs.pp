@@ -6,13 +6,15 @@ class openstack::common::ml2::ovs {
   $enable_tunneling    = $::openstack::config::neutron_tunneling # true
   $tunnel_types        = $::openstack::config::neutron_tunnel_types #['gre']
   $is_controller = $::openstack::profile::base::is_controller
-
+    
+  $bridge_mappings  = []
+  $bridge_uplinks   = []
 # TODO: this is truly supposed to be on the NETWORK node, not on the control
-  if $is_controller {
-    $bridge_mappings  = ['external:br-ext']
-  } else { 
-    $bridge_mappings  = []
-  }
+ # if $is_controller {
+ #   $bridge_mappings  = ['external:br-ex']
+ # } else { 
+ #   $bridge_mappings  = []
+ # }
 
   notify { "DataAdress: ${data_address}": }
 # TODO: link the config file properly
@@ -25,5 +27,9 @@ class openstack::common::ml2::ovs {
     enabled          => true,
     tunnel_types     => $tunnel_types,
     bridge_mappings  => $bridge_mappings,
+    bridge_uplinks   => $bridge_uplinks,
+    vxlan_udp_port   => '4789', 
+# enable this if ml2 has l2population driver enabled
+    l2_population    => false,
   }
 }

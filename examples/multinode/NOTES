@@ -1,4 +1,25 @@
 
+To enable ping of VMs: 
+
+1) Add static IP to the br-ex (gateway) 
+    ip addr add 192.168.22.2/24 dev br-ex
+    iptables -t nat -I POSTROUTING 1 -s 192.168.22.0/24 -j MASQUERADE
+
+1) Add ICMP ingress to the default security group
+    # These rule ids are 'default'
+    neutron security-group-rule-create --protocol icmp 2c9fe88a-fd8f-4d05-a5de-e0526232883d
+    neutron security-group-rule-create --protocol icmp 12dbf1b0-df16-47a3-a259-89e5db7011ab
+
+2) On control (network node):  
+    ip netns exec qrouter-93a78975-02d4-4de3-898d-f9ba16aa18cd ping 10.0.0.4
+
+
+########
+
+To monitor traffic hitting a node: 
+    yum install -y tcpdump 
+    tcpdump -i any -n -v \ 'icmp[icmptype] = icmp-echoreply or icmp[icmptype] = icmp-echo'
+
 ########
 
 Pacemaker

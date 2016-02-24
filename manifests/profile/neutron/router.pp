@@ -19,16 +19,36 @@ class openstack::profile::neutron::router {
 
   ### Router service installation
 
+  if 'vpnaas' in $::openstack::config::neutron_service_plugins {
+      $vpnaas_enabled = true
+      $start_l3_agent = false
+  } else { 
+      $vpnaas_enabled = false
+      $start_l3_agent = true
+  }
+
      # L3 Agent  (required)
   class { '::neutron::agents::l3':
     debug                   => $::openstack::config::debug,
-    external_network_bridge => 'br-ex',
-    enabled                 => true,
+    #external_network_bridge => 'br-ex',
+    enabled                 => $start_l3_agent,
+    manage_service          => $start_l3_agent, 
   }
+
     # DHCP Agent 
   class { '::neutron::agents::dhcp':
     debug   => $::openstack::config::debug,
     enabled => true,
+    dnsmasq_config_file => '/etc/neutron/dnsmasq-neutron.conf',
+    subscribe           => File['/etc/neutron/dnsmasq-neutron.conf'],
+  }
+
+  file { '/etc/neutron/dnsmasq-neutron.conf':
+    content => 'dhcp-option-force=26,1400',
+    owner   => 'root',
+    group   => 'neutron',
+    mode    => '0640',
+    require => Class['::neutron'],
   }
 
     # Metadata Agent
@@ -48,17 +68,27 @@ class openstack::profile::neutron::router {
   class { '::neutron::agents::lbaas':
     debug   => $::openstack::config::debug,
     enabled => true,
+    interface_driver => 'neutron.agent.linux.interface.OVSInterfaceDriver',
+    device_driver => 'neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver',
+    user_group       => 'haproxy',
+  }
+  
+  class { '::neutron::agents::vpnaas':
+    enabled => $vpnaas_enabled,
   }
 
-  class { '::neutron::agents::vpnaas':
-    enabled => true,
-  }
+    # Packstack establishes this
+    if defined(Class['neutron::services::fwaas']) {
+          Class['neutron::services::fwaas'] -> Class['neutron::agents::l3']
+    }
+
 
     # Metering Agent requires L3 Agent 
   class { '::neutron::agents::metering':
     enabled => true,
     debug   => $::openstack::config::debug,
-    driver  => 'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver',
+    interface_driver => 'neutron.agent.linux.interface.OVSInterfaceDriver',
+    #driver  => 'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver',
   }
 
   class { '::neutron::services::fwaas':
@@ -70,13 +100,14 @@ class openstack::profile::neutron::router {
   $external_device = device_for_network($external_network)
   vs_bridge { $external_bridge:
     ensure => present,
+    require => Service['neutron-ovs-agent-service'],
   }
-#  notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
+    #  notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
   if $external_device != $external_bridge {
-    vs_port { $external_device:
-      ensure => present,
-      bridge => $external_bridge,
-    }
+    #vs_port { $external_device:
+    #  ensure => present,
+    #  bridge => $external_bridge,
+    #}
   } else {
     # External bridge already has the external device's IP, thus the external
     # device has already been linked

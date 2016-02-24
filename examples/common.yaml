@@ -9,7 +9,9 @@ openstack::networks:
     provider_network_type: 'gre'
     router_external: true
     provider_segmentation_id: 3604
-    shared: true
+    # NOTE: we dont share public because we want it ONLY for floating IPs, not as
+    # an extra subnet to assign to nodes
+    shared: false
   private:
     tenant_name: 'services'
     provider_network_type: 'gre'
@@ -20,25 +22,25 @@ openstack::subnets:
   '192.168.22.0/24':
     cidr: '192.168.22.0/24'
     ip_version: '4'
-    gateway_ip: 192.168.22.4
+    gateway_ip: 192.168.22.2
     enable_dhcp: false 
     network_name: 'public'
     tenant_name: 'services'
     allocation_pools: ['start=192.168.22.100,end=192.168.22.200']
-    dns_nameservers: [192.168.22.4]
+    dns_nameservers: [192.168.22.2]
   '10.0.0.0/24':
     cidr: '10.0.0.0/24'
     ip_version: '4'
     enable_dhcp: true 
     network_name: 'private'
     tenant_name: 'services'
-    dns_nameservers: [192.168.22.4]
+    dns_nameservers: [192.168.22.2]
 openstack::routers:
-  test_router:
+  test:
     tenant_name: 'test'
     gateway_network_name: 'public'
 openstack::router_interfaces:
-  'test_router:10.0.0.0/24': {}
+  'test:10.0.0.0/24': {}
 
 openstack::network::management: '172.16.33.0/24'
 openstack::network::data: '172.16.44.0/24'
@@ -175,7 +177,10 @@ openstack::neutron::shared_secret: 'by-sa-bo'
 openstack::neutron::core_plugin: 'ml2'
 # can be: [ 'dummy', 'lbaas', 'lbaasv2', 'fwaas', 'vpnaas', 'metering', 'router', 'flavors', 'qos' ]
 # See /usr/lib/python2.7/site-packages/neutron/plugins/common/constants.py for the complete list
-openstack::neutron::service_plugins: ['router', 'metering', 'lbaas', 'vpnaas', 'firewall']
+openstack::neutron::service_plugins: ['router', 'metering', 'lbaas']
+openstack::neutron::neutron_type_drivers: ['gre']
+openstack::neutron::neutron_network_types: ['gre']
+openstack::neutron::neutron_tenant_network_type: ['gre']
 
 ######## Ceilometer
 openstack::ceilometer::address::management: '172.16.33.4'

@@ -49,6 +49,23 @@ class openstack::common::neutron {
     region           => $::openstack::config::region,
   }
 
+
+  $user                = $::openstack::config::mysql_user_neutron
+  $pass                = $::openstack::config::mysql_pass_neutron
+  $database_connection = "mysql://${user}:${pass}@${controller_management_address}/neutron"
+
+    # Neutron API
+  class { '::neutron::server':
+    auth_uri            => "http://${::openstack::config::controller_address_management}:5000",
+    identity_uri        => "http://${::openstack::config::controller_address_management}:35357",
+    auth_password       => $::openstack::config::neutron_password,
+    database_connection => $database_connection,
+    enabled             => $is_controller,
+    sync_db             => $is_controller,
+    #mysql_module        => '2.2',
+  }
+
+
   #if $::osfamily == 'redhat' {
   #  package { 'iproute':
   #      ensure => latest,
