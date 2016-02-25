@@ -152,6 +152,20 @@ openstack::images:
     container_format: 'bare'
     disk_format: 'qcow2'
     source: 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img'
+# Enable these to get pre-built Ubuntu images for DBaaS (Trove). 
+  mongodb_trove:
+    container_format: 'ovf'
+    disk_format: 'qcow2'
+    source: 'http://tarballs.openstack.org/trove/images/ubuntu/mongodb.qcow2'
+  mysql_trove:
+    container_format: 'ovf'
+    disk_format: 'qcow2'
+    source: 'http://tarballs.openstack.org/trove/images/ubuntu/mysql.qcow2'
+  percona_trove:
+    container_format: 'ovf'
+    disk_format: 'qcow2'
+    source: 'http://tarballs.openstack.org/trove/images/ubuntu/percona.qcow2'
+
 
 openstack::glance::password: 'na-mu-va'
 
@@ -197,6 +211,49 @@ openstack::gnocchi::password: 'whi-truz'
 
 ######## TROVE
 openstack::trove::password: 'whi-truz'
+
+# The versions here must match with the datastore_versions below
+openstack::trove::datastores: 
+  mysql:
+    version: 'mysql-5.5'
+    ensure: 'present'
+  percona: 
+    version: 'percona-5.5'
+    ensure: 'present'
+  mongodb:
+    version: 'mongodb-3.0'
+    ensure: 'present'
+
+openstack::trove::datastore_versions:
+  mysql-5.5:
+    ensure: 'present'
+    datastore: mysql
+    image_id: mysql_trove
+    manager: mysql
+    # Must be a single string: 
+    packages: 'mysql-server-5.5'
+    # Must be 0 or 1
+    active: 1
+  percona-5.5:
+    ensure: 'present'
+    datastore: percona
+    image_id: percona_trove
+    manager: percona 
+    # Must be a single string: 
+    packages: 'percona-server-server-5.5'
+    # Must be 0 or 1
+    active: 1
+  mongodb-3.0:
+    ensure: 'present'
+    datastore: mongodb
+    image_id: mongodb_trove
+    manager: mongodb
+    # Must be a single string: 
+    packages: 'mongodb-org-server'
+    # Must be 0 or 1
+    active: 1
+
+
 
 ######## Heat
 openstack::heat::password: 'zap-bang'

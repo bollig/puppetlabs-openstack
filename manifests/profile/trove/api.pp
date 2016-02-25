@@ -26,5 +26,12 @@ class openstack::profile::trove::api {
     verbose  => true,
     auth_url => "http://${::openstack::config::controller_address_management}:5000/",
   }
-
+    
+  # Build the base images
+  $datastores = hiera(openstack::trove::datastores)
+  $datastore_versions = hiera(openstack::trove::datastore_versions)
+  create_resources('trove_datastore', $datastores)
+  create_resources('trove_datastore_version', $datastore_versions)
+  
+    Trove_datastore<||> -> Trove_datastore_version<||>
 }
