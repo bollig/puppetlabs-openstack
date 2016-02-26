@@ -65,7 +65,7 @@ class openstack::profile::neutron::server {
 # agents configured on the Neutron-API server (the neutron::api should
 # implicitly install python libraries for these deps 
    if 'network' in $node_type { 
-    notify{'network': message => "Node type prevents neutron agents and services from being installed via profile/neutron/server.pp"}
+    #notify{'network': message => "Node type prevents neutron agents and services from being installed via profile/neutron/server.pp"}
    } else {
     #ensure_packages(['openstack-neutron-vpnaas', 'openstack-neutron-lbaas', 'openstack-neutron-fwaas'])
     if 'vpnaas' in $::openstack::config::neutron_service_plugins {

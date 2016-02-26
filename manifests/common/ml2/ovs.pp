@@ -16,7 +16,7 @@ class openstack::common::ml2::ovs {
  #   $bridge_mappings  = []
  # }
 
-  notify { "DataAdress: ${data_address}": }
+  #notify { "DataAdress: ${data_address}": }
 # TODO: link the config file properly
   file { ['/etc/neutron','/etc/neutron/plugins','/etc/neutron/plugins/ml2/']:
     ensure=>'directory', 

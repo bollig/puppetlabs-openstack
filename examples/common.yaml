@@ -189,12 +189,12 @@ openstack::nova::password: 'quuk-paj'
 openstack::neutron::password: 'whi-rtuz'
 openstack::neutron::shared_secret: 'by-sa-bo'
 openstack::neutron::core_plugin: 'ml2'
-# can be: [ 'dummy', 'lbaas', 'lbaasv2', 'fwaas', 'vpnaas', 'metering', 'router', 'flavors', 'qos' ]
 # See /usr/lib/python2.7/site-packages/neutron/plugins/common/constants.py for the complete list
-openstack::neutron::service_plugins: ['router', 'metering', 'lbaas']
-openstack::neutron::neutron_type_drivers: ['gre']
-openstack::neutron::neutron_network_types: ['gre']
-openstack::neutron::neutron_tenant_network_type: ['gre']
+# NOTE: only router, metering, lbaas, vpnaas and firewall have been tested in this module and are installable with this module
+openstack::neutron::service_plugins: ['router', 'metering', 'lbaas', 'vpnaas', 'firewall']
+openstack::neutron::neutron_type_drivers: ['gre','vxlan']
+openstack::neutron::neutron_network_types: ['gre','vxlan']
+openstack::neutron::neutron_tenant_network_type: ['gre','vxlan']
 
 ######## Ceilometer
 openstack::ceilometer::address::management: '172.16.33.4'
@@ -224,12 +224,14 @@ openstack::trove::datastores:
     version: 'mongodb-3.0'
     ensure: 'present'
 
+# TODO: note the trove_data_store_version must specify a valid image ID (not NAME). 
+# This requires manual update of the yaml once the images are imported, and then rerun puppet
 openstack::trove::datastore_versions:
   mysql-5.5:
     ensure: 'present'
     datastore: mysql
-    image_id: mysql_trove
-    manager: mysql
+    image_id: 787fd5c0-004f-4df0-a827-9b541baf0083
+    manager: mysql 
     # Must be a single string: 
     packages: 'mysql-server-5.5'
     # Must be 0 or 1
@@ -237,8 +239,8 @@ openstack::trove::datastore_versions:
   percona-5.5:
     ensure: 'present'
     datastore: percona
-    image_id: percona_trove
-    manager: percona 
+    image_id: a446db5a-fb83-41c8-b015-488df09cb8dd
+    manager: percona
     # Must be a single string: 
     packages: 'percona-server-server-5.5'
     # Must be 0 or 1
@@ -246,7 +248,7 @@ openstack::trove::datastore_versions:
   mongodb-3.0:
     ensure: 'present'
     datastore: mongodb
-    image_id: mongodb_trove
+    image_id: ea3a6e0f-b3e9-4682-ba74-62d84a9bc10e
     manager: mongodb
     # Must be a single string: 
     packages: 'mongodb-org-server'

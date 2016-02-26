@@ -1,3 +1,19 @@
+NOTE: trove images are registered via trove_datastore_version. If a database instance will not boot, it is likely due to either a bad datastore_version image_id, or insufficient resources for the flavor or because of the flavor. To get around the image_id problem: 
+
+1) glance image-list 
+2) update common.yaml with the ID values and not NAME values. 
+
+###############
+
+LBaaS requires that at least one member of the pool attach to a valid and OPEN port (i.e., enabled in Security Groups). If you try to attach to a closed port you will get this warning on the server: 
+
+Broadcast message from systemd-journald@control (Thu 2016-02-25 22:46:11 UTC):
+
+haproxy[15640]: backend 6df266f2-bdb5-4f83-b18c-6f9aa30c7016 has no server available!
+
+NOTE: you can have 4 valid member->port connections and one bad, and the message will not appear. However, that one bad will never get any traffic. 
+
+###############
 On atmosphere* (add to puppet): 
 
 # Where 28 is provided by 

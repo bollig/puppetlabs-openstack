@@ -21,6 +21,7 @@ class openstack::profile::neutron::router {
 
   if 'vpnaas' in $::openstack::config::neutron_service_plugins {
       $vpnaas_enabled = true
+    # NOTE: old versions of OS did not allow these services to run in the same space
       $start_l3_agent = true
   } else { 
       $vpnaas_enabled = false
@@ -68,9 +69,9 @@ class openstack::profile::neutron::router {
   class { '::neutron::agents::lbaas':
     debug   => $::openstack::config::debug,
     enabled => true,
-    interface_driver => 'neutron.agent.linux.interface.OVSInterfaceDriver',
-    device_driver => 'neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver',
-    user_group       => 'haproxy',
+    #interface_driver => 'neutron.agent.linux.interface.OVSInterfaceDriver',
+    #device_driver => 'neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver',
+    #user_group       => 'haproxy',
   }
   
   class { '::neutron::agents::vpnaas':
@@ -102,7 +103,7 @@ class openstack::profile::neutron::router {
     ensure => present,
     require => Service['neutron-ovs-agent-service'],
   }
-   notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
+   #notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
   if $external_device != $external_bridge {
     vs_port { $external_device:
       ensure => present,
