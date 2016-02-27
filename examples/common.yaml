@@ -191,7 +191,7 @@ openstack::neutron::shared_secret: 'by-sa-bo'
 openstack::neutron::core_plugin: 'ml2'
 # See /usr/lib/python2.7/site-packages/neutron/plugins/common/constants.py for the complete list
 # NOTE: only router, metering, lbaas, vpnaas and firewall have been tested in this module and are installable with this module
-openstack::neutron::service_plugins: ['router', 'metering', 'lbaas', 'vpnaas', 'firewall']
+openstack::neutron::service_plugins: ['router', 'metering', 'lbaas', 'firewall', 'vpnaas']
 openstack::neutron::neutron_type_drivers: ['gre','vxlan']
 openstack::neutron::neutron_network_types: ['gre','vxlan']
 openstack::neutron::neutron_tenant_network_type: ['gre','vxlan']
@@ -230,7 +230,7 @@ openstack::trove::datastore_versions:
   mysql-5.5:
     ensure: 'present'
     datastore: mysql
-    image_id: 787fd5c0-004f-4df0-a827-9b541baf0083
+    image_id: mysql_trove
     manager: mysql 
     # Must be a single string: 
     packages: 'mysql-server-5.5'
@@ -239,7 +239,7 @@ openstack::trove::datastore_versions:
   percona-5.5:
     ensure: 'present'
     datastore: percona
-    image_id: a446db5a-fb83-41c8-b015-488df09cb8dd
+    image_id: percona_trove
     manager: percona
     # Must be a single string: 
     packages: 'percona-server-server-5.5'
@@ -248,7 +248,7 @@ openstack::trove::datastore_versions:
   mongodb-3.0:
     ensure: 'present'
     datastore: mongodb
-    image_id: ea3a6e0f-b3e9-4682-ba74-62d84a9bc10e
+    image_id: mongodb_trove
     manager: mongodb
     # Must be a single string: 
     packages: 'mongodb-org-server'
