@@ -56,7 +56,7 @@ class openstack::profile::neutron::router {
   class { '::neutron::agents::metadata':
     auth_password => $::openstack::config::neutron_password,
     shared_secret => $::openstack::config::neutron_shared_secret,
-    auth_url      => "http://${controller_management_address}:35357/v3",
+    auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
     debug         => $::openstack::config::debug,
     auth_region   => $::openstack::config::region,
 # TODO: Offload metadata to network address

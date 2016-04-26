@@ -43,9 +43,9 @@ class openstack::common::neutron {
 # Base Neutron authentication config (pointing to Keystone)
   class { '::neutron::keystone::auth':
     password         => $::openstack::config::neutron_password,
-    public_url       => "http://${::openstack::config::controller_address_api}:9696",
-    admin_url        => "http://${::openstack::config::controller_address_management}:9696",
-    internal_url     => "http://${::openstack::config::controller_address_management}:9696",
+    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
+    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
     region           => $::openstack::config::region,
   }
 
@@ -56,8 +56,8 @@ class openstack::common::neutron {
 
     # Neutron API
   class { '::neutron::server':
-    auth_uri            => "http://${::openstack::config::controller_address_management}:5000",
-    identity_uri        => "http://${::openstack::config::controller_address_management}:35357",
+    auth_uri            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    identity_uri        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
     auth_password       => $::openstack::config::neutron_password,
     database_connection => $database_connection,
     enabled             => $is_controller,

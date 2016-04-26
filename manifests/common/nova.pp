@@ -39,8 +39,8 @@ class openstack::common::nova {
     neutron_admin_password => $::openstack::config::neutron_password,
     neutron_region_name    => $::openstack::config::region,
 #TODO: update puppet-neutron to a version that supports v3 auth
-    neutron_admin_auth_url => "http://${controller_management_address}:35357/v2.0",
-    neutron_url            => "http://${controller_management_address}:9696",
+    neutron_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v2.0",
+    neutron_url            => "${::openstack::config::http_protocol}://${controller_management_address}:9696",
     vif_plugging_is_fatal  => false,
     vif_plugging_timeout   => '0',
   }

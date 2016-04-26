@@ -6,6 +6,12 @@ class openstack::profile::keystone {
 
   include ::openstack::common::keystone
 
+  class { '::keystone::client': }
+  class { '::keystone::cron::token_flush': }
+  class { '::keystone::db::mysql':
+      password => 'keystone',
+  }
+
   class { '::keystone::roles::admin':
     email        => $::openstack::config::keystone_admin_email,
     password     => $::openstack::config::keystone_admin_password,
@@ -13,17 +19,23 @@ class openstack::profile::keystone {
   }
 
   class { 'keystone::endpoint':
-    public_url   => "http://${::openstack::config::controller_address_api}:5000",
-    admin_url    => "http://${::openstack::config::controller_address_management}:35357",
-    internal_url => "http://${::openstack::config::controller_address_management}:5000",
+    public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:5000",
+    admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
+    internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
     region       => $::openstack::config::region,
   }
 
   if $::openstack::config::keystone_use_httpd == true {
+    include ::apache
     class { '::keystone::wsgi::apache':
-      ssl => false,
+      ssl             => $::openstack::config::enable_ssl,
+      ssl_cert        => $::openstack::config::ssl_certfile,
+      ssl_key         => $::openstack::config::ssl_keyfile,
+      ssl_chain       => $::openstack::config::ssl_chainfile,
+      ssl_ca_file     => $::openstack::config::ssl_ca_certs,
     }
   }
+
 
   $domains = $::openstack::config::keystone_domains
   $tenants = $::openstack::config::keystone_tenants

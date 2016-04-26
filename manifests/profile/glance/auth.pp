@@ -6,9 +6,9 @@ class openstack::profile::glance::auth {
 
   class  { '::glance::keystone::auth':
 	password => $::openstack::config::glance_password,
-	public_url   => "http://${::openstack::config::storage_address_api}:9292",
-	admin_url    => "http://${::openstack::config::storage_address_management}:9292",
-	internal_url => "http://${::openstack::config::storage_address_management}:9292",
+	public_url   => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:9292",
+	admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:9292",
+	internal_url => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:9292",
 	region           => $::openstack::config::region,
   }
 }

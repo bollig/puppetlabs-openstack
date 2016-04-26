@@ -21,17 +21,17 @@ class openstack::profile::ceilometer::gnocchi (
     # Make the 'gnocchi' user in keystone: 
     class { '::gnocchi::keystone::auth':
         password => $::openstack::config::gnocchi_password,
-        public_url   => "http://${::openstack::config::controller_address_api}:8042",
-        admin_url    => "http://${::openstack::config::controller_address_management}:8042",
-        internal_url => "http://${::openstack::config::controller_address_management}:8042",
+        public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8042",
+        admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
+        internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
         region           => $::openstack::config::region,
     }
 
     # Setup the gnocchi api endpoint
     class { '::gnocchi::api':
         keystone_password     => $::openstack::config::gnocchi_password,
-        keystone_identity_uri => "http://${::openstack::config::controller_address_management}:35357/",
-        keystone_auth_uri     => "http://${::openstack::config::controller_address_management}:35357/",
+        keystone_identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+        keystone_auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
         #service_name          => 'httpd',
         manage_service        => false,
         enabled               => false,

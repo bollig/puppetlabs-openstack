@@ -1,3 +1,14 @@
+TODO: 
+ - glance Auth endpoint is still http
+ - heat Auth endpoint is still http
+
+-- How to enable SSL on heat and glance?
+-- Is nova SSL? 
+-- How to test? 
+ -- WOrking on NEUTORN
+
+##############
+
 NOTE: trove images are registered via trove_datastore_version. If a database instance will not boot, it is likely due to either a bad datastore_version image_id, or insufficient resources for the flavor or because of the flavor. To get around the image_id problem: 
 
 1) glance image-list 

@@ -4,6 +4,8 @@
 # === Authors
 #
 # Christian Hoge <chris.hoge@puppetlabs.com>
+# 
+# Modified by Evan Bollig <bollig@gmail.com>
 #
 # === Copyright
 #
@@ -394,6 +396,25 @@
 class openstack (
   $use_hiera = true,
   $region = undef,
+# Start SSL: use same options Keystone would use
+  $insecure_ssl                       = false,
+  $enable_ssl                         = false,
+  $ssl_certfile                       = '/etc/keystone/ssl/certs/keystone.pem',
+  $ssl_keyfile                        = '/etc/keystone/ssl/private/keystonekey.pem',
+  $ssl_chainfile                      = '/etc/keystone/ssl/certs/keystone_incommon_chain.pem',
+  $ssl_ca_certs                       = '/etc/keystone/ssl/certs/ca.pem',
+  $ssl_ca_key                         = '/etc/keystone/ssl/private/cakey.pem',
+  $ssl_cert_subject                   = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+  $signing_certfile                   = '/etc/keystone/ssl/certs/signing_cert.pem',
+  $signing_keyfile                    = '/etc/keystone/ssl/private/signing_key.pem',
+  $signing_ca_certs                   = '/etc/keystone/ssl/certs/ca.pem',
+  $signing_ca_key                     = '/etc/keystone/ssl/private/cakey.pem',
+  $rabbit_use_ssl                     = false,
+  $kombu_ssl_ca_certs                 = undef,
+  $kombu_ssl_certfile                 = undef,
+  $kombu_ssl_keyfile                  = undef,
+  $kombu_ssl_version                  = 'TLSv1',
+# End SSL
   $network_api = undef,
   $networks = undef,
   $subnets = undef,
@@ -496,9 +517,33 @@ class openstack (
   $verbose = undef,
   $debug = undef,
 ) {
+
+  if $enable_ssl { 
+    $http_protocol = 'https'
+  } else {
+    $http_protocol = 'http'
+  }
+
   if $use_hiera {
     class { '::openstack::config':
       region                        => hiera(openstack::region),
+      http_protocol                 => pick(hiera(openstack::security::http_protocol), $http_protocol),
+      insecure_ssl                  => pick(hiera(openstack::security::insecure_ssl), $insecure_ssl),
+      enable_ssl                    => pick(hiera(openstack::security::enable_ssl), $enable_ssl),
+      ssl_certfile                  => pick(hiera(openstack::security::ssl_certfile), $ssl_certfile),
+      ssl_keyfile                   => pick(hiera(openstack::security::ssl_keyfile), $ssl_keyfile),
+      ssl_ca_certs                  => pick(hiera(openstack::security::ssl_ca_certs), $ssl_ca_certs),
+      ssl_ca_key                    => pick(hiera(openstack::security::ssl_ca_key), $ssl_ca_key),
+      ssl_cert_subject              => pick(hiera(openstack::security::ssl_cert_subject), $ssl_cert_subject),
+      signing_certfile              => pick(hiera(openstack::security::signing_certfile), $signing_certfile),
+      signing_keyfile               => pick(hiera(openstack::security::signing_keyfile), $signing_keyfile),
+      signing_ca_certs              => pick(hiera(openstack::security::signing_ca_certs), $signing_ca_certs),
+      signing_ca_key                => pick(hiera(openstack::security::signing_ca_key), $signing_ca_key),
+      rabbit_use_ssl                => pick(hiera(openstack::security::rabbit_use_ssl), $rabbit_use_ssl),
+      kombu_ssl_ca_certs            => pick(hiera(openstack::security::kombu_ssl_ca_certs), $kombu_ssl_ca_certs),
+      kombu_ssl_certfile            => pick(hiera(openstack::security::kombu_ssl_certfile), $kombu_ssl_certfile),
+      kombu_ssl_keyfile             => pick(hiera(openstack::security::kombu_ssl_keyfile), $kombu_ssl_keyfile),
+      kombu_ssl_version             => pick(hiera(openstack::security::kombu_ssl_version), $kombu_ssl_version),
       network_api                   => hiera(openstack::network::api),
       networks                      => hiera(openstack::networks, {}),
       subnets                       => hiera(openstack::subnets, {}),
@@ -530,8 +575,8 @@ class openstack (
       mysql_pass_aodh               => pick(hiera(openstack::mysql::aodh::pass, undef), hiera(openstack::mysql::service_password)),
       mysql_user_gnocchi            => pick(hiera(openstack::mysql::gnocchi::user, undef), 'gnocchi'),
       mysql_pass_gnocchi            => pick(hiera(openstack::mysql::gnocchi::pass, undef), hiera(openstack::mysql::service_password)),
-      mysql_user_trove            => pick(hiera(openstack::mysql::trove::user, undef), 'trove'),
-      mysql_pass_trove            => pick(hiera(openstack::mysql::trove::pass, undef), hiera(openstack::mysql::service_password)),
+      mysql_user_trove              => pick(hiera(openstack::mysql::trove::user, undef), 'trove'),
+      mysql_pass_trove              => pick(hiera(openstack::mysql::trove::pass, undef), hiera(openstack::mysql::service_password)),
       rabbitmq_hosts                => hiera(openstack::rabbitmq::hosts),
       rabbitmq_user                 => hiera(openstack::rabbitmq::user),
       rabbitmq_password             => hiera(openstack::rabbitmq::password),
@@ -571,7 +616,7 @@ class openstack (
       ceilometer_meteringsecret     => hiera(openstack::ceilometer::meteringsecret),
       aodh_password           	    => hiera(openstack::aodh::password),
       gnocchi_password           	=> hiera(openstack::gnocchi::password),
-      trove_password           	=> hiera(openstack::trove::password),
+      trove_password           	    => hiera(openstack::trove::password),
       heat_password                 => hiera(openstack::heat::password),
       heat_encryption_key           => hiera(openstack::heat::encryption_key),
       horizon_secret_key            => hiera(openstack::horizon::secret_key),
@@ -598,6 +643,23 @@ class openstack (
   } else {
     class { '::openstack::config':
       region                        => $region,
+      http_protocol                 => $http_protocol,
+      insecure_ssl                  => $insecure_ssl,
+      enable_ssl                    => $enable_ssl,
+      ssl_certfile                  => $ssl_certfile,
+      ssl_keyfile                   => $ssl_keyfile,
+      ssl_ca_certs                  => $ssl_ca_certs,
+      ssl_ca_key                    => $ssl_ca_key,
+      ssl_cert_subject              => $ssl_cert_subject,
+      signing_certfile              => $signing_certfile,
+      signing_keyfile               => $signing_keyfile,
+      signing_ca_certs              => $signing_ca_certs,
+      signing_ca_key                => $signing_ca_key,
+      rabbit_use_ssl                => $rabbit_use_ssl,
+      kombu_ssl_ca_certs            => $kombu_ssl_ca_certs,
+      kombu_ssl_certfile            => $kombu_ssl_certfile,
+      kombu_ssl_keyfile             => $kombu_ssl_keyfile,
+      kombu_ssl_version             => $kombu_ssl_version,
       network_api                   => $network_api,
       networks                      => pick($networks, {}),
       subnets                       => pick($subnets, {}),

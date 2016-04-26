@@ -20,4 +20,12 @@ class openstack::common::glance {
     os_region_name      => $::openstack::config::region,
   }
 
+  if $::openstack::config::insecure_ssl == true {
+         glance_registry_config {
+             'keystone_authtoken/insecure': value => true; 
+         }
+         glance_api_config {
+             'keystone_authtoken/insecure': value => true; 
+         }
+  }
 }

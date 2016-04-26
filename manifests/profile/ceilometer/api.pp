@@ -16,19 +16,19 @@ class openstack::profile::ceilometer::api {
   # Setup the ceilometer user in keystone and register endpoints (control)
   class { '::ceilometer::keystone::auth':
     password         => $::openstack::config::ceilometer_password,
-    public_url   => "http://${::openstack::config::controller_address_api}:8777",
-    admin_url    => "http://${::openstack::config::controller_address_management}:8777",
-    internal_url => "http://${::openstack::config::controller_address_management}:8777",
+    public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8777",
+    admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8777",
+    internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8777",
     region           => $::openstack::config::region,
   }
 
   # Setup ceilometer API service (control)
   class { '::ceilometer::api':
 # TODO: drop update this to handle SSL
-    keystone_protocol	  => 'http', 
+    keystone_protocol	  => "${::openstack::config::http_protocol}", 
     keystone_password     => $::openstack::config::ceilometer_password,
-    keystone_identity_uri => "http://${controller_management_address}:35357/",
-    keystone_auth_uri     => "http://${controller_management_address}:5000/",
+    keystone_identity_uri => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
+    keystone_auth_uri     => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
 # TODO: on new version of ceilometer puppet module we should be able to track
 # the httpd service (see aodh below). Until then, assume that ceilometer will
 # follow httpd cycles
@@ -93,7 +93,7 @@ class openstack::profile::ceilometer::api {
     'RedHat': {
       $gnocchi_enabled = false
       if $gnocchi_enabled { 
-        aodh_config { 'DEFAULT/gnocchi_url': value => "http://{::controller_management_address}:8041"; }
+        aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
         class { '::openstack::profile::ceilometer::gnocchi': }
       }
       class { '::openstack::profile::ceilometer::aodh': }

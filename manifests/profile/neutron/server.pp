@@ -50,8 +50,8 @@ class openstack::profile::neutron::server {
     class { '::neutron::agents::metadata':
       auth_password => $::openstack::config::neutron_password,
       shared_secret => $::openstack::config::neutron_shared_secret,
-      auth_url      => "http://${controller_management_address}:35357/v2.0/",
-      #auth_url      => "http://${controller_management_address}:35357",
+      auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v2.0/",
+      #auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:35357",
       debug         => $::openstack::config::debug,
       auth_region   => $::openstack::config::region,
       metadata_ip   => $controller_management_address,
@@ -65,7 +65,7 @@ class openstack::profile::neutron::server {
 # agents configured on the Neutron-API server (the neutron::api should
 # implicitly install python libraries for these deps 
    if 'network' in $node_type { 
-    #notify{'network': message => "Node type prevents neutron agents and services from being installed via profile/neutron/server.pp"}
+    notify{'network': message => "Node type prevents neutron agents and services from being installed via profile/neutron/server.pp"}
    } else {
     #ensure_packages(['openstack-neutron-vpnaas', 'openstack-neutron-lbaas', 'openstack-neutron-fwaas'])
     if 'vpnaas' in $::openstack::config::neutron_service_plugins {
@@ -98,9 +98,9 @@ class openstack::profile::neutron::server {
 
   anchor { 'neutron_common_first': } ->
   class { '::neutron::server::notifications':
-    nova_url            => "http://${controller_management_address}:8774/v2/",
-    nova_admin_auth_url => "http://${controller_management_address}:35357/v2.0/",
-    #nova_admin_auth_url => "http://${controller_management_address}:35357",
+    nova_url            => "${::openstack::config::http_protocol}://${controller_management_address}:8774/v2/",
+    nova_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v2.0/",
+    #nova_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357",
     nova_admin_password => $::openstack::config::nova_password,
     nova_region_name    => $::openstack::config::region,
   } ->

@@ -3,8 +3,10 @@ class openstack::common::keystone {
     $admin_bind_host = '0.0.0.0'
     if $::openstack::config::keystone_use_httpd == true {
       $service_name = 'httpd'
+      $enable_ssl = false
     } else {
       $service_name = undef
+      $enable_ssl = $::openstack::config::enable_ssl
     }
   } else {
     $admin_bind_host = $::openstack::config::controller_address_management
@@ -23,10 +25,10 @@ class openstack::common::keystone {
     debug               => $::openstack::config::debug,
     enabled             => $::openstack::profile::base::is_controller,
     admin_bind_host     => $admin_bind_host,
-    #mysql_module        => '2.2',
     service_name        => $service_name,
-# Needed to enforce the creation of the default role, _member_
-    sync_db             => true,
+    enable_ssl          => $enable_ssl, 
+    public_endpoint     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    admin_endpoint      => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
 # FOR CEILOMETER:
     #notification_format => 'cadf',  
     #notification_driver => 'messagingv2',

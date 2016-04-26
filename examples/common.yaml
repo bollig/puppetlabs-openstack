@@ -1,5 +1,25 @@
 openstack::region: 'openstack'
 
+######## Security
+# enable_ssl: either 'http' or 'https'; will switch all endpoints for API services,
+# including any behind Apache WSGI
+openstack::security::insecure_ssl: false
+openstack::security::enable_ssl: false
+#openstack::security::ssl_certfile: '/etc/keystone/ssl/certs/keystone.pem'
+#openstack::security::ssl_keyfile: '/etc/keystone/ssl/private/keystonekey.pem'
+#openstack::security::ssl_ca_certs: '/etc/keystone/ssl/certs/ca.pem'
+#openstack::security::ssl_ca_key: '/etc/keystone/ssl/private/cakey.pem'
+#openstack::security::ssl_cert_subject: '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
+#openstack::security::signing_certfile: '/etc/keystone/ssl/certs/signing_cert.pem'
+#openstack::security::signing_keyfile: '/etc/keystone/ssl/private/signing_key.pem'
+#openstack::security::signing_ca_certs: '/etc/keystone/ssl/certs/ca.pem'
+#openstack::security::signing_ca_key: '/etc/keystone/ssl/private/cakey.pem'
+#openstack::security::rabbit_use_ssl: false
+#openstack::security::kombu_ssl_ca_certs: undef
+#openstack::security::kombu_ssl_certfile: undef
+#openstack::security::kombu_ssl_keyfile: undef
+#openstack::security::kombu_ssl_version: 'TLSv1'
+
 ######## Networks
 openstack::network::api: '192.168.11.0/24'
 openstack::network::external: '192.168.22.0/24'
