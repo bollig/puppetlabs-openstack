@@ -6,11 +6,10 @@ class openstack::profile::keystone {
 
   include ::openstack::common::keystone
 
-  class { '::keystone::client': }
   class { '::keystone::cron::token_flush': }
-  class { '::keystone::db::mysql':
-      password => 'keystone',
-  }
+  #class { '::keystone::db::mysql':
+  #    password => 'keystone',
+  #}
 
   class { '::keystone::roles::admin':
     email        => $::openstack::config::keystone_admin_email,
@@ -32,7 +31,7 @@ class openstack::profile::keystone {
       ssl_cert        => $::openstack::config::ssl_certfile,
       ssl_key         => $::openstack::config::ssl_keyfile,
       ssl_chain       => $::openstack::config::ssl_chainfile,
-      ssl_ca_file     => $::openstack::config::ssl_ca_certs,
+      ssl_ca          => $::openstack::config::ssl_ca_certs,
     }
   }
 

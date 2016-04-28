@@ -1,3 +1,4 @@
+#
 define openstack::resources::database (
   $user = getvar("::openstack::config::mysql_user_${title}"),
   $password = getvar("::openstack::config::mysql_pass_${title}"),

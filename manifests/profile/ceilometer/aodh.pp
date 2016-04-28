@@ -30,7 +30,7 @@ class openstack::profile::ceilometer::aodh (
       }
 
       # if Keystone is behind wsgi, we can put aodh there as well.   
-      if $::openstack::config::keystone_use_${::openstack::config::http_protocol}d == true {
+      if $::openstack::config::keystone_use_httpd == true {
           # Setup the aodh service behind apache wsgi
           include ::apache
           class { '::aodh::wsgi::apache':
@@ -50,7 +50,7 @@ class openstack::profile::ceilometer::aodh (
         keystone_password     => $::openstack::config::aodh_password,
         keystone_identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
         keystone_auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
-        #service_name          => '${::openstack::config::http_protocol}d',
+        #service_name          => 'httpd',
         manage_service        => $service_enabled,
         enabled               => $service_managed,
       }

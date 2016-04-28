@@ -1,3 +1,4 @@
+# 
 class openstack::common::keystone {
   if $::openstack::profile::base::is_controller {
     $admin_bind_host = '0.0.0.0'
