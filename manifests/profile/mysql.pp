@@ -12,7 +12,7 @@ class openstack::profile::mysql {
                     'default-storage-engine' => 'innodb',
 # TODO: comment this out when we have a proper set of IPs. Until then, avoid
 # DNS resolution from preventing mysql client connections
-		    'skip-name-resolve'      => true,
+#		    'skip-name-resolve'      => true,
                   }
     }
   }
