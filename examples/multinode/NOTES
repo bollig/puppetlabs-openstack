@@ -5,6 +5,8 @@ TODO:
 -- How to enable SSL on heat and glance?
 -- Is nova SSL? 
 -- How to test? 
+-> search for http (replace with http_protocol)
+-> search for keystone_auth_host and replace with identity_uri and auth_uri/
  -- WOrking on NEUTORN
 
 ##############
