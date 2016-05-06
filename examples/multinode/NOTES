@@ -82,3 +82,36 @@ Cinder Volume Manager fails to load driver (after vagrant reload):
     control|storage $> pvcreate /dev/loop1
     control|storage $> vgcfgrestore cinder-volumes
     control|storage $> systemctl restart openstack-cinder*
+
+#######
+
+To build from scratch: 
+
+    vagrant sandbox on
+
+    ./00_download_modules.sh
+    ./05_up.sh
+    ./10_setup_master.sh
+    ./11_setup_openstack.sh
+    ./20_setup_nodes.sh
+
+    vagrant sandbox commit
+
+    ./30_deploy_control.sh
+    ./40_deploy_nodes.sh
+
+If not satisfied you can rollback:
+
+    vagrant sandbox rollback
+
+To test: 
+
+    ./41_setup_tempest.sh
+    ./42_run_tempest.sh
+    ./50_destroy_nodes.sh
+
+To leave sandbox mod:
+
+    vagrant sandbox off
+
+
