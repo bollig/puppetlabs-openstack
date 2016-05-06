@@ -24,6 +24,16 @@ node 'control.msi.umn.edu' {
   class { '::openstack::role::storage': } 
   class { '::openstack::profile::trove::auth': }
   class { '::openstack::profile::trove::api': }
+
+  class { 'ceph::repo': }
+  class { 'ceph':
+      fsid                => '',
+      mon_initial_members => '',
+      mon_host            => '',
+  }
+  ceph::key { 'client.admin':
+	secret => "key",
+  }
 }
 
 node 'storage.msi.umn.edu' {
@@ -31,6 +41,8 @@ node 'storage.msi.umn.edu' {
   class { '::openstack::role::common': }
   class { '::openstack::role::storage': }
   class { '::openstack::profile::trove::api': }
+	
+  
 }
 
 node 'network.msi.umn.edu' {
