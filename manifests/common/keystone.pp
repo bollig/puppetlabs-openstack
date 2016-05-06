@@ -12,6 +12,7 @@ class openstack::common::keystone {
   } else {
     $admin_bind_host = $::openstack::config::controller_address_management
     $service_name    = undef
+    $enable_ssl = false
   }
 
   $management_address  = $::openstack::config::controller_address_management

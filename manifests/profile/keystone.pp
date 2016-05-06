@@ -24,14 +24,17 @@ class openstack::profile::keystone {
     region       => $::openstack::config::region,
   }
 
+
+  notify { "$::openstack::config::http_protocol should be TRUE": } 
+
   if $::openstack::config::keystone_use_httpd == true {
     include ::apache
     class { '::keystone::wsgi::apache':
       ssl             => $::openstack::config::enable_ssl,
-      ssl_cert        => $::openstack::config::ssl_certfile,
-      ssl_key         => $::openstack::config::ssl_keyfile,
+      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
       ssl_chain       => $::openstack::config::ssl_chainfile,
-      ssl_ca          => $::openstack::config::ssl_ca_certs,
+      #ssl_ca          => $::openstack::config::ssl_chainfile,
     }
   }
 

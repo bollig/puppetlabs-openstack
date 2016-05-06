@@ -7,6 +7,12 @@ class openstack::profile::horizon {
   if "lbaas" in $service_plugins { $enable_lbaas = true } else { $enable_lbaas = false }
   if "vpnaas" in $service_plugins { $enable_vpnaas = true } else { $enable_vpnaas = false }
 
+  if $::openstack::config::enable_ssl {
+	$vhost_params = { add_listen => true , ssl_chain => $::openstack::config::ssl_chainfile }
+  } else {
+	$vhost_params = { }
+  }
+
   class { '::horizon':
     allowed_hosts   => concat([ '127.0.0.1', $::openstack::config::controller_address_api, $::fqdn ], $::openstack::config::horizon_allowed_hosts),
     server_aliases  => concat([ '127.0.0.1', $::openstack::config::controller_address_api, $::fqdn ], $::openstack::config::horizon_server_aliases),
@@ -17,7 +23,12 @@ class openstack::profile::horizon {
         'enable_firewall'           => $enable_firewall,
         'enable_vpn'                => $enable_vpnaas,
         'enable_distributed_router' => $enable_router
-    }
+    },
+    vhost_extra_params    => $vhost_params,
+    listen_ssl	    => $::openstack::config::enable_ssl,
+    horizon_cert    => $::openstack::config::horizon_ssl_certfile,
+    horizon_key     => $::openstack::config::horizon_ssl_keyfile,
+    horizon_ca      => $::openstack::config::ssl_chainfile,
   }
 
   openstack::resources::firewall { 'Apache (Horizon)': port => '80' }
