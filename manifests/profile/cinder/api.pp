@@ -6,8 +6,11 @@ class openstack::profile::cinder::api {
 
   include ::openstack::common::cinder
 
+  class { '::cinder::quota': }
+
   class { '::cinder::scheduler':
     #scheduler_driver => 'cinder.scheduler.simple.SimpleScheduler',
     enabled          => true,
   }
+  class { '::cinder::scheduler::filter': }
 }
