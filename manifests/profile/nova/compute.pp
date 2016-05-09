@@ -16,12 +16,32 @@ class openstack::profile::nova::compute {
 # NOTE: the remainder of the ceilometer notificatons settings are in ::nova
   }
 
+  $libvirt_rbd=true
+
   class { '::nova::compute::libvirt':
     libvirt_virt_type => $::openstack::config::nova_libvirt_type,
-    vncserver_listen  => $management_address,
+    #vncserver_listen  => $management_address,
+	# NOTE: this is required for live migration (listens on all interfaces)
+    vncserver_listen  => '0.0.0.0',
   }
 
+  if $libvirt_rbd {
+    class { '::nova::compute::rbd':
+      libvirt_rbd_user        => 'cinder',
+      libvirt_rbd_secret_uuid => '06a25e2f-5a2e-461a-aa6f-66efd6b5fe0a',
+      libvirt_images_rbd_pool => 'vms',
+      rbd_keyring             => 'client.cinder',
+    }
+  }
+
+
+#TODO: test live migration
   class { 'nova::migration::libvirt':
+	  #use_tls              => false,
+	  #auth                 => 'none',
+	# From: http://www.tcpcloud.eu/en/blog/2014/11/20/block-live-migration-openstack-environment/
+	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE',
+	  #block_migration_flag => true,
   }
 
   file { '/etc/libvirt/qemu.conf':

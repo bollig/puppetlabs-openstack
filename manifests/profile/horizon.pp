@@ -1,6 +1,7 @@
 # Profile to install the horizon web service
 class openstack::profile::horizon {
   $service_plugins  = $::openstack::config::neutron_service_plugins
+  $enable_backups   = pick($::openstack::config::cinder_enable_backup, true)
 
   if "router" in $service_plugins { $enable_router = true } else { $enable_router = false }
   if "firewall" in $service_plugins { $enable_firewall = true } else { $enable_firewall = false }
@@ -23,6 +24,9 @@ class openstack::profile::horizon {
         'enable_firewall'           => $enable_firewall,
         'enable_vpn'                => $enable_vpnaas,
         'enable_distributed_router' => $enable_router
+    },
+    cinder_options => {
+	'enable_backup'		    => $enable_backups,
     },
     vhost_extra_params    => $vhost_params,
     listen_ssl	    => $::openstack::config::enable_ssl,

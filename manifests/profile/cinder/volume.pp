@@ -32,6 +32,7 @@ class openstack::profile::cinder::volume {
 	  class { '::cinder::volume::rbd':
 		  rbd_user        => 'cinder',
 		  rbd_pool        => 'volumes',
+		  volume_tmp_dir  => '/tmp',
 		  #rbd_secret_uuid => '06a25e2f-5a2e-461a-aa6f-66efd6b5fe0a',
 	  }
       }
@@ -59,6 +60,12 @@ class openstack::profile::cinder::volume {
 		enabled_backends => ['DEFAULT', 'rbd2'],
 	  }  
 	  Class['Cinder::Backends'] -> Service['httpd']
+  }
+
+  class { '::cinder::backup': }
+  class { '::cinder::backup::ceph': 
+	backup_ceph_user => 'cinder-backup',
+	backup_ceph_pool => 'backups',
   }
 
 
