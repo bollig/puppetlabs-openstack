@@ -17,26 +17,29 @@ class openstack::profile::cinder::volume {
     enabled        => true,
   }
 
-  #$backend = 'iscsi'
-#
-#  case $backend {
-#     'iscsi': {
-#	  class { '::cinder::volume::iscsi':
-#	    iscsi_ip_address => $management_address,
-#	    volume_group     => 'cinder-volumes',
-#	  }
-#     }
-#     'rbd': {
-#	  class { '::cinder::volume::rbd':
-#		  rbd_user        => 'cinder',
-#		  rbd_pool        => 'volumes',
-#	  }
-#      }
-#      default: {
-#         fail("Unsupported backend (${backend})")
-#      }
-#  }
-  $enable_extra_backend=true
+  # This is the primary (DEFAULT) backend. This is what users get when they
+  # dont specify a backend in OpenStack
+  $backend = 'rbd'
+
+  case $backend {
+     'iscsi': {
+	  class { '::cinder::volume::iscsi':
+	    iscsi_ip_address => $management_address,
+	    volume_group     => 'cinder-volumes',
+	  }
+     }
+     'rbd': {
+	  class { '::cinder::volume::rbd':
+		  rbd_user        => 'cinder',
+		  rbd_pool        => 'volumes',
+		  #rbd_secret_uuid => '06a25e2f-5a2e-461a-aa6f-66efd6b5fe0a',
+	  }
+      }
+      default: {
+         fail("Unsupported cinder backend (${backend})")
+      }
+  }
+  $enable_extra_backend=false
   if $enable_extra_backend {
 	  cinder::backend::rbd { 'rbd2':
 		  rbd_user        => 'cinder',
@@ -44,7 +47,7 @@ class openstack::profile::cinder::volume {
 	  }
 	  Cinder::Type {
 	      os_password     => $::openstack::config::keystone_admin_password,
-	     os_tenant_name  => 'admin',
+	      os_tenant_name  => 'admin',
 	      os_username     => 'admin',
 	      os_auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/v2.0",
 	  }

@@ -19,7 +19,6 @@ class openstack::profile::glance::api {
 # Triggers the glance::api
   include ::openstack::common::glance
 
-  class { '::glance::backend::file': }
 
   class { '::glance::registry':
     keystone_password   => $::openstack::config::glance_password,
