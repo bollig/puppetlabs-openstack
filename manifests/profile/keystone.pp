@@ -25,8 +25,6 @@ class openstack::profile::keystone {
   }
 
 
-  notify { "$::openstack::config::http_protocol should be TRUE": } 
-
   if $::openstack::config::keystone_use_httpd == true {
     include ::apache
     class { '::keystone::wsgi::apache':
