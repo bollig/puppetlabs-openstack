@@ -13,34 +13,37 @@ class openstack::profile::trove::api {
     auth_host          => $::openstack::config::controller_address_management,
     enabled            => true,
     debug              => true, 
-    verbose            => true, 
+    verbose            => false, 
   }  
   class { '::trove::conductor':
     debug    => true,
-    verbose  => true,
+    verbose  => false,
     auth_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
   }  
   class { '::trove::taskmanager':
     debug    => true,
-    verbose  => true,
+    verbose  => false,
     auth_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
   }  
   class { '::trove::db::sync': }
+
 
   # The trove services take a second or so to start 
   exec {"wait for trove":
     require => Service["trove-taskmanager"],
     command => "/bin/sleep 2",
   }
-    
-  $datastores = hiera(openstack::trove::datastores)
-  $datastore_versions = hiera(openstack::trove::datastore_versions)
-  create_resources('trove_datastore', $datastores)
-# TODO: note the trove_data_store_version must specify a valid image ID (not NAME). 
-  create_resources('trove_datastore_version', $datastore_versions)
-  
-    # Don't try to create datastores unless the trove service is fully running
   Service['trove-api'] -> Service['trove-conductor'] -> Service['trove-taskmanager'] 
-  Exec['wait for trove'] -> Trove_datastore<||> -> Trove_datastore_version<||>
+    
+  if pick(hiera(openstack::trove::datastores), false) {
+	  $datastores = hiera(openstack::trove::datastores)
+	  $datastore_versions = hiera(openstack::trove::datastore_versions)
+	  create_resources('trove_datastore', $datastores)
+	# TODO: note the trove_data_store_version must specify a valid image ID (not NAME). 
+	  create_resources('trove_datastore_version', $datastore_versions)
+  
+	# Don't try to create datastores unless the trove service is fully running
+	  Exec['wait for trove'] -> Trove_datastore<||> -> Trove_datastore_version<||>
+  }
 
 }
