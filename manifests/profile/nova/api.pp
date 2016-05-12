@@ -52,4 +52,8 @@ class openstack::profile::nova::api {
   ]:
     enabled => true
   }
+  class { 'nova::scheduler::filter': 
+	cpu_allocation_ratio => "10.0",
+	ram_allocation_ratio => "2.0",
+  }
 }
