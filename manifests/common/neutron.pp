@@ -7,12 +7,12 @@ class openstack::common::neutron {
 
 # What it does: https://access.redhat.com/solutions/53031
 # See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty&f=13
-  #::sysctl::value { 'net.ipv4.conf.default.rp_filter':
-    #value     => '0',
-  #}
-  #::sysctl::value { 'net.ipv4.conf.all.rp_filter':
-  #  value     => '0',
-  #}
+  ::sysctl::value { 'net.ipv4.conf.default.rp_filter':
+    value     => '0',
+  }
+  ::sysctl::value { 'net.ipv4.conf.all.rp_filter':
+    value     => '0',
+  }
 
 
   $is_controller = $::openstack::profile::base::is_controller

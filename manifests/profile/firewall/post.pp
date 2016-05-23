@@ -11,19 +11,6 @@ class openstack::profile::firewall::post {
     state  => ['NEW'],
     action => 'accept',
     source => $::openstack::config::network_data,
-  } ->
-#iptables -A INPUT -p gre -s 10.31.13.128/26 -j ACCEPT
-  firewall { '9888 - Accept GRE traffic (INTERNAL_DATA)':
-    proto  => 'gre',
-    state  => ['NEW'],
-    action => 'accept',
-    source => $::openstack::config::network_data,
-  } -> 
-  firewall { '9888 - Accept GRE traffic (EXTERNAL)':
-    proto  => 'gre',
-    state  => ['NEW'],
-    action => 'accept',
-    source => $::openstack::config::network_external,
   } -> 
   firewall { '9999 - Reject remaining traffic':
     proto  => 'all',

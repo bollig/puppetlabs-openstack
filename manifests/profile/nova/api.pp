@@ -48,12 +48,13 @@ class openstack::profile::nova::api {
     'nova::objectstore',
     'nova::cert',
     'nova::consoleauth',
-    'nova::conductor'
+    'nova::conductor',
+    'nova::spicehtml5proxy',
   ]:
     enabled => true
   }
   class { 'nova::scheduler::filter': 
-	cpu_allocation_ratio => "10.0",
-	ram_allocation_ratio => "2.0",
+	cpu_allocation_ratio => "4.0",
+	ram_allocation_ratio => "1.2",
   }
 }

@@ -6,6 +6,8 @@ class openstack::profile::nova::compute {
 
   include ::openstack::common::nova
 
+# TODO: enable SPICE instead of VNC console. This will give us full Remote Desktop to VMs
+
   class { '::nova::compute':
     enabled                       => true,
     vnc_enabled                   => true,
@@ -13,13 +15,20 @@ class openstack::profile::nova::compute {
     vncproxy_host                 => $::openstack::config::controller_address_api,
     instance_usage_audit 	      => true,
     instance_usage_audit_period   => 'hour',
+    force_raw_images 		  => false,
+    allow_resize_to_same_host     => true,
 # NOTE: the remainder of the ceilometer notificatons settings are in ::nova
+  }
+
+  nova_config { 
+	'DEFAULT/compute_monitors': value => 'nova.compute.monitors.cpu.virt_driver';
   }
 
   $libvirt_rbd=true
 
   class { '::nova::compute::libvirt':
     libvirt_virt_type => $::openstack::config::nova_libvirt_type,
+    libvirt_cpu_mode => 'host-passthrough',
     #vncserver_listen  => $management_address,
 	# NOTE: this is required for live migration (listens on all interfaces)
     vncserver_listen  => '0.0.0.0',
@@ -40,7 +49,7 @@ class openstack::profile::nova::compute {
 	  #use_tls              => false,
 	  #auth                 => 'none',
 	# From: http://www.tcpcloud.eu/en/blog/2014/11/20/block-live-migration-openstack-environment/
-	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE',
+	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_TUNNELLED',
 	  #block_migration_flag => true,
   }
 

@@ -28,20 +28,21 @@ class openstack::profile::trove::api {
   class { '::trove::db::sync': }
 
 
-  # The trove services take a second or so to start 
-  exec {"wait for trove":
-    require => Service["trove-taskmanager"],
-    command => "/bin/sleep 2",
-  }
   Service['trove-api'] -> Service['trove-conductor'] -> Service['trove-taskmanager'] 
     
-  if pick(hiera(openstack::trove::datastores), false) {
+  $create_datastores = hiera('openstack::trove::create_datastores', false)
+  if $create_datastores == true {
 	  $datastores = hiera(openstack::trove::datastores)
 	  $datastore_versions = hiera(openstack::trove::datastore_versions)
 	  create_resources('trove_datastore', $datastores)
 	# TODO: note the trove_data_store_version must specify a valid image ID (not NAME). 
 	  create_resources('trove_datastore_version', $datastore_versions)
   
+	# The trove services take a second or so to start 
+	  exec {"wait for trove":
+		  require => Service["trove-taskmanager"],
+			  command => "/bin/sleep 2",
+	  }
 	# Don't try to create datastores unless the trove service is fully running
 	  Exec['wait for trove'] -> Trove_datastore<||> -> Trove_datastore_version<||>
   }
