@@ -48,8 +48,7 @@ class openstack::profile::nova::api {
     'nova::objectstore',
     'nova::cert',
     'nova::consoleauth',
-    'nova::conductor',
-    'nova::spicehtml5proxy',
+    'nova::conductor'
   ]:
     enabled => true
   }

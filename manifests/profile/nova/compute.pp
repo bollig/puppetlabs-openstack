@@ -6,8 +6,6 @@ class openstack::profile::nova::compute {
 
   include ::openstack::common::nova
 
-# TODO: enable SPICE instead of VNC console. This will give us full Remote Desktop to VMs
-
   class { '::nova::compute':
     enabled                       => true,
     vnc_enabled                   => true,
@@ -15,13 +13,15 @@ class openstack::profile::nova::compute {
     vncproxy_host                 => $::openstack::config::controller_address_api,
     instance_usage_audit 	      => true,
     instance_usage_audit_period   => 'hour',
-    force_raw_images 		  => false,
+# TODO: not sure why, but setting this to false will break our glance image imports in Horizon
+    force_raw_images 		  => true,
     allow_resize_to_same_host     => true,
 # NOTE: the remainder of the ceilometer notificatons settings are in ::nova
   }
 
   nova_config { 
 	'DEFAULT/compute_monitors': value => 'nova.compute.monitors.cpu.virt_driver';
+	'DEFAULT/resize_fs_using_block_device': value => 'true';
   }
 
   $libvirt_rbd=true
