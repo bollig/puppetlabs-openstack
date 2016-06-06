@@ -21,9 +21,9 @@ class openstack::profile::ceilometer::gnocchi (
     # Make the 'gnocchi' user in keystone: 
     class { '::gnocchi::keystone::auth':
         password => $::openstack::config::gnocchi_password,
-        public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8042",
-        admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
-        internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
+        public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
+        admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041",
+        internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041",
         region           => $::openstack::config::region,
     }
 
@@ -32,9 +32,9 @@ class openstack::profile::ceilometer::gnocchi (
         keystone_password     => $::openstack::config::gnocchi_password,
         keystone_identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
         keystone_auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
-        #service_name          => 'httpd',
-        manage_service        => false,
-        enabled               => false,
+        service_name          => 'httpd',
+        #manage_service        => false,
+        enabled               => true,
     }
     include ::apache
     class { '::gnocchi::wsgi::apache':
@@ -46,14 +46,17 @@ class openstack::profile::ceilometer::gnocchi (
     class { '::gnocchi::metricd': }
     class { '::gnocchi::storage': }
     class { '::gnocchi::storage::file': }
+
+    # make sure ceph pool exists before running gnocchi (dbsync & services)
+    #Exec['create-gnocchi'] -> Exec['gnocchi-db-sync']
 # TODO: enable statsd
-    #class { '::gnocchi::statsd':
-    #  archive_policy_name => 'high',
-    #  flush_delay         => '100',
-    #  # random datas:
-    #  resource_id         => '07f26121-5777-48ba-8a0b-d70468133dd9',
-    #  user_id             => 'f81e9b1f-9505-4298-bc33-43dfbd9a973b',
-    #  project_id          => '203ef419-e73f-4b8a-a73f-3d599a72b18d',
-    #}
+    class { '::gnocchi::statsd':
+      archive_policy_name => 'high',
+      flush_delay         => '100',
+      # random datas:
+      resource_id         => '07f26121-5777-48ba-8a0b-d70468133dd9',
+      user_id             => 'f81e9b1f-9505-4298-bc33-43dfbd9a973b',
+      project_id          => '203ef419-e73f-4b8a-a73f-3d599a72b18d',
+    }
 
 }

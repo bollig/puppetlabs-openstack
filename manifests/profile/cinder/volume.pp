@@ -33,7 +33,6 @@ class openstack::profile::cinder::volume {
 		  rbd_user        => 'cinder',
 		  rbd_pool        => 'volumes',
 		  volume_tmp_dir  => '/tmp',
-		  #rbd_secret_uuid => '06a25e2f-5a2e-461a-aa6f-66efd6b5fe0a',
 	  }
       }
       default: {

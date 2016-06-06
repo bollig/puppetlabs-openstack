@@ -1,7 +1,9 @@
 # The profile to set up the Ceilometer API
 # For co-located api and worker nodes this appear
 # after openstack::profile::ceilometer::agent
-class openstack::profile::ceilometer::api {
+class openstack::profile::ceilometer::api (
+      $gnocchi_enabled = false
+) {
 
   $mongo_username                = $::openstack::config::ceilometer_mongo_username
   $mongo_password                = $::openstack::config::ceilometer_mongo_password
@@ -43,7 +45,8 @@ class openstack::profile::ceilometer::api {
   class { '::ceilometer::agent::polling':
     central_namespace => true,
     compute_namespace => true,
-    ipmi_namespace    => true,
+# NOTE: this might result in errors of the form: "ceilometer.hardware.discovery [-] Couldn't obtain IP address of instance"
+    ipmi_namespace    => false,
   }
 
   # Install compute agent (deprecated)
@@ -91,7 +94,6 @@ class openstack::profile::ceilometer::api {
       }
     }
     'RedHat': {
-      $gnocchi_enabled = false
       if $gnocchi_enabled { 
         aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
         class { '::openstack::profile::ceilometer::gnocchi': }

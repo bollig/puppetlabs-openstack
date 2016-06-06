@@ -1,5 +1,12 @@
 # The puppet module to set up a Nova Compute node
-class openstack::profile::nova::compute {
+class openstack::profile::nova::compute (
+  $libvirt_use_rbd=false,
+  $libvirt_rbd_user='cinder',
+  $libvirt_rbd_secret_uuid='',
+  $libvirt_images_rbd_pool='vms',
+  $rbd_keyring='client.cinder',
+  $libvirt_cpu_mode = 'host-passthrough',
+) {
   $management_network            = $::openstack::config::network_management
   $management_address            = ip_for_network($management_network)
   $controller_management_address = $::openstack::config::controller_address_management
@@ -20,26 +27,26 @@ class openstack::profile::nova::compute {
   }
 
   nova_config { 
-	'DEFAULT/compute_monitors': value => 'nova.compute.monitors.cpu.virt_driver';
+	#'DEFAULT/compute_monitors': value => 'nova.compute.monitors.cpu.virt_driver';
+	'DEFAULT/compute_monitors': value => ["cpu.virt_driver", "numa_mem_bw.virt_driver"];
 	'DEFAULT/resize_fs_using_block_device': value => 'true';
   }
 
-  $libvirt_rbd=true
 
   class { '::nova::compute::libvirt':
     libvirt_virt_type => $::openstack::config::nova_libvirt_type,
-    libvirt_cpu_mode => 'host-passthrough',
+    libvirt_cpu_mode => $libvirt_cpu_mode,
     #vncserver_listen  => $management_address,
 	# NOTE: this is required for live migration (listens on all interfaces)
     vncserver_listen  => '0.0.0.0',
   }
 
-  if $libvirt_rbd {
+  if $libvirt_use_rbd {
     class { '::nova::compute::rbd':
-      libvirt_rbd_user        => 'cinder',
-      libvirt_rbd_secret_uuid => '06a25e2f-5a2e-461a-aa6f-66efd6b5fe0a',
-      libvirt_images_rbd_pool => 'vms',
-      rbd_keyring             => 'client.cinder',
+      libvirt_rbd_user        => $libvirt_rbd_user,
+      libvirt_rbd_secret_uuid => $libvirt_rbd_secret_uuid,
+      libvirt_images_rbd_pool => $libvirt_images_rbd_pool,
+      rbd_keyring             => $rbd_keyring,
     }
   }
 
