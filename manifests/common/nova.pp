@@ -13,10 +13,12 @@ class openstack::common::nova {
 
   $user                = $::openstack::config::mysql_user_nova
   $pass                = $::openstack::config::mysql_pass_nova
-  $database_connection = "mysql://${user}:${pass}@${controller_management_address}/nova"
+  $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova"
+  $api_database_connection = "mysql+pymysql://${user}_api:${pass}@${controller_management_address}/nova_api"
 
   class { '::nova':
     database_connection => $database_connection,
+    api_database_connection => $api_database_connection,
     glance_api_servers  => join($::openstack::config::glance_api_servers, ','),
     memcached_servers   => ["${controller_management_address}:11211"],
     rabbit_hosts        => $::openstack::config::rabbitmq_hosts,

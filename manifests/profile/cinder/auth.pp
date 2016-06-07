@@ -7,9 +7,9 @@ class openstack::profile::cinder::auth {
   # distributed via the storage role, not the control role
   class { '::cinder::keystone::auth':
     password         => $::openstack::config::cinder_password,
-    public_address   => $::openstack::config::storage_address_api,
-    admin_address    => $::openstack::config::storage_address_management,
-    internal_address => $::openstack::config::storage_address_management,
+    public_url   => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8776",
+    admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8776",
+    internal_url => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8776",
     region           => $::openstack::config::region,
   }
 

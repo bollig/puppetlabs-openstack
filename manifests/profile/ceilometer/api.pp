@@ -26,8 +26,6 @@ class openstack::profile::ceilometer::api (
 
   # Setup ceilometer API service (control)
   class { '::ceilometer::api':
-# TODO: drop update this to handle SSL
-    keystone_protocol	  => "${::openstack::config::http_protocol}", 
     keystone_password     => $::openstack::config::ceilometer_password,
     keystone_identity_uri => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
     keystone_auth_uri     => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
@@ -63,7 +61,8 @@ class openstack::profile::ceilometer::api (
 
   # Purge 1 month old meters (wherever mongo service is (control))
   class { '::ceilometer::expirer':
-    time_to_live => '2592000'
+	# Expire on the first of every month at 12:01 am
+ 	monthday => '1',
   }
 
   # Install notification agent (with API (control))
@@ -95,7 +94,7 @@ class openstack::profile::ceilometer::api (
     }
     'RedHat': {
       if $gnocchi_enabled { 
-        aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
+        #aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
         class { '::openstack::profile::ceilometer::gnocchi': }
       }
       class { '::openstack::profile::ceilometer::aodh': }

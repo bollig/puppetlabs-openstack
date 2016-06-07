@@ -14,7 +14,7 @@ class openstack::profile::keystone {
   class { '::keystone::roles::admin':
     email        => $::openstack::config::keystone_admin_email,
     password     => $::openstack::config::keystone_admin_password,
-    admin_tenant => 'admin',
+    #admin_tenant => 'admin',
   }
 
   class { 'keystone::endpoint':
@@ -33,9 +33,11 @@ class openstack::profile::keystone {
       ssl_key         => $::openstack::config::keystone_ssl_keyfile,
       ssl_chain       => $::openstack::config::ssl_chainfile,
       #ssl_ca          => $::openstack::config::ssl_chainfile,
+      workers         => 2
     }
   }
 
+  class { '::keystone::disable_admin_token_auth': }
 
   $domains = $::openstack::config::keystone_domains
   $tenants = $::openstack::config::keystone_tenants

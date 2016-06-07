@@ -23,7 +23,8 @@ class openstack::profile::glance::api {
   class { '::glance::registry':
     keystone_password   => $::openstack::config::glance_password,
     database_connection => $database_connection,
-    auth_host           => $::openstack::config::controller_address_management,
+    identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
     keystone_tenant     => 'services',
     keystone_user       => 'glance',
     verbose             => $::openstack::config::verbose,

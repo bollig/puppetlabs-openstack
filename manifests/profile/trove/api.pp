@@ -25,7 +25,7 @@ class openstack::profile::trove::api {
     verbose  => false,
     auth_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
   }  
-  class { '::trove::db::sync': }
+  #class { '::trove::db::sync': }
 
 
   Service['trove-api'] -> Service['trove-conductor'] -> Service['trove-taskmanager'] 

@@ -30,7 +30,8 @@ class openstack::common::glance {
 
   class { '::glance::api':
     keystone_password   => $::openstack::config::glance_password,
-    auth_host           => $::openstack::config::controller_address_management,
+    identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
     keystone_tenant     => 'services',
     keystone_user       => 'glance',
     known_stores	=> $glance_stores,
