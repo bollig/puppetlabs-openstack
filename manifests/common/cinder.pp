@@ -21,6 +21,7 @@ class openstack::common::cinder {
 #    keystone_auth_host => $::openstack::config::controller_address_management,
     identity_uri       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
     auth_uri           => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    public_endpoint    => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8776", 
     enabled            => true,
   }
 

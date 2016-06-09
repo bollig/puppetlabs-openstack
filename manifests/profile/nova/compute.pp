@@ -18,7 +18,7 @@ class openstack::profile::nova::compute (
     vnc_enabled                   => true,
     vncserver_proxyclient_address => $management_address,
     vncproxy_host                 => $::openstack::config::controller_address_api,
-    instance_usage_audit 	      => true,
+    instance_usage_audit 	  => true,
     instance_usage_audit_period   => 'hour',
 # TODO: not sure why, but setting this to false will break our glance image imports in Horizon
     force_raw_images 		  => true,
@@ -57,6 +57,7 @@ class openstack::profile::nova::compute (
 	  #auth                 => 'none',
 	# From: http://www.tcpcloud.eu/en/blog/2014/11/20/block-live-migration-openstack-environment/
 	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_TUNNELLED',
+	  block_migration_flag => 'VIR_MIGRATE_SHARED_INC,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_UNDEFINE_SOURCE',
 	  #block_migration_flag => true,
   }
 

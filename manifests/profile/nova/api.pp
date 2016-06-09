@@ -1,6 +1,6 @@
 # The profile to set up the Nova controller (several services)
 class openstack::profile::nova::api (
-	$nova_use_httpd = false,
+	$nova_use_httpd = true,
 ) {
 
   $controller_management_address = $::openstack::config::controller_address_management

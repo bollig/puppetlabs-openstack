@@ -16,15 +16,18 @@ class openstack::common::nova {
   $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova"
   $api_database_connection = "mysql+pymysql://${user}_api:${pass}@${controller_management_address}/nova_api"
 
+  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, $::openstack::config::http_protocol)
+
   class { '::nova':
     database_connection => $database_connection,
     api_database_connection => $api_database_connection,
-    glance_api_servers  => join($::openstack::config::glance_api_servers, ','),
+    glance_api_servers  => join($glance_api_servers_w_proto, ','),
     memcached_servers   => ["${controller_management_address}:11211"],
     rabbit_hosts        => $::openstack::config::rabbitmq_hosts,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
-    debug               => $::openstack::config::debug,
+    #debug               => $::openstack::config::debug,
+    debug               => true,
     verbose             => $::openstack::config::verbose,
 # FOR CEILOMETER NOTIFICATIONS: 
     notify_on_state_change => 'vm_and_task_state', 
@@ -41,7 +44,7 @@ class openstack::common::nova {
     neutron_admin_password => $::openstack::config::neutron_password,
     neutron_region_name    => $::openstack::config::region,
 #TODO: update puppet-neutron to a version that supports v3 auth
-    neutron_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v2.0",
+    neutron_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
     neutron_url            => "${::openstack::config::http_protocol}://${controller_management_address}:9696",
     vif_plugging_is_fatal  => false,
     vif_plugging_timeout   => '0',
