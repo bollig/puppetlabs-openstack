@@ -65,12 +65,20 @@ class openstack::profile::neutron::router {
   }
 
 #### EXTRAS #######
+  class { '::neutron::services::lbaas': 
+	service_providers => 'LOADBALANCER:Haproxy:neutron_lbaas.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default',
+# lbaasv2
+#	service_providers => 'LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default',
+  }
 
   class { '::neutron::agents::lbaas':
     debug   => $::openstack::config::debug,
     enabled => true,
+    enable_v2 => false,
+    enable_v1 => true,
     #interface_driver => 'neutron.agent.linux.interface.OVSInterfaceDriver',
-    #device_driver => 'neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver',
+    #interface_driver => 'openvswitch',
+    #device_driver => 'neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver',
     #user_group       => 'haproxy',
   }
   
@@ -93,6 +101,7 @@ class openstack::profile::neutron::router {
   }
 
   class { '::neutron::services::fwaas':
+    driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
     enabled => true,
   }
 

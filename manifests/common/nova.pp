@@ -16,7 +16,7 @@ class openstack::common::nova {
   $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova"
   $api_database_connection = "mysql+pymysql://${user}_api:${pass}@${controller_management_address}/nova_api"
 
-  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, $::openstack::config::http_protocol)
+  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
 
   class { '::nova':
     database_connection => $database_connection,
@@ -26,8 +26,7 @@ class openstack::common::nova {
     rabbit_hosts        => $::openstack::config::rabbitmq_hosts,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
-    #debug               => $::openstack::config::debug,
-    debug               => true,
+    debug               => $::openstack::config::debug,
     verbose             => $::openstack::config::verbose,
 # FOR CEILOMETER NOTIFICATIONS: 
     notify_on_state_change => 'vm_and_task_state', 

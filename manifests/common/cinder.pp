@@ -25,6 +25,8 @@ class openstack::common::cinder {
     enabled            => true,
   }
 
+#TODO: cinder wsgi
+
   #$storage_server = $::openstack::config::storage_address_api
   #$glance_api_server = "${storage_server}:9292"
 

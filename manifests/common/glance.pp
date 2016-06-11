@@ -28,6 +28,7 @@ class openstack::common::glance {
 
   $glance_stores = concat($http_store, $backend_store)
 
+# NOTE: this is in common for Tempest. Might be able to avoid this.
   class { '::glance::api':
     keystone_password   => $::openstack::config::glance_password,
     identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",

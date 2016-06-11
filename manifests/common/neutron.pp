@@ -57,6 +57,7 @@ class openstack::common::neutron {
     # Neutron API
   class { '::neutron::server':
     auth_uri            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    auth_url            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
     identity_uri        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
     auth_password       => $::openstack::config::neutron_password,
     database_connection => $database_connection,
