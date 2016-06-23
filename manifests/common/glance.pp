@@ -1,6 +1,8 @@
-# Common class for cinder installation
+# Common class for glance installation
 # Private, and should not be used on its own
-class openstack::common::glance {
+class openstack::common::glance (
+	$enable_service = false,
+) {
 
   $controller_address  = $::openstack::config::controller_address_management
   $user                = $::openstack::config::mysql_user_glance
@@ -40,7 +42,7 @@ class openstack::common::glance {
     registry_host       => $::openstack::config::storage_address_management,
     verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,
-    enabled             => $::openstack::profile::base::is_storage,
+    enabled             => $enable_service,
     os_region_name      => $::openstack::config::region,
   }
 

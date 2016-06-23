@@ -1,5 +1,7 @@
 # The profile to install an OpenStack specific MongoDB server
-class openstack::profile::mongodb {
+class openstack::profile::mongodb (
+	$bind_address = 'localhost',
+) {
   $management_network = $::openstack::config::network_management
 
   class { '::mongodb::globals':
@@ -7,7 +9,8 @@ class openstack::profile::mongodb {
   }
 
   class { '::mongodb::server':
-    bind_ip => ['127.0.0.1', $::openstack::config::controller_address_management],
+    #bind_ip => ['127.0.0.1', $::openstack::config::controller_address_management],
+    bind_ip => ['127.0.0.1', $bind_address ],
   }
 
 # THIS IS NOW PART OF THE common/ceilometer.pp

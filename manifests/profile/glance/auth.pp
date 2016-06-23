@@ -10,5 +10,8 @@ class openstack::profile::glance::auth {
 	admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:9292",
 	internal_url => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:9292",
 	region           => $::openstack::config::region,
+	configure_endpoint => true,
+	# endpoint service name (defaults to Image Service)
+	service_name => 'glance',
   }
 }

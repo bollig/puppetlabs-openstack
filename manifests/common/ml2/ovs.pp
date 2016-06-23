@@ -5,16 +5,9 @@ class openstack::common::ml2::ovs {
   $data_address        = ip_for_network($data_network)
   $enable_tunneling    = $::openstack::config::neutron_tunneling # true
   $tunnel_types        = $::openstack::config::neutron_tunnel_types #['gre']
-  $is_controller = $::openstack::profile::base::is_controller
     
   $bridge_mappings  = []
   $bridge_uplinks   = []
-# TODO: this is truly supposed to be on the NETWORK node, not on the control
- # if $is_controller {
- #   $bridge_mappings  = ['external:br-ex']
- # } else { 
- #   $bridge_mappings  = []
- # }
 
   #notify { "DataAdress: ${data_address}": }
 # TODO: link the config file properly

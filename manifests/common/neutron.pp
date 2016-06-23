@@ -3,7 +3,9 @@
 # Sets up configuration common to all neutron nodes.
 # Flags install individual services as needed
 # This follows the suggest deployment from the neutron Administrator Guide.
-class openstack::common::neutron {
+class openstack::common::neutron (
+  $enable_service = false,
+) {
 
 # What it does: https://access.redhat.com/solutions/53031
 # See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty&f=13
@@ -15,7 +17,6 @@ class openstack::common::neutron {
   }
 
 
-  $is_controller = $::openstack::profile::base::is_controller
 
   $controller_management_address = $::openstack::config::controller_address_management
 
@@ -61,8 +62,8 @@ class openstack::common::neutron {
     identity_uri        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
     auth_password       => $::openstack::config::neutron_password,
     database_connection => $database_connection,
-    enabled             => $is_controller,
-    sync_db             => $is_controller,
+    enabled             => $enable_service,
+    sync_db             => $enable_service,
     #mysql_module        => '2.2',
   }
 

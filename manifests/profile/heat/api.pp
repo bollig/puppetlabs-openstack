@@ -1,5 +1,7 @@
 # The profile for installing the heat API
-class openstack::profile::heat::api {
+class openstack::profile::heat::api (
+	$bind_address = 'localhost',
+) {
 
   openstack::resources::database { 'heat': }
   openstack::resources::firewall { 'Heat API': port     => '8004', }
@@ -44,11 +46,13 @@ class openstack::profile::heat::api {
   }
 
   class { '::heat::api':
-    bind_host => $::openstack::config::controller_address_api,
+#    bind_host => $::openstack::config::controller_address_api,
+    bind_host => $bind_address,
   }
 
   class { '::heat::api_cfn':
-    bind_host => $::openstack::config::controller_address_api,
+#    bind_host => $::openstack::config::controller_address_api,
+    bind_host => $bind_address,
   }
 
   class { '::heat::engine':

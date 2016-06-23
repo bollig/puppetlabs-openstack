@@ -1,6 +1,8 @@
 # 
-class openstack::common::keystone {
-  if $::openstack::profile::base::is_controller {
+class openstack::common::keystone (
+	$enable_service = false,
+) {
+  if $enable_service {
     $admin_bind_host = '0.0.0.0'
     if $::openstack::config::keystone_use_httpd == true {
       $service_name = 'httpd'
@@ -15,7 +17,7 @@ class openstack::common::keystone {
     $admin_bind_host = $::openstack::config::controller_address_management
     $service_name    = undef
     $enable_ssl = false
-    $enable_fernet = false
+    $enable_fernet = true
   }
 
   $management_address  = $::openstack::config::controller_address_management
@@ -29,7 +31,7 @@ class openstack::common::keystone {
     database_connection => $database_connection,
     verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,
-    enabled             => $::openstack::profile::base::is_controller,
+    enabled             => $enable_service,
     admin_bind_host     => $admin_bind_host,
     service_name        => $service_name,
     enable_ssl          => $enable_ssl, 

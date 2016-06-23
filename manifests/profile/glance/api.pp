@@ -17,7 +17,8 @@ class openstack::profile::glance::api {
   openstack::resources::firewall { 'Glance Registry': port => '9191', }
 
 # Triggers the glance::api
-  include ::openstack::common::glance
+  class {'::openstack::common::glance': enable_service => true }
+  #include ::openstack::common::glance
 
 
   class { '::glance::registry':

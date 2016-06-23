@@ -4,7 +4,7 @@ class openstack::profile::keystone {
   openstack::resources::database { 'keystone': }
   openstack::resources::firewall { 'Keystone API': port => '5000', }
 
-  include ::openstack::common::keystone
+  class { '::openstack::common::keystone': enable_service => true }
 
   class { '::keystone::cron::token_flush': }
   #class { '::keystone::db::mysql':
@@ -22,6 +22,8 @@ class openstack::profile::keystone {
     admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
     internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
     region       => $::openstack::config::region,
+# If set to '' then the API version is detected at runtime
+    #version      => 'v3',
   }
 
 

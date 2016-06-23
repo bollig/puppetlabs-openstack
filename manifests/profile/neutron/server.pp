@@ -5,7 +5,7 @@ class openstack::profile::neutron::server {
   openstack::resources::database { 'neutron': }
   openstack::resources::firewall { 'Neutron API': port => '9696', }
 
-  include ::openstack::common::neutron
+  class { '::openstack::common::neutron': enable_service => true }
 
   $tenant_network_type           = $::openstack::config::neutron_tenant_network_type # ['gre']
   $type_drivers                  = $::openstack::config::neutron_type_drivers # ['gre']
@@ -106,5 +106,5 @@ class openstack::profile::neutron::server {
   } ->
   anchor { 'neutron_common_last': }
 
-  Class['::neutron::db::mysql'] -> Exec['neutron-db-sync']
+  #Class['::neutron::db::mysql'] -> Exec['neutron-db-sync']
 }
