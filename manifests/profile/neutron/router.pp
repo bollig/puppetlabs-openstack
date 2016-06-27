@@ -65,11 +65,11 @@ class openstack::profile::neutron::router {
   }
 
 #### EXTRAS #######
-  class { '::neutron::services::lbaas': 
+  #class { '::neutron::services::lbaas': 
 #	service_providers => 'LOADBALANCER:Haproxy:neutron_lbaas.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default',
 	# lbaasv2
-	service_providers => 'LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default',
-  }
+	#service_providers => 'LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default',
+  #}
 
   class { '::neutron::agents::lbaas':
     debug   => $::openstack::config::debug,
