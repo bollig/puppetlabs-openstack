@@ -5,7 +5,10 @@ class openstack::profile::horizon {
 
   if "router" in $service_plugins { $enable_router = true } else { $enable_router = false }
   if "firewall" in $service_plugins { $enable_firewall = true } else { $enable_firewall = false }
-  if "lbaas" in $service_plugins { $enable_lbaas = true } else { $enable_lbaas = false }
+   # check for "lbaas" or "neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2"
+  if "lbaas" in $service_plugins { $enable_lbaas = true } else { 
+  	if "neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2" in $service_plugins { $enable_lbaas = true } else { $enable_lbaas = false } 
+  }
   if "vpnaas" in $service_plugins { $enable_vpnaas = true } else { $enable_vpnaas = false }
 
   if $::openstack::config::enable_ssl {

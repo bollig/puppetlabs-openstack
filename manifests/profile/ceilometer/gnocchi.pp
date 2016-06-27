@@ -13,7 +13,7 @@ class openstack::profile::ceilometer::gnocchi (
       openstack::resources::firewall { 'GNOCCHI API': port => '8041', }
 
     class { '::gnocchi':
-      verbose             => true,
+      verbose             => false,
       debug               => false,
       database_connection => $database_connection,
     }

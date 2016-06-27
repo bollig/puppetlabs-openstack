@@ -1,5 +1,6 @@
 # Adds AODH to the stack
 class openstack::profile::ceilometer::aodh (
+	$gnocchi_enabled = false,
 ) {
 
       $management_address  = $::openstack::config::controller_address_management
@@ -11,6 +12,12 @@ class openstack::profile::ceilometer::aodh (
       openstack::resources::database { 'aodh': }
       openstack::resources::firewall { 'AODH API': port => '8042', }
 
+	if $gnocchi_enabled { 
+		$gnocchi_url = "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041"
+	} else {
+		$gnocchi_url = undef
+	}
+
       class { '::aodh':
         rabbit_userid       => $::openstack::config::rabbitmq_user,
         rabbit_password     => $::openstack::config::rabbitmq_password,
@@ -19,6 +26,7 @@ class openstack::profile::ceilometer::aodh (
         rabbit_hosts         => $::openstack::config::rabbitmq_hosts,
             # TODO: update to mongo when possible
      	database_connection => $database_connection,
+	gnocchi_url 	    => $gnocchi_url,	
       }
 	    # Make the 'aodh' user in keystone: 
       class { '::aodh::keystone::auth':
@@ -59,7 +67,7 @@ class openstack::profile::ceilometer::aodh (
         auth_url      => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/v2.0",
         auth_password => $::openstack::config::aodh_password,
       }
-      class { '::aodh::client': }
+      class { '::aodh::client': } -> package {'python2-aodhclient': ensure => 'present' }
       class { '::aodh::notifier': }
       class { '::aodh::listener': }
       class { '::aodh::evaluator': }

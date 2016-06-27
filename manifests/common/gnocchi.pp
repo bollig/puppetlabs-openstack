@@ -2,6 +2,12 @@
 class openstack::common::gnocchi ( 
 ) {
 
+    #class { 'statsd': 
+#	package_name => 'statsd',
+#	package_provider => 'yum',
+#	statsd_title => 'gnocchi-statsd',
+#    }
+
     class { '::gnocchi::client': }
 
     # make sure ceph pool exists before running gnocchi (dbsync & services)

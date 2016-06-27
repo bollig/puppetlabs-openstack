@@ -40,12 +40,12 @@ class openstack::profile::ceilometer::api (
   # Install polling agent (control)
   # Can be used instead of central, compute or ipmi agent
   # As default use central and compute polling namespaces
-  class { '::ceilometer::agent::polling':
-    central_namespace => true,
-    compute_namespace => true,
+  #class { '::ceilometer::agent::polling':
+  #  central_namespace => true,
+  #  compute_namespace => false,
 # NOTE: this might result in errors of the form: "ceilometer.hardware.discovery [-] Couldn't obtain IP address of instance"
-    ipmi_namespace    => false,
-  }
+  #  ipmi_namespace    => true,
+  #}
 
   # Install compute agent (deprecated)
   # default: enable
@@ -53,11 +53,8 @@ class openstack::profile::ceilometer::api (
   # }
 
   # Install central agent (deprecated)
-  # class { 'ceilometer::agent::central':
-  # }
-
-  # CRITICAL: The collector service sends data to mongodb
-  class { '::ceilometer::collector': }                                                                                                         
+   class { 'ceilometer::agent::central':
+   }
 
   # Purge 1 month old meters (wherever mongo service is (control))
   class { '::ceilometer::expirer':
@@ -91,13 +88,27 @@ class openstack::profile::ceilometer::api (
 
       class { '::ceilometer::alarm::evaluator':
       }
+	# CRITICAL: The collector service sends data to mongodb
+      class { '::ceilometer::collector': }                                                                                                         
     }
     'RedHat': {
       if $gnocchi_enabled { 
         #aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
         class { '::openstack::profile::ceilometer::gnocchi': }
+	class { '::ceilometer::collector':
+		meter_dispatcher => ['gnocchi'],
+	}
+	class { '::ceilometer::dispatcher::gnocchi':
+	  filter_service_activity   => false,
+	  filter_project            => 'gnocchi',
+	  url                       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
+	  archive_policy            => 'high',
+	  resources_definition_file => 'gnocchi_resources.yaml',
+	}
+      } else {
+        class { '::ceilometer::collector': }                                                                                                         
       }
-      class { '::openstack::profile::ceilometer::aodh': }
+      class { '::openstack::profile::ceilometer::aodh': gnocchi_enabled => $gnocchi_enabled }
     }
     default: {
       fail("Unsupported osfamily (${::osfamily})")
