@@ -42,7 +42,12 @@ class openstack::profile::ceilometer::aodh (
           # Setup the aodh service behind apache wsgi
           include ::apache
           class { '::aodh::wsgi::apache':
-            ssl => false,
+	      ssl             => $::openstack::config::enable_ssl,
+	      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+	      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+	      ssl_chain       => $::openstack::config::ssl_chainfile,
+	      #ssl_ca          => $::openstack::config::ssl_chainfile,
+	      workers         => 2
           }
 
           $service_enabled = false
