@@ -29,8 +29,10 @@ class openstack::common::keystone (
   class { '::keystone':
     admin_token         => $::openstack::config::keystone_admin_token,
     database_connection => $database_connection,
-    verbose             => $::openstack::config::verbose,
-    debug               => $::openstack::config::debug,
+    #verbose             => $::openstack::config::verbose,
+	verbose => true,
+	debug => true,
+    #debug               => $::openstack::config::debug,
     enabled             => $enable_service,
     admin_bind_host     => $admin_bind_host,
     service_name        => $service_name,
