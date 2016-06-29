@@ -44,7 +44,9 @@ class openstack::common::nova {
     neutron_region_name    => $::openstack::config::region,
 #TODO: update puppet-neutron to a version that supports v3 auth
     neutron_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
-    neutron_url            => "${::openstack::config::http_protocol}://${controller_management_address}:9696",
+#TODO: when neutron supports chain files or WSGI, enable the http_protocol below: 
+    #neutron_url            => "${::openstack::config::http_protocol}://${controller_management_address}:9696",
+    neutron_url            => "http://${controller_management_address}:9696",
     vif_plugging_is_fatal  => false,
     vif_plugging_timeout   => '0',
   }

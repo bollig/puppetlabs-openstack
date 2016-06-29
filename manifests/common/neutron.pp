@@ -7,6 +7,21 @@ class openstack::common::neutron (
   $enable_service = false,
 ) {
 
+  if $enable_service {
+	if $::openstack::config::enable_ssl {
+	# TODO: when neutron has a wsgi api class available disable eventlet
+	# and switch name to httpd, then add neutron::wsgi::apache config
+		$enable_api_eventlet = true
+		$service_name = 'neutron-server'
+	} else {
+		$enable_api_eventlet = true
+		$service_name = 'neutron-server'
+	}
+  } else {
+	$enable_api_eventlet = false
+	$service_name = 'neutron-server'
+  }
+
 # What it does: https://access.redhat.com/solutions/53031
 # See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty&f=13
   ::sysctl::value { 'net.ipv4.conf.default.rp_filter':
@@ -39,14 +54,34 @@ class openstack::common::neutron (
     debug                 => $::openstack::config::debug,
     verbose               => $::openstack::config::verbose,
     service_plugins       => $::openstack::config::neutron_service_plugins,
+    #use_ssl               => $::openstack::config::enable_ssl,
+    #cert_file             => $::openstack::config::keystone_ssl_certfile,
+    #key_file              => $::openstack::config::keystone_ssl_keyfile,
+    #ca_file               => $::openstack::config::ssl_chainfile,
+    #key_file              => "/etc/neutron/ssl/private/${::fqdn}.pem",
   }
+  #neutron_config { 
+	#'ssl/chain_file':    		value  => $::openstack::config::ssl_chainfile; 
+#	'wsgi/api_paste_config':	value => 'api-paste.ini';
+  #}
 
 # Base Neutron authentication config (pointing to Keystone)
   class { '::neutron::keystone::auth':
     password         => $::openstack::config::neutron_password,
-    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
-    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
-    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+# TODO: when neutron supports chain files and/or wsgi, enable ssl: 
+    public_url       => "http://${::openstack::config::controller_address_api}:9696",
+    admin_url        => "http://${::openstack::config::controller_address_management}:9696",
+    internal_url     => "http://${::openstack::config::controller_address_management}:9696",
+    #public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
+    #admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+    #internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+    #public_address   => $::openstack::config::controller_address_api,
+    #internal_address => $::openstack::config::controller_address_management,
+    #admin_address    => $::openstack::config::controller_address_management,
+    #public_protocol  => $::openstack::config::http_protocol, 
+    #admin_protocol  => $::openstack::config::http_protocol, 
+    #internal_protocol  => $::openstack::config::http_protocol, 
+# END: when neutron supports chain files and/or wsgi, enable ssl: 
     region           => $::openstack::config::region,
   }
 
@@ -62,7 +97,8 @@ class openstack::common::neutron (
     identity_uri        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
     auth_password       => $::openstack::config::neutron_password,
     database_connection => $database_connection,
-    enabled             => $enable_service,
+    enabled             => $enable_api_eventlet,
+    #service_name 	=> $service_name,
     sync_db             => $enable_service,
     service_providers => ['LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default'],
 #'LOADBALANCERV2:Octavia:neutron_lbaas.drivers.octavia.driver.OctaviaDriver:default'],
@@ -71,6 +107,19 @@ class openstack::common::neutron (
 
     #mysql_module        => '2.2',
   }
+
+  # This is a HUGE hack. The Neutron puppet module does not include a
+  # wsgi::apache.pp class yet. I adapted from the nova class to ensure we are
+  # consistently using wsgi endpoints for our apis. 
+  #class { '::openstack::profile::neutron::wsgi_apache':
+  #    ssl             => $::openstack::config::enable_ssl,
+  #    ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+  #    ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+  #    ssl_chain       => $::openstack::config::ssl_chainfile,
+  #    #ssl_ca          => $::openstack::config::ssl_chainfile,
+  #    workers         => 2
+  #}
+
 
 
   if $::osfamily == 'redhat' {

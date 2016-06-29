@@ -20,9 +20,15 @@ class openstack::profile::nova::api (
     internal_address => $::openstack::config::controller_address_management,
     admin_address    => $::openstack::config::controller_address_management,
 # TODO: if needed replace the following 3 lines with public_uri
+    public_protocol  => $::openstack::config::http_protocol, 
+    admin_protocol  => $::openstack::config::http_protocol, 
+    internal_protocol  => $::openstack::config::http_protocol, 
     public_url_v3    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8774/v3",
     internal_url_v3  => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v3",
     admin_url_v3     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v3",
+    public_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8774/v2",
+    internal_url  => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2",
+    admin_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2",
     region           => $::openstack::config::region,
   }
 

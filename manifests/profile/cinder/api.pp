@@ -13,4 +13,14 @@ class openstack::profile::cinder::api {
     enabled          => true,
   }
   class { '::cinder::scheduler::filter': }
+
+  class { '::cinder::wsgi::apache':
+      ssl             => $::openstack::config::enable_ssl,
+      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+      ssl_chain       => $::openstack::config::ssl_chainfile,
+      #ssl_ca          => $::openstack::config::ssl_chainfile,
+      workers         => 2
+  }
+
 }

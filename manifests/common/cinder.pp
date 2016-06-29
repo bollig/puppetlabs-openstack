@@ -23,6 +23,7 @@ class openstack::common::cinder {
     auth_uri           => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
     public_endpoint    => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8776", 
     enabled            => true,
+    service_name       => 'httpd',
   }
 
 #TODO: cinder wsgi
