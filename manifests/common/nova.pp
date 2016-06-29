@@ -36,6 +36,13 @@ class openstack::common::nova {
     #mysql_module        => '2.2',
   }
 
+   # NOTE: fixes https://bugs.launchpad.net/nova/+bug/1572062
+    oslo::cache { 'nova_config':
+      enabled 		 => true,
+      memcache_servers   => ["${controller_management_address}:11211"],
+      backend 		 => 'oslo_cache.memcache_pool',
+    }
+
   #nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
   #class { '::nova::api': 
   #  default_floating_pool => 'public' 

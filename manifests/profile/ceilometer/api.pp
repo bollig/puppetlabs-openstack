@@ -68,7 +68,12 @@ class openstack::profile::ceilometer::api (
 
   include ::apache
   class { '::ceilometer::wsgi::apache':
-       ssl => false,
+          ssl             => $::openstack::config::enable_ssl,
+          ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+          ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+          ssl_chain       => $::openstack::config::ssl_chainfile,
+          #ssl_ca          => $::openstack::config::ssl_chainfile,
+          workers         => 2
   }
 
     # See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty2&f=13
