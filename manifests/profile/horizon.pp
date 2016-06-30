@@ -49,4 +49,21 @@ class openstack::profile::horizon {
     }
   }
 
+
+ # NOTE: this fixes the v3 openrc file to function properly when downloaded:
+ file_line { 'Set default OS_IDENTITY_API_VERSION':
+  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',  
+  line => 'export OS_IDENTITY_API_VERSION=3',
+  after => Exec['refresh_horizon_django_cache'],
+ }
+
+ # NOTE: this removes the Consistency Groups tab which is a feature not supported by CEPH RBD 
+ file_line { 'Disable consistency groups tab':
+  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/volumes/tabs.py',
+  match => '.*, CGroupsTab\)',
+  line => '    tabs = (VolumeTab, SnapshotTab, BackupsTab) #, CGroupsTab)',
+  after => Exec['refresh_horizon_django_cache'],
+ }
+
+
 }
