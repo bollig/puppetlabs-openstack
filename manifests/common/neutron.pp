@@ -54,16 +54,16 @@ class openstack::common::neutron (
     debug                 => $::openstack::config::debug,
     verbose               => $::openstack::config::verbose,
     service_plugins       => $::openstack::config::neutron_service_plugins,
-    #use_ssl               => $::openstack::config::enable_ssl,
-    #cert_file             => $::openstack::config::keystone_ssl_certfile,
-    #key_file              => $::openstack::config::keystone_ssl_keyfile,
-    #ca_file               => $::openstack::config::ssl_chainfile,
-    #key_file              => "/etc/neutron/ssl/private/${::fqdn}.pem",
+# NOTE: http://miroslav.suchy.cz/blog/archives/2015/03/05/how_to_enable_ssl_for_neutron_and_other_openstack_services/index.html
+# https://github.com/Juniper/contrail-controller/wiki/SSL-configuration-for-API,-neutron-server-and-openstack-keystone-in-Contrail
+# --> Neutron SSL is buggy. 
+# This might help: https://github.com/rcbops-cookbooks/glance/blob/fd73f48b13f25e285f48bcbe93f35db5ec20f036/files/default/api_modwsgi.py
+#    use_ssl               => $::openstack::config::enable_ssl,
+#    cert_file             => $::openstack::config::keystone_ssl_certfile,
+#    key_file              => $::openstack::config::keystone_ssl_keyfile,
+	 # ca_file can be either the CA file or Chain File
+#    ca_file               => $::openstack::config::ssl_chainfile,
   }
-  #neutron_config { 
-	#'ssl/chain_file':    		value  => $::openstack::config::ssl_chainfile; 
-#	'wsgi/api_paste_config':	value => 'api-paste.ini';
-  #}
 
 # Base Neutron authentication config (pointing to Keystone)
   class { '::neutron::keystone::auth':
@@ -72,9 +72,9 @@ class openstack::common::neutron (
     public_url       => "http://${::openstack::config::controller_address_api}:9696",
     admin_url        => "http://${::openstack::config::controller_address_management}:9696",
     internal_url     => "http://${::openstack::config::controller_address_management}:9696",
-    #public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
-    #admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
-    #internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+#    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
+#    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+#    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
     #public_address   => $::openstack::config::controller_address_api,
     #internal_address => $::openstack::config::controller_address_management,
     #admin_address    => $::openstack::config::controller_address_management,

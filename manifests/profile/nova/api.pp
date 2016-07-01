@@ -67,12 +67,12 @@ class openstack::profile::nova::api (
     enabled                              => true,
   }
 
-  if $nova_use_httpd == true {
+  if $nova_use_httpd {
     include ::apache
     class { '::nova::wsgi::apache':
       ssl             => $::openstack::config::enable_ssl,
-      ssl_cert        => $::openstack::config::nova_ssl_certfile,
-      ssl_key         => $::openstack::config::nova_ssl_keyfile,
+      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
       ssl_chain       => $::openstack::config::ssl_chainfile,
       #ssl_ca          => $::openstack::config::ssl_chainfile,
     }
