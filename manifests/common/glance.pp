@@ -2,6 +2,8 @@
 # Private, and should not be used on its own
 class openstack::common::glance (
 	$enable_service = false,
+	$api_port = '9292',
+	$registry_port = '9191',
 ) {
 
   $controller_address  = $::openstack::config::controller_address_management
@@ -39,11 +41,15 @@ class openstack::common::glance (
     keystone_user       => 'glance',
     known_stores	=> $glance_stores,
     database_connection => $database_connection,
+    registry_client_protocol => $::openstack::config::http_protocol,
     registry_host       => $::openstack::config::storage_address_management,
+    bind_port		=> $api_port,
+    registry_port	=> $registry_port, 
     verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,
     enabled             => $enable_service,
     os_region_name      => $::openstack::config::region,
+    pipeline 		=> 'keystone+cachemanagement',
   }
 
   if $::openstack::config::insecure_ssl == true {

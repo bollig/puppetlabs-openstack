@@ -13,11 +13,33 @@ class openstack::profile::glance::api {
   $pass                = $::openstack::config::mysql_pass_glance
   $database_connection = "mysql://${user}:${pass}@${controller_address}/glance"
 
+  openstack::resources::firewall { 'Glance API (Test)': port      => '9293', }
+  openstack::resources::firewall { 'Glance Registry (Test)': port => '9192', }
   openstack::resources::firewall { 'Glance API': port      => '9292', }
   openstack::resources::firewall { 'Glance Registry': port => '9191', }
 
 # Triggers the glance::api
-  class {'::openstack::common::glance': enable_service => true }
+  $enable_wsgi = false
+
+  if $enable_wsgi { 
+	$enable_api_service = false
+	$enable_registry_service = false
+	$api_port = '9292'
+	$registry_port = '9191'
+  } else {
+	$enable_api_service = true
+	$enable_registry_service = true
+	$api_port = '9292'
+	$registry_port = '9191'
+	$enable_haproxy = false
+  }
+
+  class {'::openstack::common::glance': 
+	enable_service => $enable_api_service,
+	api_port       => $api_port,
+	registry_port  => $registry_port,
+  }
+
   #include ::openstack::common::glance
 
 
@@ -30,7 +52,33 @@ class openstack::profile::glance::api {
     keystone_user       => 'glance',
     verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,
+    enabled 		=> $enable_registry_service,
     #mysql_module        => '2.2',
+  }
+
+  if $enable_wsgi {
+	  ::openstack::profile::glance::wsgi_apache { 'glance-api_wsgi':
+	      wsgi_service_name => 'glance-api',
+	      api_port 		=> '9293', 
+	      ssl             => $::openstack::config::enable_ssl,
+	      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+	      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+	      ssl_chain       => $::openstack::config::ssl_chainfile,
+	      #ssl_ca          => $::openstack::config::ssl_chainfile,
+	      workers         => 2,
+	      notify => Service['httpd'],
+	  }
+	  ::openstack::profile::glance::wsgi_apache { 'glance-registry_wsgi':
+	      wsgi_service_name => 'glance-registry',
+	      api_port 		=> '9192', 
+	      ssl             => $::openstack::config::enable_ssl,
+	      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+	      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+	      ssl_chain       => $::openstack::config::ssl_chainfile,
+	      #ssl_ca          => $::openstack::config::ssl_chainfile,
+	      workers         => 2,
+	      notify => Service['httpd'],
+	  }
   }
 
   class { '::glance::notify::rabbitmq':

@@ -17,8 +17,8 @@ class openstack::common::nova {
   $api_database_connection = "mysql+pymysql://${user}_api:${pass}@${controller_management_address}/nova_api"
 
   # TODO: when glance support SSL, enable http_protocol
-  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
   #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
+  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
 
   class { '::nova':
     database_connection => $database_connection,

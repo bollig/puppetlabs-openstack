@@ -26,13 +26,14 @@ class openstack::common::cinder {
     service_name       => 'httpd',
   }
 
-#TODO: cinder wsgi
+#DONE: cinder wsgi
 
-  #$storage_server = $::openstack::config::storage_address_api
-  #$glance_api_server = "${storage_server}:9292"
-
+  #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
+  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
+  $glance_api_servers_with_ports = suffix($glance_api_servers_w_proto, ':9292')
+  
   class { '::cinder::glance':
-    glance_api_servers => [ $::openstack::config::glance_api_servers ],
+    glance_api_servers => [ $glance_api_servers_wit_ports ],
   }
 
   class { 'cinder::ceilometer': }
