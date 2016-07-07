@@ -41,7 +41,7 @@ class openstack::common::glance (
     keystone_user       => 'glance',
     known_stores	=> $glance_stores,
     database_connection => $database_connection,
-    registry_client_protocol => $::openstack::config::http_protocol,
+    #registry_client_protocol => $::openstack::config::http_protocol,
     registry_host       => $::openstack::config::storage_address_management,
     bind_port		=> $api_port,
     registry_port	=> $registry_port, 
