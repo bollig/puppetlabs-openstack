@@ -17,13 +17,14 @@ class openstack::common::nova {
   $api_database_connection = "mysql+pymysql://${user}_api:${pass}@${controller_management_address}/nova_api"
 
   # TODO: when glance support SSL, enable http_protocol
-  #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
-  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
+  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
+  #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
+  $glance_api_servers_with_ports = suffix($glance_api_servers_w_proto, ':9292')
 
   class { '::nova':
     database_connection => $database_connection,
     api_database_connection => $api_database_connection,
-    glance_api_servers  => join($glance_api_servers_w_proto, ','),
+    glance_api_servers  => join($glance_api_servers_with_ports, ','),
     memcached_servers   => ["${controller_management_address}:11211"],
     rabbit_hosts        => $::openstack::config::rabbitmq_hosts,
     rabbit_userid       => $::openstack::config::rabbitmq_user,

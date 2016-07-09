@@ -88,6 +88,7 @@ class openstack::profile::nova::api (
   class { '::nova::vncproxy':
     host    => $::openstack::controller_address_api,
     enabled => true,
+    vncproxy_protocol => $::openstack::config::http_protocol,
   }
 
   class { [

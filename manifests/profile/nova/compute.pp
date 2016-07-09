@@ -18,6 +18,7 @@ class openstack::profile::nova::compute (
     vnc_enabled                   => true,
     vncserver_proxyclient_address => $management_address,
     vncproxy_host                 => $::openstack::config::controller_address_api,
+    vncproxy_protocol 		  => $::openstack::config::http_protocol,
     instance_usage_audit 	  => true,
     instance_usage_audit_period   => 'hour',
 # TODO: not sure why, but setting this to false will break our glance image imports in Horizon
@@ -30,6 +31,7 @@ class openstack::profile::nova::compute (
 	#'DEFAULT/compute_monitors': value => 'nova.compute.monitors.cpu.virt_driver';
 	'DEFAULT/compute_monitors': value => ["cpu.virt_driver, numa_mem_bw.virt_driver"];
 	'DEFAULT/resize_fs_using_block_device': value => 'true';
+	'DEFAULT/ssl_only': value => $::openstack::config::enable_ssl;
   }
 
 

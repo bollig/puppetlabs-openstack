@@ -1,7 +1,9 @@
 # The profile to install the Glance API and Registry services
 # Note that for this configuration API controls the storage,
 # so it is on the storage node instead of the control node
-class openstack::profile::glance::api {
+class openstack::profile::glance::api (
+	$cert_chain_bundle  = undef,
+) {
   $api_network = $::openstack::config::network_api
   $api_address = ip_for_network($api_network)
 
@@ -20,24 +22,34 @@ class openstack::profile::glance::api {
 
 # Triggers the glance::api
   $enable_wsgi = false
+  $enable_haproxy = true
+  $api_port = '9292'
+  $registry_port = '9191'
 
   if $enable_wsgi { 
 	$enable_api_service = false
 	$enable_registry_service = false
-	$api_port = '9292'
-	$registry_port = '9191'
-  } else {
+	$bind_host = '0.0.0.0'
+  }
+  else {
 	$enable_api_service = true
 	$enable_registry_service = true
-	$api_port = '9292'
-	$registry_port = '9191'
-	$enable_haproxy = false
+
+  	if $enable_haproxy {
+		$bind_host = '127.0.0.1'
+		$registry_host = '127.0.0.1'
+  	}
+  	else {
+		$bind_host = '0.0.0.0'
+	}
   }
 
   class {'::openstack::common::glance': 
 	enable_service => $enable_api_service,
-	api_port       => $api_port,
-	registry_port  => $registry_port,
+	# NOTE: only override registry port if haproxy is not in use and user-facing service endpoint is not 9191 
+	#registry_port  => $registry_port,
+	api_bind_host => $bind_host,
+	api_port => $api_port,
   }
 
   #include ::openstack::common::glance
@@ -53,13 +65,15 @@ class openstack::profile::glance::api {
     verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,
     enabled 		=> $enable_registry_service,
-    #mysql_module        => '2.2',
+    #TODO: test this
+    bind_host	 	=> $bind_host,
+    bind_port	 	=> $registry_port,
   }
 
   if $enable_wsgi {
 	  ::openstack::profile::glance::wsgi_apache { 'glance-api_wsgi':
 	      wsgi_service_name => 'glance-api',
-	      api_port 		=> '9293', 
+	      api_port 		=> $api_port, 
 	      ssl             => $::openstack::config::enable_ssl,
 	      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
 	      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
@@ -70,7 +84,7 @@ class openstack::profile::glance::api {
 	  }
 	  ::openstack::profile::glance::wsgi_apache { 'glance-registry_wsgi':
 	      wsgi_service_name => 'glance-registry',
-	      api_port 		=> '9192', 
+	      api_port 		=> $registry_port, 
 	      ssl             => $::openstack::config::enable_ssl,
 	      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
 	      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
@@ -79,6 +93,33 @@ class openstack::profile::glance::api {
 	      workers         => 2,
 	      notify => Service['httpd'],
 	  }
+  }
+
+  if $enable_haproxy {
+	include ::openstack::profile::haproxy_ssl
+	haproxy::listen { 'glance-api-in':
+ 	  bind => {
+	    # binding to a specific address, so the underlying service can bind to same port on localhost
+	    "$::ipaddress:9292"	=> ['ssl', 'crt', $cert_chain_bundle],
+	  },
+	}
+	haproxy::listen { 'glance-registry-in':
+ 	  bind => {
+	    "$::ipaddress:9191"	=> ['ssl', 'crt', $cert_chain_bundle],
+	  },
+	}
+	haproxy::balancermember { 'glance-api-01':
+	  listening_service => 'glance-api-in',
+	  ipaddresses => '127.0.0.1',
+	  ports     => $api_port,
+	  options   => '',
+	}
+	haproxy::balancermember { 'glance-registry-01':
+	  listening_service => 'glance-registry-in',
+	  ipaddresses => '127.0.0.1',
+	  ports     => $registry_port,
+	  options   => '',
+	}
   }
 
   class { '::glance::notify::rabbitmq':

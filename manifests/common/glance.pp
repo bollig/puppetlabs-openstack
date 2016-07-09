@@ -1,7 +1,10 @@
 # Common class for glance installation
 # Private, and should not be used on its own
+# 
+# NOTE: only override registry_port if the registry endpoint in Keystone is different
 class openstack::common::glance (
 	$enable_service = false,
+	$api_bind_host = '0.0.0.0',
 	$api_port = '9292',
 	$registry_port = '9191',
 ) {
@@ -41,9 +44,10 @@ class openstack::common::glance (
     keystone_user       => 'glance',
     known_stores	=> $glance_stores,
     database_connection => $database_connection,
-    #registry_client_protocol => $::openstack::config::http_protocol,
-    registry_host       => $::openstack::config::storage_address_management,
     bind_port		=> $api_port,
+    bind_host		=> $api_bind_host,
+    registry_client_protocol => $::openstack::config::http_protocol,
+    registry_host       => $::openstack::config::storage_address_management,
     registry_port	=> $registry_port, 
     verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,

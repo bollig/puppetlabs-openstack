@@ -80,6 +80,9 @@ class openstack::profile::neutron::router {
     #interface_driver => 'openvswitch',
     #device_driver => 'neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver',
     #user_group       => 'haproxy',
+
+    # NOTE: this is installed by the haproxy module.
+    manage_haproxy_package => false,
   }
   
   class { '::neutron::agents::vpnaas':

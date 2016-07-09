@@ -28,8 +28,8 @@ class openstack::common::cinder {
 
 #DONE: cinder wsgi
 
-  #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
-  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
+  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
+  #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
   $glance_api_servers_with_ports = suffix($glance_api_servers_w_proto, ':9292')
   
   class { '::cinder::glance':
