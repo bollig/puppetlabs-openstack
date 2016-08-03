@@ -54,6 +54,7 @@ class openstack::common::neutron (
     debug                 => $::openstack::config::debug,
     verbose               => $::openstack::config::verbose,
     service_plugins       => $::openstack::config::neutron_service_plugins,
+    bind_host => '127.0.0.1',
 # NOTE: http://miroslav.suchy.cz/blog/archives/2015/03/05/how_to_enable_ssl_for_neutron_and_other_openstack_services/index.html
 # https://github.com/Juniper/contrail-controller/wiki/SSL-configuration-for-API,-neutron-server-and-openstack-keystone-in-Contrail
 # --> Neutron SSL is buggy. 
@@ -69,12 +70,12 @@ class openstack::common::neutron (
   class { '::neutron::keystone::auth':
     password         => $::openstack::config::neutron_password,
 # TODO: when neutron supports chain files and/or wsgi, enable ssl: 
-    public_url       => "http://${::openstack::config::controller_address_api}:9696",
-    admin_url        => "http://${::openstack::config::controller_address_management}:9696",
-    internal_url     => "http://${::openstack::config::controller_address_management}:9696",
-#    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
-#    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
-#    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+#    public_url       => "http://${::openstack::config::controller_address_api}:9696",
+#    admin_url        => "http://${::openstack::config::controller_address_management}:9696",
+#    internal_url     => "http://${::openstack::config::controller_address_management}:9696",
+    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
+    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
     #public_address   => $::openstack::config::controller_address_api,
     #internal_address => $::openstack::config::controller_address_management,
     #admin_address    => $::openstack::config::controller_address_management,

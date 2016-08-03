@@ -96,30 +96,31 @@ class openstack::profile::glance::api (
   }
 
   if $enable_haproxy {
-	include ::openstack::profile::haproxy_ssl
-	haproxy::listen { 'glance-api-in':
- 	  bind => {
-	    # binding to a specific address, so the underlying service can bind to same port on localhost
-	    "$::ipaddress:9292"	=> ['ssl', 'crt', $cert_chain_bundle],
-	  },
-	}
-	haproxy::listen { 'glance-registry-in':
- 	  bind => {
-	    "$::ipaddress:9191"	=> ['ssl', 'crt', $cert_chain_bundle],
-	  },
-	}
-	haproxy::balancermember { 'glance-api-01':
-	  listening_service => 'glance-api-in',
-	  ipaddresses => '127.0.0.1',
-	  ports     => $api_port,
-	  options   => '',
-	}
-	haproxy::balancermember { 'glance-registry-01':
-	  listening_service => 'glance-registry-in',
-	  ipaddresses => '127.0.0.1',
-	  ports     => $registry_port,
-	  options   => '',
-	}
+	include ::openstack::profile::haproxy::init
+	include ::openstack::profile::haproxy::glance
+#	haproxy::listen { 'glance-api-in':
+# 	  bind => {
+#	    # binding to a specific address, so the underlying service can bind to same port on localhost
+#	    "$::ipaddress:9292"	=> ['ssl', 'crt', $cert_chain_bundle],
+#	  },
+#	}
+#	haproxy::listen { 'glance-registry-in':
+# 	  bind => {
+#	    "$::ipaddress:9191"	=> ['ssl', 'crt', $cert_chain_bundle],
+#	  },
+#	}
+#	haproxy::balancermember { 'glance-api-01':
+#	  listening_service => 'glance-api-in',
+#	  ipaddresses => '127.0.0.1',
+#	  ports     => $api_port,
+#	  options   => '',
+#	}
+#	haproxy::balancermember { 'glance-registry-01':
+#	  listening_service => 'glance-registry-in',
+#	  ipaddresses => '127.0.0.1',
+#	  ports     => $registry_port,
+#	  options   => '',
+#	}
   }
 
   class { '::glance::notify::rabbitmq':

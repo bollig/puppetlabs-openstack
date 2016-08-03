@@ -1,5 +1,6 @@
 # The profile to set up the neutron server
-class openstack::profile::neutron::server {
+class openstack::profile::neutron::server 
+  {
   
     # Defines ::neutron::db::mysql
   openstack::resources::database { 'neutron': }
@@ -60,6 +61,14 @@ class openstack::profile::neutron::server {
     }
   }
 
+  $enable_haproxy = true
+#  neutron_config { 
+#    'DEFAULT/bind_host': value => '127.0.0.1';
+#  }
+  if $enable_haproxy {
+	include ::openstack::profile::haproxy::init
+	include ::openstack::profile::haproxy::neutron
+  }
 # The following installs python-neutron-plugin packages 
 #
 # TODO: update puppet-neutron module to a version that does not need these

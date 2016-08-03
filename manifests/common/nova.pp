@@ -44,7 +44,14 @@ class openstack::common::nova {
       backend 		 => 'oslo_cache.memcache_pool',
     }
 
-  #nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
+  nova_config { 
+    #'DEFAULT/default_floating_pool': value => 'public';
+    # ssl needs set for both api and compute (for novnc)
+    'DEFAULT/ssl_only': value => $::openstack::config::enable_ssl;
+    'DEFAULT/cert': value => $::openstack::config::horizon_ssl_certfile;
+    'DEFAULT/key': value => $::openstack::config::horizon_ssl_keyfile;
+    'libvirt/image_rbd_ceph_conf': value => '/etc/ceph/ceph-nova.conf';
+  }
   #class { '::nova::api': 
   #  default_floating_pool => 'public' 
   #}
@@ -55,8 +62,8 @@ class openstack::common::nova {
 #TODO: update puppet-neutron to a version that supports v3 auth
     neutron_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
 #TODO: when neutron supports chain files or WSGI, enable the http_protocol below: 
-    #neutron_url            => "${::openstack::config::http_protocol}://${controller_management_address}:9696",
-    neutron_url            => "http://${controller_management_address}:9696",
+    neutron_url            => "${::openstack::config::http_protocol}://${controller_management_address}:9696",
+    #neutron_url            => "http://${controller_management_address}:9696",
     vif_plugging_is_fatal  => false,
     vif_plugging_timeout   => '0',
   }

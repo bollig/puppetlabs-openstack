@@ -9,6 +9,7 @@ class openstack::config (
   $horizon_ssl_keyfile                = '/etc/horizon/ssl/private/horizonkey.pem',
   $keystone_ssl_certfile              = '/etc/keystone/ssl/certs/keystone.pem',
   $keystone_ssl_keyfile                = '/etc/keystone/ssl/private/keystonekey.pem',
+  $haproxy_ssl_certfile		      = '/etc/haproxy/haproxy.pem',
   $ssl_chainfile                      = '/etc/keystone/ssl/certs/chainfile.pem',
   $ssl_ca_certs                       = '/etc/keystone/ssl/certs/ca.pem',
 #  $ssl_ca_key                         = '/etc/keystone/ssl/private/cakey.pem',

@@ -1,6 +1,6 @@
 # The profile for installing the heat API
 class openstack::profile::heat::api (
-	$bind_address = 'localhost',
+	$bind_address = '127.0.0.1',
 ) {
 
   openstack::resources::database { 'heat': }
@@ -11,6 +11,14 @@ class openstack::profile::heat::api (
   $user                          = $::openstack::config::mysql_user_heat
   $pass                          = $::openstack::config::mysql_pass_heat
   $database_connection           = "mysql://${user}:${pass}@${controller_management_address}/heat"
+
+  heat_config { 
+    #'DEFAULT/default_floating_pool': value => 'public';
+    # ssl needs set for both api and compute (for novnc)
+    'DEFAULT/ssl_only': value => $::openstack::config::enable_ssl;
+    'DEFAULT/cert': value => $::openstack::config::horizon_ssl_certfile;
+    'DEFAULT/key': value => $::openstack::config::horizon_ssl_keyfile;
+  }
 
   class { '::heat::keystone::auth':
     password         => $::openstack::config::heat_password,
