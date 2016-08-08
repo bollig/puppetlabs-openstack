@@ -49,13 +49,45 @@ class openstack::profile::horizon {
     }
   }
 
+  # Override the openrc to get OS_TOKEN support out of box
+  file {
+    path    => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => "puppet://modules/openstack/files/openrc.sh.template",
+    after => Exec['refresh_horizon_django_cache'],
+  } 
+  # Override the openrc to get OS_TOKEN support out of box
+  file {
+    path    => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc_v2.sh.template',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => "puppet://modules/openstack/files/openrc_v2.sh.template",
+    after => Exec['refresh_horizon_django_cache'],
+  } 
+
 
  # NOTE: this fixes the v3 openrc file to function properly when downloaded:
- file_line { 'Set default OS_IDENTITY_API_VERSION':
-  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',  
-  line => 'export OS_IDENTITY_API_VERSION=3',
-  after => Exec['refresh_horizon_django_cache'],
- }
+# file_line { 'Set default OS_IDENTITY_API_VERSION':
+#  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',  
+#  line => 'export OS_IDENTITY_API_VERSION=3',
+#  after => Exec['refresh_horizon_django_cache'],
+# }
+
+# file_line { 'Set default OS_TOKEN for v2':
+#  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',  
+#  line => 'export OS_TOKEN=$(openstack token issue -c id -f value)\nexport OS_AUTH_TYPE=v3token',
+#  after => Exec['refresh_horizon_django_cache'],
+# }
+# file_line { 'Set default OS_TOKEN for v2':
+#  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc_v2.sh.template',  
+#  line => 'export OS_TOKEN=$(openstack token issue -c id -f value)\nexport OS_AUTH_TYPE=v2token',
+#  after => Exec['refresh_horizon_django_cache'],
+# }
+
+
 
  # NOTE: this removes the Consistency Groups tab which is a feature not supported by CEPH RBD 
  file_line { 'Disable consistency groups tab':
