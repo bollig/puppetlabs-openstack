@@ -22,22 +22,23 @@ class openstack::profile::cinder::volume {
   $backend = 'rbd'
 
   case $backend {
-     'iscsi': {
-	  class { '::cinder::volume::iscsi':
-	    iscsi_ip_address => $management_address,
-	    volume_group     => 'cinder-volumes',
-	  }
-     }
-     'rbd': {
-	  class { '::cinder::volume::rbd':
-		  rbd_user        => 'cinder',
-		  rbd_pool        => 'volumes',
-		  volume_tmp_dir  => '/tmp',
-	  }
+    'iscsi': {
+      class { '::cinder::volume::iscsi':
+        iscsi_ip_address => $management_address,
+        volume_group     => 'cinder-volumes',
       }
-      default: {
-         fail("Unsupported cinder backend (${backend})")
+    }
+    'rbd': {
+      class { '::cinder::volume::rbd':
+        rbd_user        => 'cinder',
+        rbd_pool        => 'volumes',
+        volume_tmp_dir  => '/tmp',
+        rbd_ceph_conf   => '/etc/ceph/ceph-nova.conf',
       }
+    }
+    default: {
+      fail("Unsupported cinder backend (${backend})")
+    }
   }
   $enable_extra_backend=false
   if $enable_extra_backend {

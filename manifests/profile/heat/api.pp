@@ -1,6 +1,7 @@
 # The profile for installing the heat API
 class openstack::profile::heat::api (
 	$bind_address = '127.0.0.1',
+        $enable_haproxy = true
 ) {
 
   openstack::resources::database { 'heat': }
@@ -22,10 +23,11 @@ class openstack::profile::heat::api (
 
   class { '::heat::keystone::auth':
     password         => $::openstack::config::heat_password,
-    public_address   => $::openstack::config::controller_address_api,
-    admin_address    => $::openstack::config::controller_address_management,
-    internal_address => $::openstack::config::controller_address_management,
+    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8004/v1/%(tenant_id)s",
+    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8004/v1/%(tenant_id)s",
+    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8004/v1/%(tenant_id)s",
     region           => $::openstack::config::region,
+
 #NOTE: this is required to create the heat_stack_owner role. This role is
 # required to allow users to create orchestration stacks. Option will default
 # to true in Mikasa or later
@@ -34,9 +36,9 @@ class openstack::profile::heat::api (
 
   class { '::heat::keystone::auth_cfn':
     password         => $::openstack::config::heat_password,
-    public_address   => $::openstack::config::controller_address_api,
-    admin_address    => $::openstack::config::controller_address_management,
-    internal_address => $::openstack::config::controller_address_management,
+    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8000/v1",
+    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8000/v1",
+    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8000/v1",
     region           => $::openstack::config::region,
   }
 
@@ -65,5 +67,10 @@ class openstack::profile::heat::api (
 
   class { '::heat::engine':
     auth_encryption_key => $::openstack::config::heat_encryption_key,
+  }
+
+  if $enable_haproxy {
+	include ::openstack::profile::haproxy::init
+	include ::openstack::profile::haproxy::heat
   }
 }
