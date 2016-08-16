@@ -1,4 +1,4 @@
-i{% load shellfilter %}#!/usr/bin/env bash
+{% load shellfilter %}#!/usr/bin/env bash
 
 # To use an OpenStack cloud you need to authenticate against the Identity
 # service named keystone, which returns a **Token** and **Service Catalog**.
@@ -32,13 +32,16 @@ export OS_USERNAME="{{ user.username|shellfilter }}"
 #read -sr OS_PASSWORD_INPUT
 #export OS_PASSWORD=$OS_PASSWORD_INPUT
 
-#'openstack token issue' will prompt users for password
-echo "Please enter your OpenStack Password when prompted."
-export OS_TOKEN=$(openstack token issue -c id -f value)
-export OS_AUTH_TYPE=v2token
-
 # If your configuration has multiple regions, we set that information here.
 # OS_REGION_NAME is optional and only valid in certain environments.
 export OS_REGION_NAME="{{ region|shellfilter }}"
 # Don't leave a blank variable, unset it if it was empty
 if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
+
+#'openstack token issue' will prompt users for password
+echo "Please enter your OpenStack Password when prompted."
+unset OS_AUTH_TYPE
+unset OS_TOKEN
+export OS_TOKEN=$(openstack token issue -c id -f value)
+export OS_AUTH_TYPE=v2token
+

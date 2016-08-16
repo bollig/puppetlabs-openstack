@@ -21,7 +21,11 @@ class openstack::profile::nova::compute (
     vncproxy_protocol 		  => $::openstack::config::http_protocol,
     instance_usage_audit 	  => true,
     instance_usage_audit_period   => 'hour',
-# TODO: not sure why, but setting this to false will break our glance image imports in Horizon
+# DONE: not sure why, but setting this to false will break our glance image imports in Horizon
+# NOTE: Glance images MUST be RAW. If they are compressed in any way, the image
+# is first copied down to the local hypervisor (from Ceph), decompressed, and
+# the RAW image uploaded back into Ceph. This voids the ability to
+# Copy-On-Write in Ceph and benefit from duplicate data.
     force_raw_images 		  => true,
     allow_resize_to_same_host     => true,
 # NOTE: the remainder of the ceilometer notificatons settings are in ::nova

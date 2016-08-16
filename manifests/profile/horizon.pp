@@ -50,22 +50,22 @@ class openstack::profile::horizon {
   }
 
   # Override the openrc to get OS_TOKEN support out of box
-  file {
+  file { 'V3 OpenRC':
     path    => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => "puppet://modules/openstack/files/openrc.sh.template",
-    after => Exec['refresh_horizon_django_cache'],
+    source  => "puppet:///modules/openstack/openrc.sh.template",
+    before => Exec['refresh_horizon_django_cache'],
   } 
   # Override the openrc to get OS_TOKEN support out of box
-  file {
+  file { 'V2 OpenRC':
     path    => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc_v2.sh.template',
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => "puppet://modules/openstack/files/openrc_v2.sh.template",
-    after => Exec['refresh_horizon_django_cache'],
+    source  => "puppet:///modules/openstack/openrc_v2.sh.template",
+    before => Exec['refresh_horizon_django_cache'],
   } 
 
 
