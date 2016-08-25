@@ -44,6 +44,8 @@ class openstack::profile::nova::compute (
     #vncserver_listen  => $management_address,
 	# NOTE: this is required for live migration (listens on all interfaces)
     vncserver_listen  => '0.0.0.0',
+    # This is required to enable disk caching and avoid this bug when snapshotting VMs: http://tracker.ceph.com/issues/14522
+    libvirt_disk_cachemodes => ['network=writeback'], 
   }
 
   if $libvirt_use_rbd {

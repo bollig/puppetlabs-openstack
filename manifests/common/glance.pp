@@ -53,7 +53,9 @@ class openstack::common::glance (
     debug               => $::openstack::config::debug,
     enabled             => $enable_service,
     os_region_name      => $::openstack::config::region,
-    pipeline 		=> 'keystone+cachemanagement',
+    # NOTE: this is required to enable copy-on-write cloning of images
+    #pipeline 		=> 'keystone+cachemanagement',
+    show_image_direct_url => 'True',
   }
 
   if $::openstack::config::insecure_ssl == true {

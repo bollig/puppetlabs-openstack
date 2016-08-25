@@ -60,12 +60,19 @@ class openstack::profile::cinder::volume {
 		enabled_backends => ['DEFAULT', 'rbd2'],
 	  }  
 	  Class['Cinder::Backends'] -> Service['httpd']
+  } else {
+	  class { 'cinder::backends':
+		enabled_backends => ['DEFAULT'],
+	  }  
   }
 
   class { '::cinder::backup': }
   class { '::cinder::backup::ceph': 
 	backup_ceph_user => 'cinder-backup',
 	backup_ceph_pool => 'backups',
+  }
+  cinder_config {
+    'DEFAULT/restore_discard_excess_bytes': value=> 'true';
   }
 
 

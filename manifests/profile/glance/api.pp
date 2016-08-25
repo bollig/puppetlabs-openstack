@@ -68,6 +68,7 @@ class openstack::profile::glance::api (
     #TODO: test this
     bind_host	 	=> $bind_host,
     bind_port	 	=> $registry_port,
+    #pipeline 		=> 'keystone+cachemanagement',
   }
 
   if $enable_wsgi {
@@ -127,6 +128,16 @@ class openstack::profile::glance::api (
     rabbit_password => $::openstack::config::rabbitmq_password,
     rabbit_userid   => $::openstack::config::rabbitmq_user,
     rabbit_host     => $::openstack::config::controller_address_management,
+  }
+
+
+  # SETUP IMAGE CONVERSION WORKERS
+  glance_api_config { 
+    'task/task_executor': value=>'taskflow';
+    'task/work_dir': value=>'/tmp';
+    'taskflow_executor/engine_mode': value=>'serial';
+    'taskflow_executor/max_workers': value=>'10';
+    'taskflow_executor/conversion_format': value=>'raw';
   }
 
   $images = $::openstack::config::images

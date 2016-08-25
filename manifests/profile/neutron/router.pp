@@ -31,7 +31,11 @@ class openstack::profile::neutron::router {
      # L3 Agent  (required)
   class { '::neutron::agents::l3':
     debug                   => $::openstack::config::debug,
-    external_network_bridge => 'br-ex',
+    #DEPRECATED: 
+    #external_network_bridge => 'br-ex',
+    # NOTE: this is empty otherwise l3 wont start with mutliple external networks
+    # defined
+    external_network_bridge => '',
     enabled                 => $start_l3_agent,
     manage_service          => $start_l3_agent, 
   }
@@ -108,24 +112,24 @@ class openstack::profile::neutron::router {
     enabled => true,
   }
 
-  $external_bridge = 'br-ex'
-  $external_network = $::openstack::config::network_external
-  $external_device = device_for_network($external_network)
-  vs_bridge { $external_bridge:
-    ensure => present,
-    require => Service['neutron-ovs-agent-service'],
-  }
-   #notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
-  if $external_device != $external_bridge {
-    vs_port { $external_device:
-      ensure => present,
-      bridge => $external_bridge,
-      require => Service['neutron-ovs-agent-service'],
-    }
-  } else {
-    # External bridge already has the external device's IP, thus the external
-    # device has already been linked
-  }
+  #$external_bridge = 'br-ex'
+  #$external_network = $::openstack::config::network_external
+  #$external_device = device_for_network($external_network)
+  #vs_bridge { $external_bridge:
+  #  ensure => present,
+  #  require => Service['neutron-ovs-agent-service'],
+  #}
+  # #notify {"DEVICE FOR NETWORK: ${external_device} ; ${external_network} ; ${external_bridge}": }
+  #if $external_device != $external_bridge {
+  #  vs_port { $external_device:
+  #    ensure => present,
+  #    bridge => $external_bridge,
+  #    require => Service['neutron-ovs-agent-service'],
+  #  }
+  #} else {
+  #  # External bridge already has the external device's IP, thus the external
+  #  # device has already been linked
+  #}
 
   $defaults = { 'ensure' => 'present' }
   create_resources('neutron_network', $::openstack::config::networks, $defaults)

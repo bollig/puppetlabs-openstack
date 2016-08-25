@@ -50,7 +50,7 @@ class openstack::common::nova {
     'DEFAULT/ssl_only': value => $::openstack::config::enable_ssl;
     'DEFAULT/cert': value => $::openstack::config::horizon_ssl_certfile;
     'DEFAULT/key': value => $::openstack::config::horizon_ssl_keyfile;
-    'libvirt/image_rbd_ceph_conf': value => '/etc/ceph/ceph-nova.conf';
+    #'libvirt/image_rbd_ceph_conf': value => '/etc/ceph/ceph-nova.conf';
   }
   #class { '::nova::api': 
   #  default_floating_pool => 'public' 

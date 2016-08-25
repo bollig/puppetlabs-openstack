@@ -18,6 +18,7 @@ class openstack::profile::neutron::server
      # Connect the L2 Plugin but do not setup the L2 Agent**
   if ($::openstack::config::neutron_core_plugin == 'ml2') {
     class  { '::neutron::plugins::ml2':
+      network_vlan_ranges  => 'external', 
       type_drivers         => $type_drivers,
       tenant_network_types => $tenant_network_type,
       mechanism_drivers    => $mechanism_drivers,
