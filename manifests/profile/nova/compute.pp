@@ -66,9 +66,15 @@ class openstack::profile::nova::compute (
 	  #use_tls              => false,
 	  #auth                 => 'none',
 	# From: http://www.tcpcloud.eu/en/blog/2014/11/20/block-live-migration-openstack-environment/
-	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE, VIR_MIGRATE_PEER2PEER, VIR_MIGRATE_LIVE, VIR_MIGRATE_PERSIST_DEST, VIR_MIGRATE_TUNNELLED',
-	  block_migration_flag => 'VIR_MIGRATE_UNDEFINE_SOURCE, VIR_MIGRATE_PEER2PEER, VIR_MIGRATE_LIVE, VIR_MIGRATE_TUNNELLED, VIR_MIGRATE_NON_SHARED_INC',
+        # http://docs.openstack.org/releasenotes/nova/mitaka.html
+	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE',
+	  block_migration_flag => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_SHARED_INC',
 	  #block_migration_flag => true,
+  } -> 
+  nova_config {
+    # FORCE THE USE OF RBD LIVE MIGRATION
+    'libvirt/live_migration_tunneled': value => 'False';
+    'libvirt/snapshot_image_format': value => 'raw';
   }
 
   file { '/etc/libvirt/qemu.conf':
