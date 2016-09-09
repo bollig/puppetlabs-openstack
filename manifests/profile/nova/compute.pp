@@ -46,6 +46,9 @@ class openstack::profile::nova::compute (
     vncserver_listen  => '0.0.0.0',
     # This is required to enable disk caching and avoid this bug when snapshotting VMs: http://tracker.ceph.com/issues/14522
     libvirt_disk_cachemodes => ['network=writeback'], 
+    # This requires images to have properties set: 
+    # and it requires QEMU 1.6.0+ (CentOS 7 is only 1.5.3) 
+    #libvirt_hw_disk_discard => 'ignore',
   }
 
   if $libvirt_use_rbd {
@@ -63,8 +66,8 @@ class openstack::profile::nova::compute (
 	  #use_tls              => false,
 	  #auth                 => 'none',
 	# From: http://www.tcpcloud.eu/en/blog/2014/11/20/block-live-migration-openstack-environment/
-	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_TUNNELLED',
-	  block_migration_flag => 'VIR_MIGRATE_SHARED_INC,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_UNDEFINE_SOURCE',
+	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE, VIR_MIGRATE_PEER2PEER, VIR_MIGRATE_LIVE, VIR_MIGRATE_PERSIST_DEST, VIR_MIGRATE_TUNNELLED',
+	  block_migration_flag => 'VIR_MIGRATE_UNDEFINE_SOURCE, VIR_MIGRATE_PEER2PEER, VIR_MIGRATE_LIVE, VIR_MIGRATE_TUNNELLED, VIR_MIGRATE_NON_SHARED_INC',
 	  #block_migration_flag => true,
   }
 

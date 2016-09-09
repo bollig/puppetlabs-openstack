@@ -38,6 +38,7 @@ class openstack::common::keystone (
     public_endpoint     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
     admin_endpoint      => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
     manage_policyrcd    => true,
+    using_domain_config => true,
     #enable_fernet_setup => $enable_fernet,
 # FOR CEILOMETER:
     #notification_format => 'cadf',  

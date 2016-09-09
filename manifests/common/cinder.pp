@@ -33,7 +33,7 @@ class openstack::common::cinder {
   $glance_api_servers_with_ports = suffix($glance_api_servers_w_proto, ':9292')
   
   class { '::cinder::glance':
-    glance_api_servers => [ $glance_api_servers_wit_ports ],
+    glance_api_servers => [ $glance_api_servers_with_ports ],
   }
 
   class { 'cinder::ceilometer': }
