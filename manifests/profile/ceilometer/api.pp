@@ -1,7 +1,9 @@
 # The profile to set up the Ceilometer API
 # For co-located api and worker nodes this appear
 # after openstack::profile::ceilometer::agent
-class openstack::profile::ceilometer::api {
+class openstack::profile::ceilometer::api (
+      $gnocchi_enabled = false
+) {
 
   $mongo_username                = $::openstack::config::ceilometer_mongo_username
   $mongo_password                = $::openstack::config::ceilometer_mongo_password
@@ -16,35 +18,34 @@ class openstack::profile::ceilometer::api {
   # Setup the ceilometer user in keystone and register endpoints (control)
   class { '::ceilometer::keystone::auth':
     password         => $::openstack::config::ceilometer_password,
-    public_url   => "http://${::openstack::config::controller_address_api}:8777",
-    admin_url    => "http://${::openstack::config::controller_address_management}:8777",
-    internal_url => "http://${::openstack::config::controller_address_management}:8777",
+    public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8777",
+    admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8777",
+    internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8777",
     region           => $::openstack::config::region,
   }
 
   # Setup ceilometer API service (control)
   class { '::ceilometer::api':
-# TODO: drop update this to handle SSL
-    keystone_protocol	  => 'http', 
     keystone_password     => $::openstack::config::ceilometer_password,
-    keystone_identity_uri => "http://${controller_management_address}:35357/",
-    keystone_auth_uri     => "http://${controller_management_address}:5000/",
-    #service_name          => 'httpd',
+    keystone_identity_uri => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
+    keystone_auth_uri     => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
 # TODO: on new version of ceilometer puppet module we should be able to track
 # the httpd service (see aodh below). Until then, assume that ceilometer will
 # follow httpd cycles
-    manage_service        => true,
-    enabled               => true,
+    #service_name          => 'httpd',
+    manage_service        => false,
+    enabled               => false,
   }
 
   # Install polling agent (control)
   # Can be used instead of central, compute or ipmi agent
   # As default use central and compute polling namespaces
-  class { '::ceilometer::agent::polling':
-    central_namespace => true,
-    compute_namespace => true,
-    ipmi_namespace    => true,
-  }
+  #class { '::ceilometer::agent::polling':
+  #  central_namespace => true,
+  #  compute_namespace => false,
+# NOTE: this might result in errors of the form: "ceilometer.hardware.discovery [-] Couldn't obtain IP address of instance"
+  #  ipmi_namespace    => true,
+  #}
 
   # Install compute agent (deprecated)
   # default: enable
@@ -52,24 +53,28 @@ class openstack::profile::ceilometer::api {
   # }
 
   # Install central agent (deprecated)
-  # class { 'ceilometer::agent::central':
-  # }
-
-  # CRITICAL: The collector service sends data to mongodb
-  class { '::ceilometer::collector': }                                                                                                         
+   class { 'ceilometer::agent::central':
+   }
 
   # Purge 1 month old meters (wherever mongo service is (control))
   class { '::ceilometer::expirer':
-    time_to_live => '2592000'
+	# Expire on the first of every month at 12:01 am
+ 	monthday => '1',
   }
 
   # Install notification agent (with API (control))
   class { '::ceilometer::agent::notification':
   }
 
-  #class { '::ceilometer::wsgi::apache':
-  #     ssl => false,
-  #}
+  include ::apache
+  class { '::ceilometer::wsgi::apache':
+          ssl             => $::openstack::config::enable_ssl,
+          ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+          ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+          ssl_chain       => $::openstack::config::ssl_chainfile,
+          #ssl_ca          => $::openstack::config::ssl_chainfile,
+          workers         => 2
+  }
 
     # See http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty2&f=13
     # auth_strategy is not set by any parameter in the ceilometer puppet module
@@ -88,57 +93,27 @@ class openstack::profile::ceilometer::api {
 
       class { '::ceilometer::alarm::evaluator':
       }
+	# CRITICAL: The collector service sends data to mongodb
+      class { '::ceilometer::collector': }                                                                                                         
     }
     'RedHat': {
-
-      $management_address  = $::openstack::config::controller_address_management
-      $user                = $::openstack::config::mysql_user_aodh
-      $pass                = $::openstack::config::mysql_pass_aodh
-      $database_connection = "mysql://${user}:${pass}@${management_address}/aodh"
-      
-	# Make the mysql db user 'aodh' exists
-      openstack::resources::database { 'aodh': }
-      openstack::resources::firewall { 'AODH API': port => '8042', }
-
-      class { '::aodh':
-        rabbit_userid       => $::openstack::config::rabbitmq_user,
-        rabbit_password     => $::openstack::config::rabbitmq_password,
-        verbose             => true,
-        debug               => true,
-        rabbit_hosts         => $::openstack::config::rabbitmq_hosts,
-# TODO: update to mongo when possible
-	database_connection => $database_connection,
+      if $gnocchi_enabled { 
+        #aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
+        class { '::openstack::profile::ceilometer::gnocchi': }
+	class { '::ceilometer::collector':
+		meter_dispatcher => ['gnocchi'],
+	}
+	class { '::ceilometer::dispatcher::gnocchi':
+	  filter_service_activity   => false,
+	  filter_project            => 'gnocchi',
+	  url                       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
+	  archive_policy            => 'high',
+	  resources_definition_file => 'gnocchi_resources.yaml',
+	}
+      } else {
+        class { '::ceilometer::collector': }                                                                                                         
       }
-	# Make the 'aodh' user in keystone: 
-      class { '::aodh::keystone::auth':
-        password => $::openstack::config::aodh_password,
-	public_url   => "http://${::openstack::config::controller_address_api}:8042",
-	admin_url    => "http://${::openstack::config::controller_address_management}:8042",
-	internal_url => "http://${::openstack::config::controller_address_management}:8042",
-	region           => $::openstack::config::region,
-      }
-        # Setup the aodh api endpoint
-      class { '::aodh::api':
-        enabled               => true,
-        keystone_password     => $::openstack::config::aodh_password,
-        keystone_identity_uri => "http://${::openstack::config::controller_address_management}:35357/",
-        keystone_auth_uri     => "http://${::openstack::config::controller_address_management}:35357/",
-        service_name          => 'httpd',
-      }
-        # Setup the aodh service behind apache wsgi
-      class { '::aodh::wsgi::apache':
-        ssl => false,
-      }
-	# Configure aodh to point to keystone
-      class { '::aodh::auth':
-        auth_url      => "http://${::openstack::config::controller_address_management}:5000/v2.0",
-        auth_password => $::openstack::config::aodh_password,
-      }
-      class { '::aodh::client': }
-      class { '::aodh::notifier': }
-      class { '::aodh::listener': }
-      class { '::aodh::evaluator': }
-      class { '::aodh::db::sync': }
+      class { '::openstack::profile::ceilometer::aodh': gnocchi_enabled => $gnocchi_enabled }
     }
     default: {
       fail("Unsupported osfamily (${::osfamily})")

@@ -27,15 +27,15 @@ class openstack::common::ceilometer {
 
     # setup the [service_credentials] section in /etc/ceilometer/ceilometer.conf (control and compute)
   class { '::ceilometer::agent::auth':
-    auth_url      => "http://${controller_management_address}:5000/v2.0",
+    auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:5000",
     auth_password => $::openstack::config::ceilometer_password,
     auth_region   => $::openstack::config::region,
     auth_endpoint_type => 'publicURL',
   }
     # add missing entry to [keystone_authtoken]
-  ceilometer_config {
-    'keystone_authtoken/auth_version': value => 'v2.0';
-  }
+  #ceilometer_config {
+  #  'keystone_authtoken/auth_version': value => 'v2.0';
+  #}
 
   class { '::ceilometer::db':
     database_connection => $mongo_connection,

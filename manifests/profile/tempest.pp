@@ -40,9 +40,9 @@ class openstack::profile::tempest {
     image_name_alt         => $::openstack::config::tempest_image_name_alt,
     configure_networks     => $::openstack::config::tempest_configure_network,
     public_network_name    => $public_network_name,
-    identity_uri           => "http://${api_ip}:5000/v2.0/",
-    identity_uri_v3        => "http://${api_ip}:5000/v3/",
-    #identity_uri           => "http://${api_ip}:5000",
+    identity_uri           => "${::openstack::config::http_protocol}://${api_ip}:5000/v2.0/",
+    identity_uri_v3        => "${::openstack::config::http_protocol}://${api_ip}:5000/v3/",
+    #identity_uri           => "${::openstack::config::http_protocol}://${api_ip}:5000",
     admin_username         => $admin_user,
     admin_password         => $users[$admin_user]['password'],
     admin_tenant_name      => $users[$admin_user]['tenant'],
@@ -62,9 +62,9 @@ class openstack::profile::tempest {
   #}
 #
 #  tempest_config {
-#    'boto/ec2_url':            value => "http://${api_ip}:8773/services/Cloud";
-##    'boto/s3_url':             value => "http://${api_ip}:3333";
-#    'dashboard/dashboard_url': value => "http://${api_ip}/";
-#    'dashboard/login_url':     value => "http://${api_ip}/dashboard";
+#    'boto/ec2_url':            value => "${::openstack::config::http_protocol}://${api_ip}:8773/services/Cloud";
+##    'boto/s3_url':             value => "${::openstack::config::http_protocol}://${api_ip}:3333";
+#    'dashboard/dashboard_url': value => "${::openstack::config::http_protocol}://${api_ip}/";
+#    'dashboard/login_url':     value => "${::openstack::config::http_protocol}://${api_ip}/dashboard";
 #  }
 }

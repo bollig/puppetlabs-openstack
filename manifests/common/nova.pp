@@ -13,11 +13,18 @@ class openstack::common::nova {
 
   $user                = $::openstack::config::mysql_user_nova
   $pass                = $::openstack::config::mysql_pass_nova
-  $database_connection = "mysql://${user}:${pass}@${controller_management_address}/nova"
+  $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova"
+  $api_database_connection = "mysql+pymysql://${user}_api:${pass}@${controller_management_address}/nova_api"
+
+  # TODO: when glance support SSL, enable http_protocol
+  $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
+  #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
+  $glance_api_servers_with_ports = suffix($glance_api_servers_w_proto, ':9292')
 
   class { '::nova':
     database_connection => $database_connection,
-    glance_api_servers  => join($::openstack::config::glance_api_servers, ','),
+    api_database_connection => $api_database_connection,
+    glance_api_servers  => join($glance_api_servers_with_ports, ','),
     memcached_servers   => ["${controller_management_address}:11211"],
     rabbit_hosts        => $::openstack::config::rabbitmq_hosts,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
@@ -30,7 +37,21 @@ class openstack::common::nova {
     #mysql_module        => '2.2',
   }
 
-  #nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
+   # NOTE: fixes https://bugs.launchpad.net/nova/+bug/1572062
+    oslo::cache { 'nova_config':
+      enabled 		 => true,
+      memcache_servers   => ["${controller_management_address}:11211"],
+      backend 		 => 'oslo_cache.memcache_pool',
+    }
+
+  nova_config { 
+    #'DEFAULT/default_floating_pool': value => 'public';
+    # ssl needs set for both api and compute (for novnc)
+    'DEFAULT/ssl_only': value => $::openstack::config::enable_ssl;
+    'DEFAULT/cert': value => $::openstack::config::horizon_ssl_certfile;
+    'DEFAULT/key': value => $::openstack::config::horizon_ssl_keyfile;
+    #'libvirt/image_rbd_ceph_conf': value => '/etc/ceph/ceph-nova.conf';
+  }
   #class { '::nova::api': 
   #  default_floating_pool => 'public' 
   #}
@@ -39,8 +60,10 @@ class openstack::common::nova {
     neutron_admin_password => $::openstack::config::neutron_password,
     neutron_region_name    => $::openstack::config::region,
 #TODO: update puppet-neutron to a version that supports v3 auth
-    neutron_admin_auth_url => "http://${controller_management_address}:35357/v2.0",
-    neutron_url            => "http://${controller_management_address}:9696",
+    neutron_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
+#TODO: when neutron supports chain files or WSGI, enable the http_protocol below: 
+    neutron_url            => "${::openstack::config::http_protocol}://${controller_management_address}:9696",
+    #neutron_url            => "http://${controller_management_address}:9696",
     vif_plugging_is_fatal  => false,
     vif_plugging_timeout   => '0',
   }

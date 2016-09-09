@@ -1,3 +1,5 @@
+# All nodes: 
+
 node 'puppet' {
 
     package {'git': 
@@ -16,34 +18,49 @@ node 'puppet' {
 
 node 'control.msi.umn.edu' {
   $node_type = 'control|network|storage'
-  include ::openstack::role::common
-  include ::openstack::role::controller
-  include ::openstack::role::network
-  include ::openstack::role::storage
+  class { '::openstack::role::common': }
+  class { '::openstack::role::controller': }
+  class { '::openstack::role::network': }
+  class { '::openstack::role::storage': } 
+  class { '::openstack::profile::trove::auth': }
+  class { '::openstack::profile::trove::api': }
+
+  class { 'ceph::repo': }
+  class { 'ceph':
+      fsid                => '',
+      mon_initial_members => '',
+      mon_host            => '',
+  }
+  ceph::key { 'client.admin':
+	secret => "key",
+  }
 }
 
 node 'storage.msi.umn.edu' {
   $node_type = 'storage'
-  include ::openstack::role::common
-  include ::openstack::role::storage
+  class { '::openstack::role::common': }
+  class { '::openstack::role::storage': }
+  class { '::openstack::profile::trove::api': }
+	
+  
 }
 
 node 'network.msi.umn.edu' {
   $node_type = "network"
-  include ::openstack::role::common
-  include ::openstack::role::network
+  class { '::openstack::role::common': }
+  class { '::openstack::role::network': }
 }
 
 node 'compute01.msi.umn.edu' {
   $node_type = 'compute'
-  include ::openstack::role::common
-  include ::openstack::role::compute
+  class { '::openstack::role::common': }
+  class { '::openstack::role::compute': }
 }
 
 node 'compute02.msi.umn.edu' {
   $node_type = 'compute'
-  include ::openstack::role::common
-  include ::openstack::role::compute
+  class { '::openstack::role::common': }
+  class { '::openstack::role::compute': }
 }
 
 node 'swiftstore1.msi.umn.edu' {
@@ -65,6 +82,7 @@ node 'swiftstore3.msi.umn.edu' {
 }
 
 node 'tempest.msi.umn.edu' {
-  include ::openstack::role::tempest
+  class { '::openstack::role::common': }
+  class { '::openstack::role::tempest': }
 }
 

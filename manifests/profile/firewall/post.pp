@@ -11,7 +11,7 @@ class openstack::profile::firewall::post {
     state  => ['NEW'],
     action => 'accept',
     source => $::openstack::config::network_data,
-  } ->
+  } -> 
   firewall { '9999 - Reject remaining traffic':
     proto  => 'all',
     action => 'reject',

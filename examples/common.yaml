@@ -1,5 +1,25 @@
 openstack::region: 'openstack'
 
+######## Security
+# enable_ssl: either 'http' or 'https'; will switch all endpoints for API services,
+# including any behind Apache WSGI
+openstack::security::insecure_ssl: false
+openstack::security::enable_ssl: false
+#openstack::security::ssl_certfile: '/etc/keystone/ssl/certs/keystone.pem'
+#openstack::security::ssl_keyfile: '/etc/keystone/ssl/private/keystonekey.pem'
+#openstack::security::ssl_ca_certs: '/etc/keystone/ssl/certs/ca.pem'
+#openstack::security::ssl_ca_key: '/etc/keystone/ssl/private/cakey.pem'
+#openstack::security::ssl_cert_subject: '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
+#openstack::security::signing_certfile: '/etc/keystone/ssl/certs/signing_cert.pem'
+#openstack::security::signing_keyfile: '/etc/keystone/ssl/private/signing_key.pem'
+#openstack::security::signing_ca_certs: '/etc/keystone/ssl/certs/ca.pem'
+#openstack::security::signing_ca_key: '/etc/keystone/ssl/private/cakey.pem'
+#openstack::security::rabbit_use_ssl: false
+#openstack::security::kombu_ssl_ca_certs: undef
+#openstack::security::kombu_ssl_certfile: undef
+#openstack::security::kombu_ssl_keyfile: undef
+#openstack::security::kombu_ssl_version: 'TLSv1'
+
 ######## Networks
 openstack::network::api: '192.168.11.0/24'
 openstack::network::external: '192.168.22.0/24'
@@ -9,7 +29,9 @@ openstack::networks:
     provider_network_type: 'gre'
     router_external: true
     provider_segmentation_id: 3604
-    shared: true
+    # NOTE: we dont share public because we want it ONLY for floating IPs, not as
+    # an extra subnet to assign to nodes
+    shared: false
   private:
     tenant_name: 'services'
     provider_network_type: 'gre'
@@ -21,7 +43,7 @@ openstack::subnets:
     cidr: '192.168.22.0/24'
     ip_version: '4'
     gateway_ip: 192.168.22.2
-    enable_dhcp: false
+    enable_dhcp: false 
     network_name: 'public'
     tenant_name: 'services'
     allocation_pools: ['start=192.168.22.100,end=192.168.22.200']
@@ -29,36 +51,32 @@ openstack::subnets:
   '10.0.0.0/24':
     cidr: '10.0.0.0/24'
     ip_version: '4'
-    enable_dhcp: true
+    enable_dhcp: true 
     network_name: 'private'
     tenant_name: 'services'
     dns_nameservers: [192.168.22.2]
 openstack::routers:
-  test_router:
+  test:
     tenant_name: 'test'
     gateway_network_name: 'public'
 openstack::router_interfaces:
-  'test_router:10.0.0.0/24': {}
+  'test:10.0.0.0/24': {}
 
 openstack::network::management: '172.16.33.0/24'
 openstack::network::data: '172.16.44.0/24'
 
 ######## Fixed IPs (controllers)
 
+# This is the endpoint for almost all API services
 openstack::controller::address::api: '192.168.11.4'
 openstack::controller::address::management: '172.16.33.4'
 
+# This points to the endpoint for Glance API (NOT CINDER)
+# TODO: decide if all services run on control or if we distribute. Use this as
+# an example
 openstack::storage::address::api: '192.168.11.4'
 openstack::storage::address::management: '172.16.33.4'
-# For a separate storage node:
-#openstack::storage::address::api: '192.168.11.5'
-#openstack::storage::address::management: '172.16.33.5'
 
-#openstack::network::address::api: '192.168.11.4'
-#openstack::network::address::management: '172.16.33.4'
-# For a separate network router: 
-#openstack::network::address::api: '192.168.11.6'
-#openstack::network::address::management: '172.16.33.6'
 
 ######## Database
 
@@ -75,9 +93,8 @@ openstack::mysql::cinder::pass: 'fuva-wax'
 openstack::mysql::glance::user: 'glance'
 openstack::mysql::glance::pass: 'fuva-wax'
 
+# For a multiple glance nodes: 
 openstack::glance::api_servers: ['172.16.33.4:9292']
-# For a separate storage node: 
-#openstack::glance::api_servers: ['172.16.33.5:9292']
 
 openstack::mysql::nova::user: 'nova'
 openstack::mysql::nova::pass: 'fuva-wax'
@@ -90,6 +107,12 @@ openstack::mysql::heat::pass: 'fuva-wax'
 
 openstack::mysql::aodh::user: 'aodh'
 openstack::mysql::aodh::pass: 'fuva-wax'
+
+openstack::mysql::gnocchi::user: 'gnocchi'
+openstack::mysql::gnocchi::pass: 'fuva-wax'
+
+openstack::mysql::trove::user: 'trove'
+openstack::mysql::trove::pass: 'fuva-wax'
 
 ######## RabbitMQ
 
@@ -149,13 +172,27 @@ openstack::images:
     container_format: 'bare'
     disk_format: 'qcow2'
     source: 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img'
+# Enable these to get pre-built Ubuntu images for DBaaS (Trove). 
+  mongodb_trove:
+    container_format: 'ovf'
+    disk_format: 'qcow2'
+    source: 'http://tarballs.openstack.org/trove/images/ubuntu/mongodb.qcow2'
+  mysql_trove:
+    container_format: 'ovf'
+    disk_format: 'qcow2'
+    source: 'http://tarballs.openstack.org/trove/images/ubuntu/mysql.qcow2'
+  percona_trove:
+    container_format: 'ovf'
+    disk_format: 'qcow2'
+    source: 'http://tarballs.openstack.org/trove/images/ubuntu/percona.qcow2'
+
 
 openstack::glance::password: 'na-mu-va'
 
 ######## Cinder
 
 openstack::cinder::password: 'zi-co-se'
-openstack::cinder::volume_size: '8G'
+openstack::cinder::volume_size: '30G'
 
 ######## Swift
 
@@ -172,7 +209,12 @@ openstack::nova::password: 'quuk-paj'
 openstack::neutron::password: 'whi-rtuz'
 openstack::neutron::shared_secret: 'by-sa-bo'
 openstack::neutron::core_plugin: 'ml2'
-openstack::neutron::service_plugins: ['router', 'firewall', 'lbaas', 'vpnaas', 'metering']
+# See /usr/lib/python2.7/site-packages/neutron/plugins/common/constants.py for the complete list
+# NOTE: only router, metering, lbaas, vpnaas and firewall have been tested in this module and are installable with this module
+openstack::neutron::service_plugins: ['router', 'metering', 'lbaas', 'firewall', 'vpnaas']
+openstack::neutron::neutron_type_drivers: ['gre','vxlan']
+openstack::neutron::neutron_network_types: ['gre','vxlan']
+openstack::neutron::neutron_tenant_network_type: ['gre','vxlan']
 
 ######## Ceilometer
 openstack::ceilometer::address::management: '172.16.33.4'
@@ -183,6 +225,57 @@ openstack::ceilometer::meteringsecret: 'ceilometersecretkey'
 
 ######## AODH
 openstack::aodh::password: 'whi-truz'
+
+######## GNOCCHI 
+openstack::gnocchi::password: 'whi-truz'
+
+######## TROVE
+openstack::trove::password: 'whi-truz'
+
+# The versions here must match with the datastore_versions below
+openstack::trove::datastores: 
+  mysql:
+    version: 'mysql-5.5'
+    ensure: 'present'
+  percona: 
+    version: 'percona-5.5'
+    ensure: 'present'
+  mongodb:
+    version: 'mongodb-3.0'
+    ensure: 'present'
+
+# TODO: note the trove_data_store_version must specify a valid image ID (not NAME). 
+# This requires manual update of the yaml once the images are imported, and then rerun puppet
+openstack::trove::datastore_versions:
+  mysql-5.5:
+    ensure: 'present'
+    datastore: mysql
+    image_id: mysql_trove
+    manager: mysql 
+    # Must be a single string: 
+    packages: 'mysql-server-5.5'
+    # Must be 0 or 1
+    active: 1
+  percona-5.5:
+    ensure: 'present'
+    datastore: percona
+    image_id: percona_trove
+    manager: percona
+    # Must be a single string: 
+    packages: 'percona-server-server-5.5'
+    # Must be 0 or 1
+    active: 1
+  mongodb-3.0:
+    ensure: 'present'
+    datastore: mongodb
+    image_id: mongodb_trove
+    manager: mongodb
+    # Must be a single string: 
+    packages: 'mongodb-org-server'
+    # Must be 0 or 1
+    active: 1
+
+
 
 ######## Heat
 openstack::heat::password: 'zap-bang'

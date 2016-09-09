@@ -1,0 +1,117 @@
+TODO: 
+ - glance Auth endpoint is still http
+ - heat Auth endpoint is still http
+
+-- How to enable SSL on heat and glance?
+-- Is nova SSL? 
+-- How to test? 
+-> search for http (replace with http_protocol)
+-> search for keystone_auth_host and replace with identity_uri and auth_uri/
+ -- WOrking on NEUTORN
+
+##############
+
+NOTE: trove images are registered via trove_datastore_version. If a database instance will not boot, it is likely due to either a bad datastore_version image_id, or insufficient resources for the flavor or because of the flavor. To get around the image_id problem: 
+
+1) glance image-list 
+2) update common.yaml with the ID values and not NAME values. 
+
+###############
+
+LBaaS requires that at least one member of the pool attach to a valid and OPEN port (i.e., enabled in Security Groups). If you try to attach to a closed port you will get this warning on the server: 
+
+Broadcast message from systemd-journald@control (Thu 2016-02-25 22:46:11 UTC):
+
+haproxy[15640]: backend 6df266f2-bdb5-4f83-b18c-6f9aa30c7016 has no server available!
+
+NOTE: you can have 4 valid member->port connections and one bad, and the message will not appear. However, that one bad will never get any traffic. 
+
+###############
+On atmosphere* (add to puppet): 
+
+# Where 28 is provided by 
+# Should be a line that starts with 9999
+iptables -L -n --line-numbers | grep REJECT
+iptables -D INPUT 28 
+iptables -A INPUT -p gre -s 10.31.13.128/26 -j ACCEPT
+iptables -A INPUT -j REJECT
+
+
+To enable ping of VMs: 
+
+1) Add static IP to the br-ex (gateway) 
+    ip addr add 192.168.22.2/24 dev br-ex
+    iptables -t nat -I POSTROUTING 1 -s 192.168.22.0/24 -j MASQUERADE
+
+1) Add ICMP ingress to the default security group
+    # These rule ids are 'default'
+    neutron security-group-rule-create --protocol icmp 2c9fe88a-fd8f-4d05-a5de-e0526232883d
+    neutron security-group-rule-create --protocol icmp 12dbf1b0-df16-47a3-a259-89e5db7011ab
+
+2) On control (network node):  
+    ip netns exec qrouter-93a78975-02d4-4de3-898d-f9ba16aa18cd ping 10.0.0.4
+
+
+########
+
+To monitor traffic hitting a node: 
+    yum install -y tcpdump 
+    tcpdump -i any -n -v \ 'icmp[icmptype] = icmp-echoreply or icmp[icmptype] = icmp-echo'
+
+########
+
+Pacemaker
+
+Pacemaker can be used for HA distribution of nova services. See modules/nova/examples/*.pp for details. The nova services are not tracked by puppet, allowing pacemaker to launch them as needed across nodes
+
+########
+
+Live Migration fails due to: 
+
+    InvalidSharedStorage: compute02 is not on shared storage: Live migration can not be used without shared storage except a booted from volume VM which does not have a local disk.
+
+########
+
+Cinder Volume Manager fails to load driver (after vagrant reload): 
+
+2016-02-16 03:41:51.005 31717 WARNING cinder.volume.manager [req-f286b8d1-7eec-44d7-8185-f227afcc032b - - - - -] Update driver status failed:  is uninitialized.
+2016-02-16 03:41:55.031 31717 ERROR cinder.service [-] Manager for service cinder-volume control is reporting problems, not sending heartbeat. Service will appear "down".
+
+
+    control|storage $> losetup /dev/loop1 /var/lib/cinder/cinder-volumes 
+    control|storage $> pvcreate /dev/loop1
+    control|storage $> vgcfgrestore cinder-volumes
+    control|storage $> systemctl restart openstack-cinder*
+
+#######
+
+To build from scratch: 
+
+    vagrant sandbox on
+
+    ./00_download_modules.sh
+    ./05_up.sh
+    ./10_setup_master.sh
+    ./11_setup_openstack.sh
+    ./20_setup_nodes.sh
+
+    vagrant sandbox commit
+
+    ./30_deploy_control.sh
+    ./40_deploy_nodes.sh
+
+If not satisfied you can rollback:
+
+    vagrant sandbox rollback
+
+To test: 
+
+    ./41_setup_tempest.sh
+    ./42_run_tempest.sh
+    ./50_destroy_nodes.sh
+
+To leave sandbox mod:
+
+    vagrant sandbox off
+
+

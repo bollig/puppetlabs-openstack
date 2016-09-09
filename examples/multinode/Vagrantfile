@@ -56,12 +56,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     control.vm.synced_folder "../../", "/openstack"
 
     control.vm.provider "vmware_fusion" do |v|
-        v.vmx["memsize"] =  "2048"
+        v.vmx["memsize"] =  "6144"
         v.vmx["vhv.enable"] = "TRUE"
     end
     control.vm.provider :virtualbox do |v|
       v.name = "os-control"
-      v.customize ["modifyvm", :id, "--memory", "3084"]
+      v.customize ["modifyvm", :id, "--memory", "6144"]
     end
   end
 
@@ -128,7 +128,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
     compute01.vm.provider :virtualbox do |v|
       v.name = "os-compute01"
-      v.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--memory", "2048"]
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--ioapic", "on"]
     end
 
   end
@@ -152,7 +154,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
     compute02.vm.provider :virtualbox do |v|
       v.name = "os-compute02"
-      v.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--memory", "2048"]
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.customize ["modifyvm", :id, "--ioapic", "on"]
     end
 
   end
