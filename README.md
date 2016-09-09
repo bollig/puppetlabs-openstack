@@ -213,6 +213,7 @@ and maintainable OpenStack deployments.
 Puppet Labs OpenStack - A Puppet Module for a Multi-Node OpenStack Juno Installation.
 
 Copyright (C) 2013, 2014 Puppet Labs, Inc. and Authors
+
 Copyright (C) 2016 University of Minnesota Regents and Authors
 
 Original Author - Christian Hoge
