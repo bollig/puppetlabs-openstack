@@ -214,7 +214,10 @@ Puppet Labs OpenStack - A Puppet Module for a Multi-Node OpenStack Juno Installa
 
 Copyright (C) 2013, 2014 Puppet Labs, Inc. and Authors
 
+Copyright (C) 2016 University of Minnesota Regents and Authors
+
 Original Author - Christian Hoge
+Fork Author - Evan F. Bollig (bollig@gmail.com)
 
 Puppet Labs can be contacted at: info@puppetlabs.com
 
