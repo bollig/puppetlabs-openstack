@@ -38,6 +38,7 @@ class openstack::profile::neutron::router {
     external_network_bridge => '',
     enabled                 => $start_l3_agent,
     manage_service          => $start_l3_agent, 
+    agent_mode              => 'dvr_snat',
   }
 
     # DHCP Agent 

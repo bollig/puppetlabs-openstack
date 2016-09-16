@@ -1,5 +1,7 @@
 # The profile to install the volume service
-class openstack::profile::cinder::volume {
+class openstack::profile::cinder::volume (
+  $fixed_key = '82EFC15AA8E15ED96F84B6DCF6684947',
+) {
   $management_network = $::openstack::config::network_management
   $management_address = ip_for_network($management_network)
 
@@ -73,6 +75,8 @@ class openstack::profile::cinder::volume {
   }
   cinder_config {
     'DEFAULT/restore_discard_excess_bytes': value=> 'true';
+# For use in encrypted volumes
+    'keymgr/fixed_key': value => $fixed_key;
   }
 
 

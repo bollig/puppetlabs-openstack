@@ -22,7 +22,9 @@ class openstack::common::ml2::ovs {
  #   bridge_mappings  => $bridge_mappings,
  #   bridge_uplinks   => $bridge_uplinks,
  #   vxlan_udp_port   => '4789', 
+    enable_distributed_routing  => true,
 # enable this if ml2 has l2population driver enabled
- #   l2_population    => false,
+    l2_population    => true,
+    arp_responder   => true,
   }
 }

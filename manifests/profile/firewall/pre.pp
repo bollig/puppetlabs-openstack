@@ -39,6 +39,11 @@ class openstack::profile::firewall::pre {
     action => 'accept',
     source => '127.0.0.1',
   } ->
+  firewall { '0010 - Accept vxlan traffic':
+    proto  => 'udp',
+    dport  => 4789,
+    action => 'accept',
+  } ->
   firewall { '0022 - ssh':
     proto  => 'tcp',
     state  => ['NEW', 'ESTABLISHED', 'RELATED'],

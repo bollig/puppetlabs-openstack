@@ -14,7 +14,13 @@ class openstack::common::cinder {
     rabbit_password     => $::openstack::config::rabbitmq_password,
     debug               => $::openstack::config::debug,
     verbose             => $::openstack::config::verbose,
+
   }
+
+#  cinder_config { 
+#    'keymgr/fixed_key': value => '0000000000000000000000000000000000000000000000000000000000000000';
+#  }
+
 
   class { '::cinder::api':
     keystone_password  => $::openstack::config::cinder_password,
@@ -24,6 +30,7 @@ class openstack::common::cinder {
     public_endpoint    => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8776", 
     enabled            => true,
     service_name       => 'httpd',
+    default_volume_type => 'DEFAULT', 
   }
 
 #DONE: cinder wsgi

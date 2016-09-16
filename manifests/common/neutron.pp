@@ -109,7 +109,10 @@ class openstack::common::neutron (
     #mysql_module        => '2.2',
   }
 
-  #class { '::neutron::wsgi_apache':
+  # This is a HUGE hack. The Neutron puppet module does not include a
+  # wsgi::apache.pp class yet. I adapted from the nova class to ensure we are
+  # consistently using wsgi endpoints for our apis. 
+  #class { '::openstack::profile::neutron::wsgi_apache':
   #    ssl             => $::openstack::config::enable_ssl,
   #    ssl_cert        => $::openstack::config::keystone_ssl_certfile,
   #    ssl_key         => $::openstack::config::keystone_ssl_keyfile,

@@ -3,7 +3,9 @@
 # usage: include from controller, declare from worker
 # This is to handle dependency
 # depends on openstack::profile::base having been added to a node
-class openstack::common::nova {
+class openstack::common::nova (
+  $fixed_key = '82EFC15AA8E15ED96F84B6DCF6684947',
+) {
 
   $management_network = $::openstack::config::network_management
   $management_address = ip_for_network($management_network)
@@ -51,6 +53,7 @@ class openstack::common::nova {
     'DEFAULT/cert': value => $::openstack::config::horizon_ssl_certfile;
     'DEFAULT/key': value => $::openstack::config::horizon_ssl_keyfile;
     #'libvirt/image_rbd_ceph_conf': value => '/etc/ceph/ceph-nova.conf';
+    'keymgr/fixed_key': value => $fixed_key;
   }
   #class { '::nova::api': 
   #  default_floating_pool => 'public' 
