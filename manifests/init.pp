@@ -170,6 +170,12 @@
 # [*mysql_pass_trove*]
 #   The database password for trove service.
 #
+# [*mysql_user_cloudkitty*]
+#   The database username for cloudkitty service.
+#
+# [*mysql_pass_cloudkitty*]
+#   The database password for cloudkitty service.
+#
 # == RabbitMQ
 # [*rabbitmq_hosts*]
 #   The host list for the RabbitMQ service.
@@ -456,6 +462,8 @@ class openstack (
   $mysql_pass_gnocchi = undef,
   $mysql_user_trove = undef,
   $mysql_pass_trove = undef,
+  $mysql_user_cloudkitty = undef,
+  $mysql_pass_cloudkitty = undef,
   $rabbitmq_hosts = undef,
   $rabbitmq_hosts = undef,
   $rabbitmq_user = undef,
@@ -584,6 +592,8 @@ class openstack (
       mysql_pass_gnocchi            => pick(hiera(openstack::mysql::gnocchi::pass, undef), hiera(openstack::mysql::service_password)),
       mysql_user_trove              => pick(hiera(openstack::mysql::trove::user, undef), 'trove'),
       mysql_pass_trove              => pick(hiera(openstack::mysql::trove::pass, undef), hiera(openstack::mysql::service_password)),
+      mysql_user_cloudkitty         => pick(hiera(openstack::mysql::cloudkitty::user, undef), 'cloudkitty'),
+      mysql_pass_cloudkitty         => pick(hiera(openstack::mysql::cloudkitty::pass, undef), hiera(openstack::mysql::service_password)),
       rabbitmq_hosts                => hiera(openstack::rabbitmq::hosts),
       rabbitmq_user                 => hiera(openstack::rabbitmq::user),
       rabbitmq_password             => hiera(openstack::rabbitmq::password),
@@ -622,7 +632,7 @@ class openstack (
       ceilometer_password           => hiera(openstack::ceilometer::password),
       ceilometer_meteringsecret     => hiera(openstack::ceilometer::meteringsecret),
       aodh_password           	    => hiera(openstack::aodh::password),
-      gnocchi_password           	=> hiera(openstack::gnocchi::password),
+      gnocchi_password          	=> hiera(openstack::gnocchi::password),
       trove_password           	    => hiera(openstack::trove::password),
       heat_password                 => hiera(openstack::heat::password),
       heat_encryption_key           => hiera(openstack::heat::encryption_key),

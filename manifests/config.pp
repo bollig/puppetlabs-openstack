@@ -61,6 +61,8 @@ class openstack::config (
   $mysql_pass_gnocchi = undef,
   $mysql_user_trove = undef,
   $mysql_pass_trove = undef,
+  $mysql_user_cloudkitty = undef,
+  $mysql_pass_cloudkitty = undef,
   $rabbitmq_hosts = undef,
   $rabbitmq_user = undef,
   $rabbitmq_password = undef,

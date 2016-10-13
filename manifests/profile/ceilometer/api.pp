@@ -58,8 +58,10 @@ class openstack::profile::ceilometer::api (
 
   # Purge 1 month old meters (wherever mongo service is (control))
   class { '::ceilometer::expirer':
-	# Expire on the first of every month at 12:01 am
+        enable_cron => false,
+	# Expire on the first of January at 12:01 am
  	monthday => '1',
+        month => '1',
   }
 
   # Install notification agent (with API (control))

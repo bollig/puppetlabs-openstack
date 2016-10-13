@@ -12,4 +12,5 @@ class openstack::role::controller inherits ::openstack::role {
   class { '::openstack::profile::neutron::server': } ->
   class { '::openstack::profile::heat::api': } ->
   class { '::openstack::profile::horizon': }
+  class { '::openstack::profile::cloudkitty': } 
 }
