@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack CloudKitty Processor Server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=cloudkitty
+ExecStart=/usr/bin/cloudkitty-processor
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
