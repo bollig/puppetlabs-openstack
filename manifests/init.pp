@@ -457,7 +457,6 @@ class openstack (
   $mysql_user_trove = undef,
   $mysql_pass_trove = undef,
   $rabbitmq_hosts = undef,
-  $rabbitmq_hosts = undef,
   $rabbitmq_user = undef,
   $rabbitmq_password = undef,
   $keystone_admin_token = undef,

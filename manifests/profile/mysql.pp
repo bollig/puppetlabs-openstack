@@ -27,4 +27,11 @@ class openstack::profile::mysql(
   Service['mysqld'] -> Anchor['database-service']
 
   class { 'mysql::server::account_security': }
+
+  class { 'mysql::server::backup': 
+    backupuser     => 'root',
+    backuppassword => $::openstack::config::mysql_root_password,
+    backupdir     => '/tmp/backup',
+    provider      => 'xtrabackup',
+  }
 }
