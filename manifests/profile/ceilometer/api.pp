@@ -106,7 +106,9 @@ class openstack::profile::ceilometer::api (
 		meter_dispatcher => ['gnocchi'],
 	}
 	class { '::ceilometer::dispatcher::gnocchi':
+          # Only enable these if using swift backend
 	  filter_service_activity   => false,
+          # Note: this project must exist in keystone (openstack project create --or-show gnocchi)
 	  filter_project            => 'gnocchi',
 	  url                       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
 	  archive_policy            => 'high',

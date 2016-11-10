@@ -37,7 +37,8 @@ class openstack::common::keystone (
     enable_ssl          => $enable_ssl, 
     public_endpoint     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
     admin_endpoint      => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
-    manage_policyrcd    => true,
+    # NOTE: this should only be set to true if we are on Debian systems
+    #manage_policyrcd    => true,
     using_domain_config => true,
     #enable_fernet_setup => $enable_fernet,
 # FOR CEILOMETER:
