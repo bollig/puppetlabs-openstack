@@ -38,6 +38,10 @@ class openstack::common::nova (
     notification_driver    => 'messagingv2',
     #mysql_module        => '2.2',
   }
+  nova_config {
+	'DEFAULT/compute_monitors': value => ["ComputeDriverCPUMonitor"];
+#cpu.virt_driver, numa_mem_bw.virt_driver"];
+  }
 
    # NOTE: fixes https://bugs.launchpad.net/nova/+bug/1572062
     oslo::cache { 'nova_config':

@@ -2,6 +2,7 @@
 # NOTE: to use, add GNOCCHI_ENDPOINT to your env (see http://docs.openstack.org/developer/python-gnocchiclient/shell.html)
 #       - Disabling this because it requires major resources, and does not function well (Evan) 
 class openstack::profile::ceilometer::gnocchi ( 
+  $storage_type = 'file',
 ) {
       $management_address  = $::openstack::config::controller_address_management
       $user                = $::openstack::config::mysql_user_gnocchi
@@ -49,7 +50,9 @@ class openstack::profile::ceilometer::gnocchi (
     class { '::gnocchi::db::sync': }
     class { '::gnocchi::metricd': }
     class { '::gnocchi::storage': }
-    class { '::gnocchi::storage::file': }
+    #class { '::gnocchi::storage::file': }
+    #class { '::gnocchi::storage::ceph': }
+    class { "::gnocchi::storage::${storage_type}": }
 
     include ::openstack::common::gnocchi
 }
