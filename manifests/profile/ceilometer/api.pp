@@ -2,7 +2,11 @@
 # For co-located api and worker nodes this appear
 # after openstack::profile::ceilometer::agent
 class openstack::profile::ceilometer::api (
-      $gnocchi_enabled = false
+      $gnocchi_enabled = false,
+      $enable_rgw = false,
+      $rgw_admin_access_key = $::os_service_default,
+      $rgw_admin_secret_key = $::os_service_default,
+      $neutron_lbaas_version = 'v2',
 ) {
 
   $mongo_username                = $::openstack::config::ceilometer_mongo_username
@@ -15,6 +19,19 @@ class openstack::profile::ceilometer::api (
 
   include ::openstack::common::ceilometer
 
+  if $enable_rgw { 
+    ceilometer_config {
+      'service_types/radosgw': value => 'object-store';
+      'rgw_admin_credentials/access_key': value => $rgw_admin_access_key;
+      'rgw_admin_credentials/secret_key': value => $rgw_admin_secret_key;
+    } 
+
+    package { 'requests-aws':
+      ensure => 'present',
+      provider => pip,
+      tag    => ['openstack', 'ceilometer-package'],
+    }
+  }
   # Setup the ceilometer user in keystone and register endpoints (control)
   class { '::ceilometer::keystone::auth':
     password         => $::openstack::config::ceilometer_password,
@@ -40,12 +57,12 @@ class openstack::profile::ceilometer::api (
   # Install polling agent (control)
   # Can be used instead of central, compute or ipmi agent
   # As default use central and compute polling namespaces
-  #class { '::ceilometer::agent::polling':
-  #  central_namespace => true,
-  #  compute_namespace => false,
+  class { '::ceilometer::agent::polling':
+    central_namespace => true,
+    compute_namespace => true,
 # NOTE: this might result in errors of the form: "ceilometer.hardware.discovery [-] Couldn't obtain IP address of instance"
-  #  ipmi_namespace    => true,
-  #}
+    ipmi_namespace    => false,
+  }
 
   # Install compute agent (deprecated)
   # default: enable
@@ -53,19 +70,20 @@ class openstack::profile::ceilometer::api (
   # }
 
   # Install central agent (deprecated)
-   class { 'ceilometer::agent::central':
-   }
+   #class { 'ceilometer::agent::central':
+   #}
 
   # Purge 1 month old meters (wherever mongo service is (control))
-  class { '::ceilometer::expirer':
-        enable_cron => false,
+  class { '::ceilometer::expirer': }
+        #enable_cron => true,
 	# Expire on the first of January at 12:01 am
- 	monthday => '1',
-        month => '1',
-  }
+ 	#monthday => '1',
+        #month => '1',
+  #}
 
   # Install notification agent (with API (control))
   class { '::ceilometer::agent::notification':
+    store_events => true,
   }
 
   include ::apache
@@ -82,7 +100,9 @@ class openstack::profile::ceilometer::api (
     # auth_strategy is not set by any parameter in the ceilometer puppet module
   ceilometer_config {
     'DEFAULT/auth_strategy': value => 'keystone';
+    'service_types/neutron_lbaas_version': value => $neutron_lbaas_version, 
   }
+
 
   # For the time being no upstart script are provided
   # in Ubuntu 12.04 Cloud Archive. Bug report filed
@@ -101,9 +121,15 @@ class openstack::profile::ceilometer::api (
     'RedHat': {
       if $gnocchi_enabled { 
         #aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
-        class { '::openstack::profile::ceilometer::gnocchi': }
+        class { '::openstack::profile::ceilometer::gnocchi_api': }
+        class { '::openstack::profile::ceilometer::gnocchi_metricd': }
 	class { '::ceilometer::collector':
-		meter_dispatcher => ['gnocchi'],
+            # NOTE: support for multiple meters on a single line does not exist in latest mitaka
+	    #meter_dispatcher => ['gnocchi', 'database'],
+	    meter_dispatcher => 'gnocchi',
+            # NOTE: support for gnocchi event_dispatchers does not exist in latest mitaka
+            #event_dispatcher => 'gnocchi',
+            event_dispatcher => 'database',
 	}
 	class { '::ceilometer::dispatcher::gnocchi':
           # Only enable these if using swift backend
@@ -111,7 +137,7 @@ class openstack::profile::ceilometer::api (
           # Note: this project must exist in keystone (openstack project create --or-show gnocchi)
 	  filter_project            => 'gnocchi',
 	  url                       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
-	  archive_policy            => 'high',
+	  archive_policy            => 'medium',
 	  resources_definition_file => 'gnocchi_resources.yaml',
 	}
       } else {

@@ -1,5 +1,6 @@
 class openstack::resources::repo(
   $release = 'liberty',
+  $cloudkitty_release = 'mitaka',
   $enable_cloudkitty = false,
 ){
   if $::osfamily == 'Debian' {
@@ -24,7 +25,7 @@ class openstack::resources::repo(
       if $enable_cloudkitty == true {
         yumrepo { 'cloudkitty':
           name     => 'cloudkitty',
-          baseurl  => "http://archive.objectif-libre.com/cloudkitty/el7/${release}",
+          baseurl  => "http://archive.objectif-libre.com/cloudkitty/el7/${cloudkitty_release}",
           descr    => 'CloudKitty repo for RedHat',
   # TODO: FIX SIGN
           gpgcheck => 0,

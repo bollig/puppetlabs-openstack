@@ -4,6 +4,7 @@
 class openstack::profile::cloudkitty (
   $enable = false,
   $verbose = true,
+  $collector = 'ceilometer', 
   $log_dir = '/var/log/cloudkitty',
   $service_port = 8889,
   $mysql_password = 'fuva-wax',
@@ -21,6 +22,19 @@ class openstack::profile::cloudkitty (
     package { 'openstack-cloudkitty-api': ensure => 'installed' }
     package { 'openstack-cloudkitty-processor': ensure => 'installed' }
     package { 'openstack-cloudkitty-dashboard': ensure => 'installed' }
+
+    notify { 'PLEASE INSTALL THE LATEST CLOUDKITTY FROM GIT: 
+
+git clone git://git.openstack.org/openstack/cloudkitty
+cd cloudkitty
+python setup.py install
+
+cloudkitty-dbsync upgrade
+cloudkitty-storage-init
+
+systemctl restart openstack-cloudkitty-*
+': } 
+
   }
 # 2) Configure services
 # I wont have full control over the ini until cloudkitty releases a puppet module
@@ -47,13 +61,13 @@ class openstack::profile::cloudkitty (
     owner   => 'root',
     group   => 'cloudkitty',
     mode    => 640,
-    require => Package['openstack-cloudkitty-api'], 
   }
   file { '/etc/cloudkitty/api_paste.ini': 
       source => 'puppet:///modules/openstack/etc__cloudkitty__api_paste.ini',
       ensure => 'present',
+      owner   => 'root',
+      group   => 'cloudkitty',
       mode => 640,
-      require => Package['openstack-cloudkitty-api'],
   }
 
 
@@ -67,6 +81,9 @@ class openstack::profile::cloudkitty (
 #  2) cloudkitty-dbsync upgrade
 #  3) cloudkitty-storage-init
 
+#    cloudkitty collector-state-get --name gnocchi
+#    cloudkitty collector-state-get --name ceilometer
+
 # Create user directly without a cloudkitty::db::mysql defined
   #openstack::resources::database { 'cloudkitty': }
   
@@ -74,6 +91,7 @@ class openstack::profile::cloudkitty (
   openstack::resources::firewall { 'CloudKitty API': port => "${service_port}", }
 
   Keystone_endpoint["${region}/cloudkitty::rating"] ~> Service <| name == 'cloudkitty-api' |>
+  Service <| name == 'ceilometer-api' |> ~> Service <| name == 'cloudkitty-api' |>
 
   ::openstacklib::db::mysql { 'cloudkitty':
     user          => $mysql_user,
@@ -112,13 +130,18 @@ class openstack::profile::cloudkitty (
     public_url          => $public_url_real,
     admin_url           => $admin_url_real,
     internal_url        => $internal_url_real,
-    require       => [ Anchor['database-service'], Package['openstack-cloudkitty-api'] ],
+    require       =>  Anchor['database-service'] ,
   }
 
 
       if $enable {
-        #$service_ensure = 'running'
-        $service_ensure = 'stopped'
+        $service_ensure = 'running'
+        #$service_ensure = 'stopped'
+
+        File['/etc/cloudkitty/cloudkitty.conf'] -> Service['openstack-cloudkitty-api']
+        File['/etc/cloudkitty/cloudkitty.conf'] -> Service['openstack-cloudkitty-proc']
+        File['/etc/cloudkitty/cloudkitty.conf'] ~> Service['openstack-cloudkitty-api']
+        File['/etc/cloudkitty/cloudkitty.conf'] ~> Service['openstack-cloudkitty-proc']
       } else {
         $service_ensure = 'stopped'
       }
@@ -135,14 +158,14 @@ class openstack::profile::cloudkitty (
       enable    => $enable,
       hasstatus => true,
       tag       => 'cloudkitty-service',
-      require => [File['/etc/cloudkitty/cloudkitty.conf'], File['/etc/systemd/system/openstack-cloudkitty-api.service']],
     }
 
     file { '/etc/systemd/system/openstack-cloudkitty-proc.service': 
       source => 'puppet:///modules/openstack/openstack-cloudkitty-proc.service',
       ensure => 'present',
       mode => '0664',
-    } ~> Exec['systemctl daemon-reload'] 
+      notify => Exec['systemctl daemon-reload'] 
+    } 
 
     exec { 'systemctl daemon-reload':
       command     => "/usr/bin/systemctl daemon-reload",
@@ -154,7 +177,6 @@ class openstack::profile::cloudkitty (
       enable    => $enable,
       hasstatus => true,
       tag       => 'cloudkitty-service',
-      require => [File['/etc/cloudkitty/cloudkitty.conf'], File['/etc/systemd/system/openstack-cloudkitty-proc.service'], Service['openstack-cloudkitty-api']],
     }
 
 # NOTE: encrypt password with "eyaml encrypt -s 'string'"

@@ -119,7 +119,7 @@ port = <%=@service_port %>
 
 # Data collector. (string value)
 #collector = ceilometer
-collector = meta
+collector = <%=@collector %>
 
 # Number of samples to collect per call. (integer value)
 #window = 1800
@@ -788,7 +788,7 @@ backend = cloudkitty.backend.file.FileBackend
 basepath = /var/lib/cloudkitty/states/
 
 # Output pipeline (list value)
-pipeline = osrf
+pipeline = osrf,csv
 
 
 [state]
