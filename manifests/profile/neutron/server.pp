@@ -1,6 +1,7 @@
 # The profile to set up the neutron server
-class openstack::profile::neutron::server 
-  {
+class openstack::profile::neutron::server (
+  $bgp_router_id = '127.0.0.1'
+) {
   
     # Defines ::neutron::db::mysql
   openstack::resources::database { 'neutron': }
@@ -70,6 +71,37 @@ class openstack::profile::neutron::server
 	include ::openstack::profile::haproxy::init
 	include ::openstack::profile::haproxy::neutron
   }
+
+  if 'bgp' in $::openstack::config::neutron_service_plugins {
+      # Note: depends on the bgp_router_id to be set properly
+      file { '/etc/neutron/conf.d/neutron-bgp-dragent/bgp_dragent.conf':
+        content => template('openstack/etc__neutron__bgp_dragent.erb'),
+        owner   => 'root',
+        group   => 'neutron',
+        mode    => 640,
+      }
+
+      Package['neutron-bgp-dragent'] -> Service['neutron-bgp-dragent']
+      Package['neutron-bgp-dragent'] -> File['/etc/neutron/conf.d/neutron-bgp-dragent/bgp_dragent.conf']
+      package { 'neutron-bgp-dragent':
+        ensure  => 'present',
+        name    => 'openstack-neutron-bgp-dragent',
+        require => Package['neutron'],
+        tag     => ['openstack', 'neutron-package'],
+      }
+
+      Package['neutron'] ~> Service['neutron-bgp-dragent']
+      Package['neutron-bgp-dragent'] ~> Service['neutron-bgp-dragent']
+
+      service { 'neutron-bgp-dragent':
+        ensure  => 'running',
+        name    => 'neutron-bgp-dragent',
+        enable  => true,
+        require => Class['neutron'],
+        tag     => 'neutron-service',
+      }
+  }
+
 # The following installs python-neutron-plugin packages 
 #
 # TODO: update puppet-neutron module to a version that does not need these
