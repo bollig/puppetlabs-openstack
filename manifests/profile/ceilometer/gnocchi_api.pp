@@ -25,10 +25,10 @@ class openstack::profile::ceilometer::gnocchi_api (
      ": }
 
       keystone_config { 
-        "cors/allowed_origin": value => "http://${::fqdn}:3000";
+        "cors/allowed_origin": value => 'http://atmosphere1.msi.umn.edu:3000';
       }
       gnocchi_config {
-        "cors/allowed_origin": value => "http://${::fqdn}:3000";
+        "cors/allowed_origin": value => 'http://atmosphere1.msi.umn.edu:3000';
         "cors/allow_headers": value => 'Content-Type,Cache-Control,Content-Language,Expires,Last-Modified,Pragma,X-Auth-Token';
       }
       #NOTE: unfortunately we cant override this here: 
