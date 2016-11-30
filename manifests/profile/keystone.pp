@@ -145,9 +145,10 @@ class openstack::profile::keystone (
 
 
     class { 'keystone::federation::shibboleth': 
-      methods => ['password', 'token', 'oauth1', 'saml2'],
+      #methods => ['password', 'token', 'oauth1', 'saml2'],
+      methods => ['password', 'token', 'saml2'],
       main_port => true,
-      admin_port => true,
+      admin_port => false,
       suppress_warning => true,
       # Match the name of the yumrepo above:
       yum_repo_name => 'shibboleth',
@@ -164,6 +165,8 @@ class openstack::profile::keystone (
     # References: http://docs.openstack.org/developer/keystone/federation/websso.html
     keystone_config { 
       'federation/remote_id_attribute': value => 'Shib-Identity-Provider'; 
+      'saml2/remote_id_attribute': value => 'Shib-Identity-Provider'; 
+      'saml/remote_id_attribute': value => 'Shib-Identity-Provider'; 
       'federation/trusted_dashboard': value => $trusted_dashboard;
     }
 
@@ -172,12 +175,12 @@ class openstack::profile::keystone (
         content => template('openstack/shibboleth.conf.erb'),
         order   => 332,
     }
-
-    concat::fragment { 'configure_saml2_on_port_35357':
-        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_admin.conf",
-        content => template('openstack/shibboleth.conf.erb'),
-        order   => 332,
-    }
+#
+#    concat::fragment { 'configure_saml2_on_port_35357':
+#        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_admin.conf",
+#        content => template('openstack/shibboleth.conf.erb'),
+#        order   => 332,
+#    }
 
 
     # Once the above runs, to complete shibboleth configuration, we still need

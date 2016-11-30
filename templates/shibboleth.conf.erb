@@ -1,15 +1,34 @@
+
+ShibURLScheme https
+
 # NOTE: we could replace saml2 with any other WEBSSO_CHOICES
-<Location /v3/auth/OS-FEDERATION/websso/.*?>
+
+<Location /v3/auth/OS-FEDERATION/websso/saml2>
     AuthType shibboleth
-    Require valid-user
     ShibRequestSetting requireSession 1
-    ShibRequireSession On
-    ShibExportAssertion Off
+    ShibRequestSetting exportAssertion 1
+    ShibRequestSetting redirectToSSL 443
+    <IfVersion < 2.4>
+            ShibRequireSession On
+            ShibRequireAll On
+    </IfVersion>
+    Require valid-user
 </Location>
 
-<LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/saml2/websso>
-    AuthType shibboleth
-    Require valid-user
+<LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/saml2/auth>
     ShibRequestSetting requireSession 1
+    ShibRequestSetting redirectToSSL 443
+    AuthType shibboleth
     ShibExportAssertion Off
+    Require valid-user
 </LocationMatch>
+
+<LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/saml2/websso>
+    ShibRequestSetting requireSession 1
+    ShibRequestSetting redirectToSSL 443
+    AuthType shibboleth
+    ShibExportAssertion Off
+    Require valid-user
+</LocationMatch>
+
+
