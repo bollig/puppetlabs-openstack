@@ -32,10 +32,6 @@ class openstack::common::ceilometer {
     auth_region   => $::openstack::config::region,
     auth_endpoint_type => 'publicURL',
   }
-    # add missing entry to [keystone_authtoken]
-  #ceilometer_config {
-  #  'keystone_authtoken/auth_version': value => 'v2.0';
-  #}
 
   class { '::ceilometer::db':
     database_connection => $mongo_connection,

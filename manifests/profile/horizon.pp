@@ -60,37 +60,31 @@ class openstack::profile::horizon (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => "puppet:///modules/openstack/openrc.sh.template",
+    #source  => "puppet:///modules/openstack/openrc.sh.template",
+    content => template('openstack/openrc.sh.erb'),
     before => Exec['refresh_horizon_django_cache'],
   } 
   # Override the openrc to get OS_TOKEN support out of box
-  file { 'V2 OpenRC':
-    path    => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc_v2.sh.template',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    source  => "puppet:///modules/openstack/openrc_v2.sh.template",
-    before => Exec['refresh_horizon_django_cache'],
-  } 
+  # NOTE: v2 is no longer truly V2 authentication. In order to support domains,
+  # we have to bump everything to v3. This override intentionally uses the same
+  # template as the v3 version
+  #file { 'V2 OpenRC':
+  #  path    => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc_v2.sh.template',
+  #  owner   => 'root',
+  #  group   => 'root',
+  #  mode    => '0644',
+  #  content => template('openstack/openrc.sh.erb'),
+  #  before => Exec['refresh_horizon_django_cache'],
+  #} 
 
 
- # NOTE: this fixes the v3 openrc file to function properly when downloaded:
-# file_line { 'Set default OS_IDENTITY_API_VERSION':
-#  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',  
-#  line => 'export OS_IDENTITY_API_VERSION=3',
-#  after => Exec['refresh_horizon_django_cache'],
-# }
-
-# file_line { 'Set default OS_TOKEN for v2':
-#  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',  
-#  line => 'export OS_TOKEN=$(openstack token issue -c id -f value)\nexport OS_AUTH_TYPE=v3token',
-#  after => Exec['refresh_horizon_django_cache'],
-# }
-# file_line { 'Set default OS_TOKEN for v2':
-#  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc_v2.sh.template',  
-#  line => 'export OS_TOKEN=$(openstack token issue -c id -f value)\nexport OS_AUTH_TYPE=v2token',
-#  after => Exec['refresh_horizon_django_cache'],
-# }
+  # Disable v2.0 OpenRC files. This is to guarantee all users authenticate with v3 and the right domains
+  file_line { 'Disable OpenStack RC File v2.0':
+    path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/api_access/tables.py',
+    match => '        table_actions = \(DownloadOpenRCv2, DownloadOpenRC, DownloadEC2,.*',
+    line => '        table_actions = ( DownloadOpenRC, DownloadEC2, ',
+    after => Exec['refresh_horizon_django_cache'],
+  }
 
 
 
