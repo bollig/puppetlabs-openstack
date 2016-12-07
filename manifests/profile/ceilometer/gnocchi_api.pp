@@ -27,21 +27,18 @@ class openstack::profile::ceilometer::gnocchi_api (
 
       keystone_config { 
         "cors/allowed_origin": value => $cors_allowed_origin;
+        # Append origin to headers to enable Safari support
+        "cors/allow_headers": value => "X-Auth-Token,X-Openstack-Request-Id,X-Subject-Token,X-Project-Id,X-Project-Name,X-Project-Domain-Id,X-Project-Domain-Name,X-Domain-Id,X-Domain-Name,origin";
       }
       gnocchi_config {
         "cors/allowed_origin": value => $cors_allowed_origin;
-        "cors/allow_headers": value => 'Content-Type,Cache-Control,Content-Language,Expires,Last-Modified,Pragma,X-Auth-Token';
+        # Append origin to headers to enable Safari support
+        "cors/allow_headers": value => 'Content-Type,Cache-Control,Content-Language,Expires,Last-Modified,Pragma,X-Auth-Token,origin';
       }
       #NOTE: unfortunately we cant override this here: 
       #gnocchi_api_paste_ini {
       #  "pipeline:main/pipeline": value => 'cors gnocchi+auth'; 
       #}
-      #so I have notify: 
-      notify { "NOTE: manually add cors to /etc/gnocchi/api-paste.ini to enable Grafana Keystone auth:
-        
-         [pipeline:main]
-         pipeline = cors gnocchi+auth
-      ": }
       openstack::resources::firewall { 'GRAFANA PORTAL': port => '3000', }
     } 
 
