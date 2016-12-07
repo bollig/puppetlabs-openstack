@@ -73,7 +73,7 @@ class openstack::profile::ceilometer::aodh (
         auth_password => $::openstack::config::aodh_password,
       }
       #package {'python2-aodhclient': ensure => 'present' } ->
-      class { '::aodh::client': package_name => 'python2-aodhclient'} 
+      class { '::aodh::client': } 
       class { '::aodh::notifier': }
       class { '::aodh::listener': }
       class { '::aodh::evaluator': }
