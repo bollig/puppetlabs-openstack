@@ -2,6 +2,8 @@
 # user_domain => This is the default domain for users to authenticate. Override with hiera to match the ldap domain 
 class openstack::profile::horizon ( 
   $user_domain = 'default',
+  $enable_shib_openrc = false,
+  $shib_ecp_idp_url = 'http://localhost/idp/profile/shibboleth',
 ) {
   $service_plugins  = $::openstack::config::neutron_service_plugins
   $enable_backups   = pick($::openstack::config::cinder_enable_backup, true)
@@ -61,7 +63,7 @@ class openstack::profile::horizon (
     group   => 'root',
     mode    => '0644',
     #source  => "puppet:///modules/openstack/openrc.sh.template",
-    content => template('openstack/openrc.sh.erb'),
+    content => template('openstack/openrc_shib.sh.erb'),
     before => Exec['refresh_horizon_django_cache'],
   } 
   # Override the openrc to get OS_TOKEN support out of box

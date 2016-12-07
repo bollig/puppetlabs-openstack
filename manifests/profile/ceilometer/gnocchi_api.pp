@@ -4,6 +4,7 @@
 # 
 class openstack::profile::ceilometer::gnocchi_api ( 
   $enable_grafana_support = false,
+  $cors_allowed_origin = 'http://localhost:3000',
   $storage_type = 'file',
 ) {
       # Make the mysql db user 'gnocchi' exists
@@ -25,10 +26,10 @@ class openstack::profile::ceilometer::gnocchi_api (
      ": }
 
       keystone_config { 
-        "cors/allowed_origin": value => 'http://atmosphere1.msi.umn.edu:3000';
+        "cors/allowed_origin": value => $cors_allowed_origin;
       }
       gnocchi_config {
-        "cors/allowed_origin": value => 'http://atmosphere1.msi.umn.edu:3000';
+        "cors/allowed_origin": value => $cors_allowed_origin;
         "cors/allow_headers": value => 'Content-Type,Cache-Control,Content-Language,Expires,Last-Modified,Pragma,X-Auth-Token';
       }
       #NOTE: unfortunately we cant override this here: 

@@ -102,43 +102,6 @@ class openstack::profile::neutron::server (
       }
   }
 
-# The following installs python-neutron-plugin packages 
-#
-# TODO: update puppet-neutron module to a version that does not need these
-# agents configured on the Neutron-API server (the neutron::api should
-# implicitly install python libraries for these deps 
-#   if 'network' in $node_type { 
-#    notify{'network': message => "Node type prevents neutron agents and services from being installed via profile/neutron/server.pp"}
-#   } else {
-#    #ensure_packages(['openstack-neutron-vpnaas', 'openstack-neutron-lbaas', 'openstack-neutron-fwaas'])
-#    if 'vpnaas' in $::openstack::config::neutron_service_plugins {
-#        ensure_resource( 'package', 'neutron-vpnaas-agent', {
-#            name   => 'openstack-neutron-vpnaas',
-#            tag    => ['openstack', 'neutron-package'],
-#        })
-#        Package['neutron-vpnaas-agent'] ~> Service<| tag == 'neutron-service' |>
-#    }
-#    if 'firewall' in $::openstack::config::neutron_service_plugins {
-#        ensure_resource( 'package', 'neutron-fwaas', {
-#            'name'   => 'openstack-neutron-fwaas',
-#            'tag'    => 'openstack'
-#        })
-#        Package['neutron-fwaas'] ~> Service<| tag == 'neutron-service' |>
-#    }
-#    if 'lbaas' in $::openstack::config::neutron_service_plugins {
-#        ensure_resource( 'package', 'neutron-lbaas-agent', {
-#            name   => 'openstack-neutron-lbaas',
-#            tag    => ['openstack', 'neutron-package'],
-#        })
-#        Package['neutron-lbaas-agent'] ~> Service<| tag == 'neutron-service' |>
-#    }
-#    file { '/etc/neutron/api-paste.ini':
-#        ensure  => file,
-#        mode    => '0640',
-#    }
-#    Class['::neutron::server'] -> File['/etc/neutron/api-paste.ini']
-#   }
-
   anchor { 'neutron_common_first': } ->
   class { '::neutron::server::notifications':
     nova_url       => "${::openstack::config::http_protocol}://${controller_management_address}:8774/v2/",

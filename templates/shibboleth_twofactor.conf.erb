@@ -1,0 +1,37 @@
+      
+  # NOTE: we could replace <%= @twofactor_protocol %> with any other WEBSSO_CHOICES
+  <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/<%= @twofactor_protocol %>/auth>
+      ShibRequestSetting requireSession 1
+      ShibRequestSetting authnContextClassRef <%= @twofactor_authnContext %>
+      AuthType shibboleth
+      ShibExportAssertion Off
+      Require valid-user
+  </LocationMatch>
+                   
+  <Location /v3/auth/OS-FEDERATION/websso/<%= @twofactor_protocol %>>
+      ShibRequestSetting authnContextClassRef <%= @twofactor_authnContext %>
+      AuthType shibboleth
+      ShibRequestSetting requireSession 1
+      ShibRequestSetting exportAssertion 1
+      <IfVersion < 2.4>
+              ShibRequireSession On
+              ShibRequireAll On
+      </IfVersion>
+      Require valid-user
+  </Location>
+
+  <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/<%= @twofactor_protocol %>/auth>
+      ShibRequestSetting authnContextClassRef <%= @twofactor_authnContext %>
+      ShibRequestSetting requireSession 1
+      AuthType shibboleth
+      ShibExportAssertion Off
+      Require valid-user
+  </LocationMatch>
+  
+  <LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/<%= @twofactor_protocol %>/websso>
+      ShibRequestSetting authnContextClassRef <%= @twofactor_authnContext %>
+      ShibRequestSetting requireSession 1
+      AuthType shibboleth
+      ShibExportAssertion Off
+      Require valid-user
+  </LocationMatch>

@@ -10,10 +10,6 @@ class openstack::profile::neutron::compute_dvr {
     manage_service          => $start_l3_agent,
     agent_mode              => 'dvr',
   }
-  class { '::neutron::services::fwaas':
-    driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
-    enabled => true,
-  }
   # Metadata Agent
   class { '::neutron::agents::metadata':
     auth_password => $::openstack::config::neutron_password,

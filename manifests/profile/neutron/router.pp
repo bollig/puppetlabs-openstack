@@ -94,12 +94,6 @@ class openstack::profile::neutron::router {
     enabled => $vpnaas_enabled,
   }
 
-    # Packstack establishes this
-    if defined(Class['neutron::services::fwaas']) {
-          Class['neutron::services::fwaas'] -> Class['neutron::agents::l3']
-    }
-
-
     # Metering Agent requires L3 Agent 
   class { '::neutron::agents::metering':
     enabled => true,
@@ -108,10 +102,6 @@ class openstack::profile::neutron::router {
     #driver  => 'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver',
   }
 
-  class { '::neutron::services::fwaas':
-    driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
-    enabled => true,
-  }
 
   #$external_bridge = 'br-ex'
   #$external_network = $::openstack::config::network_external

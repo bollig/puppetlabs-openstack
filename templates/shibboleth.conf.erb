@@ -1,34 +1,45 @@
+      
+  # NOTE: we could replace <%= @shib_protocol %> with any other WEBSSO_CHOICES
+  <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/<%= @shib_protocol %>/auth>
+      ShibRequestSetting requireSession 1
+<% if @shib_require_authnContext %>
+      ShibRequestSetting authnContextClassRef <%= @shib_authnContext %>
+<% end -%>
+      AuthType shibboleth
+      ShibExportAssertion Off
+      Require valid-user
+  </LocationMatch>                 
 
-ShibURLScheme https
+  <Location /v3/auth/OS-FEDERATION/websso/<%= @shib_protocol %>>
+<% if @shib_require_authnContext %>
+      ShibRequestSetting authnContextClassRef <%= @shib_authnContext %>
+<% end -%>
+      AuthType shibboleth
+      ShibRequestSetting requireSession 1
+      ShibRequestSetting exportAssertion 1
+      <IfVersion < 2.4>
+              ShibRequireSession On
+              ShibRequireAll On
+      </IfVersion>
+      Require valid-user
+  </Location>
 
-# NOTE: we could replace saml2 with any other WEBSSO_CHOICES
-
-<Location /v3/auth/OS-FEDERATION/websso/saml2>
-    AuthType shibboleth
-    ShibRequestSetting requireSession 1
-    ShibRequestSetting exportAssertion 1
-    ShibRequestSetting redirectToSSL 443
-    <IfVersion < 2.4>
-            ShibRequireSession On
-            ShibRequireAll On
-    </IfVersion>
-    Require valid-user
-</Location>
-
-<LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/saml2/auth>
-    ShibRequestSetting requireSession 1
-    ShibRequestSetting redirectToSSL 443
-    AuthType shibboleth
-    ShibExportAssertion Off
-    Require valid-user
-</LocationMatch>
-
-<LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/saml2/websso>
-    ShibRequestSetting requireSession 1
-    ShibRequestSetting redirectToSSL 443
-    AuthType shibboleth
-    ShibExportAssertion Off
-    Require valid-user
-</LocationMatch>
-
-
+  <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/<%= @shib_protocol %>/auth>
+<% if @shib_require_authnContext %>
+      ShibRequestSetting authnContextClassRef <%= @shib_authnContext %>
+<% end -%>
+      ShibRequestSetting requireSession 1
+      AuthType shibboleth
+      ShibExportAssertion Off
+      Require valid-user
+  </LocationMatch>
+  
+  <LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/<%= @shib_protocol %>/websso>
+<% if @shib_require_authnContext %>
+      ShibRequestSetting authnContextClassRef <%= @shib_authnContext %>
+<% end -%>
+      ShibRequestSetting requireSession 1
+      AuthType shibboleth
+      ShibExportAssertion Off
+      Require valid-user
+  </LocationMatch>

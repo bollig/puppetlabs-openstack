@@ -25,6 +25,13 @@ class openstack::profile::keystone (
   $ldap_pool_retry_max              = 3,
   $ldap_pool_connection_timeout     = 120,
   $enable_shib_domain               = false,
+  $shib_applicationId               = 'default',
+  $shib_protocol                    = 'saml2',
+  $shib_require_authnContext        = false,
+  $shib_authnContext                = $::os_service_default,
+  $enable_twofactor                 = false,
+  $twofactor_protocol               = $::os_service_default,
+  $twofactor_authnContext           = $::os_service_default,
   $trusted_dashboard                = 'http://localhost/dashboard/auth/websso/',
 ) {
 
@@ -42,7 +49,7 @@ class openstack::profile::keystone (
   class { '::keystone::roles::admin':
     email        => $::openstack::config::keystone_admin_email,
     password     => $::openstack::config::keystone_admin_password,
-    #admin_tenant => 'admin',
+    admin_tenant => 'admin',
   }
 
   class { 'keystone::endpoint':
@@ -146,15 +153,13 @@ class openstack::profile::keystone (
 
     class { 'keystone::federation::shibboleth': 
       #methods => ['password', 'token', 'oauth1', 'saml2'],
-      methods => ['password', 'token', 'saml2'],
+      methods => ['password', 'token', $shib_protocol, $twofactor_protocol],
       main_port => true,
       admin_port => false,
       suppress_warning => true,
       # Match the name of the yumrepo above:
       yum_repo_name => 'shibboleth',
     }
-
-#TODO: file_line inject twofactor auth into /etc/httpd/conf.d/10-keystone-*
 
     service { 'shibd': 
       enable => true,
@@ -170,11 +175,30 @@ class openstack::profile::keystone (
       'federation/trusted_dashboard': value => $trusted_dashboard;
     }
 
+    concat::fragment { 'configure_common_saml2_on_port_5000':
+        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_main.conf",
+        content => template('openstack/shibboleth_common.conf.erb'),
+        order   => 331,
+    }
+   
     concat::fragment { 'configure_saml2_on_port_5000':
         target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_main.conf",
         content => template('openstack/shibboleth.conf.erb'),
         order   => 332,
     }
+ 
+    if $enable_twofactor {   
+      concat::fragment { 'configure_twofactor_saml2_on_port_5000':
+          target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_main.conf",
+          content => template('openstack/shibboleth_twofactor.conf.erb'),
+          order   => 333,
+      }
+      keystone_config { 
+        "${twofactor_protocol}/remote_id_attribute": value => 'Shib-Identity-Provider'; 
+        "auth/${twofactor_protocol}": value => 'keystone.auth.plugins.mapped.Mapped';
+      }
+    }
+
 #
 #    concat::fragment { 'configure_saml2_on_port_35357':
 #        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_admin.conf",
@@ -190,18 +214,18 @@ class openstack::profile::keystone (
     # Following  https://bigjools.wordpress.com/2015/05/22/saml-federation-with-openstack/
     # 
     # ## Default group for SAML users to join
-    # openstack group create samlusers
-    # openstack role add --project demo --group samlusers _member_
+    #   openstack group create samlusers
+    #   openstack role add --project demo --group samlusers _member_
     # ## ID Provider
-    # openstack identity provider create testshib
+    #   openstack identity provider create testshib
     # ## Mapping
-    # group_id=`openstack group list|grep samlusers|awk '{print $2}'`
-    # cat add-mapping.json|sed s^GROUP_ID^$group_id^ > /tmp/mapping.json
-    # openstack mapping create --rules /tmp/mapping.json saml_mapping
+    #   group_id=`openstack group list|grep samlusers|awk '{print $2}'`
+    #   cat add-mapping.json|sed s^GROUP_ID^$group_id^ > /tmp/mapping.json
+    #   openstack mapping create --rules /tmp/mapping.json saml_mapping
     # ## Protocol
-    # openstack federation protocol create --identity-provider testshib --mapping saml_mapping saml2
+    #   openstack federation protocol create --identity-provider testshib --mapping saml_mapping saml2
     # ## Associated Mapping
-    # openstack identity provider set --remote-id <your entity ID> testshib       
+    #   openstack identity provider set --remote-id <your entity ID /idp/profiles/shibboleth> testshib       
     
 
   }

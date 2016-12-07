@@ -1,0 +1,7 @@
+
+  # NOTE: we could replace saml2 with any other WEBSSO_CHOICES
+  ShibURLScheme https
+
+  <Location />
+    ShibRequestSetting applicationId <%= @shib_applicationId %> 
+  </Location>

@@ -91,6 +91,30 @@ class openstack::common::neutron (
   $pass                = $::openstack::config::mysql_pass_neutron
   $database_connection = "mysql://${user}:${pass}@${controller_management_address}/neutron"
 
+  if 'vpnaas' in $::openstack::config::neutron_service_plugins {
+    $ensure_vpnaas_pkg = true
+  } else {
+    $ensure_vpnaas_pkg = false
+  }
+
+  if 'firewall' in $::openstack::config::neutron_service_plugins {
+    class { '::neutron::services::fwaas':
+      driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
+      enabled => true,
+    }
+
+    # Packstack establishes this
+    if defined(Class['neutron::services::fwaas']) {
+          Class['neutron::services::fwaas'] -> Class['neutron::agents::l3']
+    }
+  }
+
+  if "neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2" in $::openstack::config::neutron_service_plugins or 'lbaas' in $::openstack::config::neutron_service_plugins {
+    $ensure_lbaas_pkg = true
+  } else {
+    $ensure_lbaas_pkg = false
+  }
+
     # Neutron API
   class { '::neutron::server':
     auth_uri            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
@@ -102,13 +126,10 @@ class openstack::common::neutron (
     #service_name 	=> $service_name,
     sync_db             => $enable_service,
     service_providers => ['LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default'],
-#'LOADBALANCERV2:Octavia:neutron_lbaas.drivers.octavia.driver.OctaviaDriver:default'],
-#        'LOADBALANCER:Haproxy:neutron_lbaas.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver',
-#        'VPN:openswan:neutron_vpnaas.services.vpn.service_drivers.ipsec.IPsecVPNDriver:default'
-
-    #mysql_module        => '2.2',
+    ensure_vpnaas_package => $ensure_vpnaas_pkg,
+    ensure_fwaas_package  => false,
+    ensure_lbaas_package  => $ensure_lbaas_pkg,
   }
-
   # This is a HUGE hack. The Neutron puppet module does not include a
   # wsgi::apache.pp class yet. I adapted from the nova class to ensure we are
   # consistently using wsgi endpoints for our apis. 
