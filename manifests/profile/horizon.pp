@@ -1,6 +1,8 @@
 # Profile to install the horizon web service
 # user_domain => This is the default domain for users to authenticate. Override with hiera to match the ldap domain 
 class openstack::profile::horizon ( 
+  $session_timeout = 1800,
+  $multi_domain_support = false,
   $user_domain = 'default',
   $enable_shib_openrc = false,
   $shib_ecp_idp_url = 'http://localhost/idp/profile/shibboleth',
@@ -24,12 +26,15 @@ class openstack::profile::horizon (
 
   class { '::horizon':
     keystone_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
-    keystone_multidomain_support => true,
+    keystone_multidomain_support => $multi_domain_support,
     keystone_default_domain      => $user_domain,
     allowed_hosts   => concat([ '127.0.0.1', $::openstack::config::controller_address_api, $::fqdn ], $::openstack::config::horizon_allowed_hosts),
     server_aliases  => concat([ '127.0.0.1', $::openstack::config::controller_address_api, $::fqdn ], $::openstack::config::horizon_server_aliases),
     secret_key      => $::openstack::config::horizon_secret_key,
     cache_server_ip => $::openstack::config::controller_address_management,
+    cache_backend   => "django.core.cache.backends.memcached.MemcachedCache",
+    secure_cookies  => true,
+    session_timeout => $session_timeout,
     neutron_options => { 
         'enable_lb'                 => $enable_lbaas,
         'enable_firewall'           => $enable_firewall,

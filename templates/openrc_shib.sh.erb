@@ -20,7 +20,8 @@ export OS_IDENTITY_API_VERSION='3'
 # as the entity that owns the resources.
 export OS_PROJECT_ID={{ tenant_id }}
 export OS_PROJECT_NAME="{{ tenant_name|shellfilter }}"
-export OS_USER_DOMAIN_NAME="{{ user_domain_name|shellfilter }}"
+#export OS_USER_DOMAIN_NAME="{{ user_domain_name|shellfilter }}"
+unset OS_USER_DOMAIN_NAME
 if [ -z "$OS_USER_DOMAIN_NAME" ]; then unset OS_USER_DOMAIN_NAME; fi
 unset OS_PROJECT_DOMAIN_NAME
 
@@ -45,7 +46,7 @@ export OS_PROTOCOL=saml2
 export OS_IDENTITY_PROVIDER_URL=<%= @shib_ecp_idp_url %>
 
 # With Keystone you pass the keystone password.
-read -t 30 -p "Please enter your Password:" -sr OS_PASSWORD_INPUT
+read -t 30 -p "Please enter your Shibboleth Password:" -sr OS_PASSWORD_INPUT
 export OS_PASSWORD=$OS_PASSWORD_INPUT
 
 export OS_TOKEN=$( openstack token issue -c id -f value 2> /dev/null )

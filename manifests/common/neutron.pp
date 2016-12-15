@@ -102,11 +102,6 @@ class openstack::common::neutron (
       driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
       enabled => true,
     }
-
-    # Packstack establishes this
-    if defined(Class['neutron::services::fwaas']) {
-          Class['neutron::services::fwaas'] -> Class['neutron::agents::l3']
-    }
   }
 
   if "neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2" in $::openstack::config::neutron_service_plugins or 'lbaas' in $::openstack::config::neutron_service_plugins {

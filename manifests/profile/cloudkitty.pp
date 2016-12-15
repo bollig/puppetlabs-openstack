@@ -60,14 +60,14 @@ systemctl restart openstack-cloudkitty-*
     content => template('openstack/etc__cloudkitty__cloudkitty.erb'),
     owner   => 'root',
     group   => 'cloudkitty',
-    mode    => 640,
+    mode    => '640',
   }
   file { '/etc/cloudkitty/api_paste.ini': 
       source => 'puppet:///modules/openstack/etc__cloudkitty__api_paste.ini',
       ensure => 'present',
       owner   => 'root',
       group   => 'cloudkitty',
-      mode => 640,
+      mode => '640',
   }
 
 

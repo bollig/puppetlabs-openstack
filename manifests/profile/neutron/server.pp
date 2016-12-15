@@ -78,7 +78,7 @@ class openstack::profile::neutron::server (
         content => template('openstack/etc__neutron__bgp_dragent.erb'),
         owner   => 'root',
         group   => 'neutron',
-        mode    => 640,
+        mode    => '640',
       }
 
       Package['neutron-bgp-dragent'] -> Service['neutron-bgp-dragent']

@@ -1,4 +1,10 @@
 class openstack::profile::neutron::compute_dvr {
+
+  # Packstack establishes this
+  if defined(Class['neutron::services::fwaas']) {
+    Class['neutron::services::fwaas'] -> Class['neutron::agents::l3']
+  }
+
   class { '::neutron::agents::l3':
     debug                   => $::openstack::config::debug,
     #DEPRECATED: 
