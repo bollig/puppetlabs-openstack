@@ -74,7 +74,7 @@ class openstack::profile::keystone (
     }
   }
 
-  class { '::keystone::disable_admin_token_auth': }
+  class { '::keystone::disable_admin_token_auth': require => Class[ '::keystone::endpoint'] }
 
   $domains = $::openstack::config::keystone_domains
   $tenants = $::openstack::config::keystone_tenants

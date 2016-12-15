@@ -3,7 +3,9 @@
 # 
 # TODO: redirect http to SSL: http://stackoverflow.com/questions/13227544/haproxy-redirecting-http-to-https-ssl
 # TODO: consider switching to the "frontend" and "backend" resources
-class openstack::profile::haproxy::init {
+class openstack::profile::haproxy::init(
+  $enable_certfile=false
+) {
   # NOTE: in modules/openstack/manifests/profile/neutron/router.pp, I set
   # "manage_haproxy_package=>false" for the lbaas service. If this gets
   # disabled, we probably want to enable that option again
@@ -42,29 +44,37 @@ class openstack::profile::haproxy::init {
   #ssl_key         => $::openstack::config::keystone_ssl_keyfile,
   #ssl_chain       => $::openstack::config::ssl_chainfile,
 
-  $haproxy_cert = $::openstack::config::haproxy_ssl_certfile
-  concat { $haproxy_cert:
-    owner => 'root',
-    group => 'haproxy',
-    mode => '0640',
-    ensure_newline => true
+  selboolean { 'haproxy_connect_any':
+    name => 'haproxy_connect_any',
+    persistent => true,
+    value => on,
   }
 
-  concat::fragment { 'haproxy_cert':
-    target => $haproxy_cert,
-    source => $::openstack::config::keystone_ssl_certfile,
-    order => '01',
-  }
+  if $enable_certfile {
 
-  concat::fragment { 'haproxy_key':
-    target => $haproxy_cert,
-    source => $::openstack::config::keystone_ssl_keyfile,
-    order => '02',
-  }
-  concat::fragment { 'haproxy_chain':
-    target => $haproxy_cert,
-    source => $::openstack::config::ssl_chainfile,
-    order => '03',
-  }
+    $haproxy_cert = $::openstack::config::haproxy_ssl_certfile
+    concat { $haproxy_cert:
+      owner => 'root',
+      group => 'haproxy',
+      mode => '0640',
+      ensure_newline => true
+    }
 
+    concat::fragment { 'haproxy_cert':
+      target => $haproxy_cert,
+      source => $::openstack::config::keystone_ssl_certfile,
+      order => '01',
+    }
+
+    concat::fragment { 'haproxy_key':
+      target => $haproxy_cert,
+      source => $::openstack::config::keystone_ssl_keyfile,
+      order => '02',
+    }
+    concat::fragment { 'haproxy_chain':
+      target => $haproxy_cert,
+      source => $::openstack::config::ssl_chainfile,
+      order => '03',
+    }
+  }
 }
