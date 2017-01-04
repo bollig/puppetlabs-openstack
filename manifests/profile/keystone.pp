@@ -35,7 +35,6 @@ class openstack::profile::keystone (
   $trusted_dashboard                = 'http://localhost/dashboard/auth/websso/',
 ) {
 
-  openstack::resources::database { 'keystone': }
   openstack::resources::firewall { 'Keystone Public and Internal API': port => '5000', }
   openstack::resources::firewall { 'Keystone Admin API': port => '35357', }
 
@@ -45,22 +44,6 @@ class openstack::profile::keystone (
   #class { '::keystone::db::mysql':
   #    password => 'keystone',
   #}
-
-  class { '::keystone::roles::admin':
-    email        => $::openstack::config::keystone_admin_email,
-    password     => $::openstack::config::keystone_admin_password,
-    admin_tenant => 'admin',
-  }
-
-  class { 'keystone::endpoint':
-    public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:5000",
-    admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
-    internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
-    region       => $::openstack::config::region,
-# If set to '' then the API version is detected at runtime
-    #version      => 'v3',
-  }
-
 
   if $::openstack::config::keystone_use_httpd == true {
     include ::apache
@@ -74,16 +57,6 @@ class openstack::profile::keystone (
     }
   }
 
-  class { '::keystone::disable_admin_token_auth': require => Class[ '::keystone::endpoint'] }
-
-  $domains = $::openstack::config::keystone_domains
-  $tenants = $::openstack::config::keystone_tenants
-  $users   = $::openstack::config::keystone_users
-
-  create_resources('openstack::resources::domain', $domains)
-  create_resources('openstack::resources::tenant', $tenants)
-  create_resources('openstack::resources::user', $users)
- 
   if $enable_ldap_domain == true {
     keystone_domain { "${ldap_user_domain}": ensure => present }
     keystone::ldap_backend { "${ldap_user_domain}":

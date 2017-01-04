@@ -1,16 +1,17 @@
 class openstack::role::controller inherits ::openstack::role {
-  class { '::openstack::profile::rabbitmq': } ->
-  class { '::openstack::profile::memcache': } ->
-  class { '::openstack::profile::mysql': } ->
-  class { '::openstack::profile::mongodb': } ->
-  class { '::openstack::profile::keystone': } ->
-  #class { '::openstack::profile::swift::proxy': } ->
-  class { '::openstack::profile::glance::auth': } ->
-  class { '::openstack::profile::cinder::auth': } ->
-  class { '::openstack::profile::nova::api': } ->
-  class { '::openstack::profile::heat::api': } ->
-  class { '::openstack::profile::horizon': }
+  include ::openstack::role::common
+
+  # Generic Controller has all API services
+  class { '::openstack::profile::keystone': }
   class { '::openstack::profile::neutron::server': } 
-  class { '::openstack::profile::ceilometer::api': } 
-  class { '::openstack::profile::cloudkitty': } 
+  class { '::openstack::profile::nova::api': } 
+  class { '::openstack::profile::heat::api': }
+  class { '::openstack::profile::ceilometer::api': }
+
+  # It also has the web server
+  class { '::openstack::profile::horizon': }
+
+  # Disabled 
+  #class { '::openstack::profile::swift::proxy': }
+  #class { '::openstack::profile::cloudkitty': } 
 }

@@ -23,6 +23,11 @@ LimitNOFILE=${max_file_limit}
 "
     }  
  
+  if $bind_address == 'ip_address' { 
+    $l_bind_address = $::ipaddress
+  } else {
+    $l_bind_address = $bind_address
+  }
 
   class { '::mysql::server':
     root_password    => $::openstack::config::mysql_root_password,
@@ -30,7 +35,7 @@ LimitNOFILE=${max_file_limit}
     override_options => {
       'mysqld' => {
                     #'bind_address'           => $::openstack::config::controller_address_management,
-                    'bind_address'           => $bind_address,
+                    'bind_address'           => $l_bind_address,
                     'default-storage-engine' => 'innodb',
                     # http://blog.endpoint.com/2013/12/increasing-mysql-55-maxconnections-on.html
                     'open_files_limit' => 8192,
@@ -57,4 +62,5 @@ LimitNOFILE=${max_file_limit}
     backupdir     => '/tmp/backup',
     provider      => 'xtrabackup',
   }
+  Class['mysql::server'] -> Class['mysql::server::backup']
 }

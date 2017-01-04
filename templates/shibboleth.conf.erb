@@ -3,7 +3,10 @@
   <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/<%= @shib_protocol %>/auth>
       ShibRequestSetting requireSession 1
 <% if @shib_require_authnContext %>
-      ShibRequestSetting authnContextClassRef <%= @shib_authnContext %>
+# By commenting this out, we open the auth endpoint to both ECP clients and Horizon
+# The other endpoints below will result in Horizon prompting for two factor
+# while ECP will only be prompted for one 
+#      ShibRequestSetting authnContextClassRef <%= @shib_authnContext %>
 <% end -%>
       AuthType shibboleth
       ShibExportAssertion Off
@@ -23,16 +26,6 @@
       </IfVersion>
       Require valid-user
   </Location>
-
-  <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/<%= @shib_protocol %>/auth>
-<% if @shib_require_authnContext %>
-      ShibRequestSetting authnContextClassRef <%= @shib_authnContext %>
-<% end -%>
-      ShibRequestSetting requireSession 1
-      AuthType shibboleth
-      ShibExportAssertion Off
-      Require valid-user
-  </LocationMatch>
   
   <LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/<%= @shib_protocol %>/websso>
 <% if @shib_require_authnContext %>

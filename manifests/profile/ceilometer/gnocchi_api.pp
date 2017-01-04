@@ -7,8 +7,6 @@ class openstack::profile::ceilometer::gnocchi_api (
   $cors_allowed_origin = 'http://localhost:3000',
   $storage_type = 'file',
 ) {
-      # Make the mysql db user 'gnocchi' exists
-      openstack::resources::database { 'gnocchi': }
       openstack::resources::firewall { 'GNOCCHI API': port => '8041', }
 # NOTE: set the ceilometer polling interval to 20 seconds:
 # /etc/ceilometer/pipeline.yaml (:%s/600/20/g)
@@ -61,7 +59,6 @@ class openstack::profile::ceilometer::gnocchi_api (
 	  workers         => 3
     }
 
-    class { '::gnocchi::db::sync': }
     class { '::gnocchi::storage': }
     #class { '::gnocchi::storage::file': }
     #class { '::gnocchi::storage::ceph': }

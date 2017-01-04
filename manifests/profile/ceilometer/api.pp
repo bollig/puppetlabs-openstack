@@ -9,8 +9,6 @@ class openstack::profile::ceilometer::api (
       $neutron_lbaas_version = 'v2',
 ) {
 
-  $mongo_username                = $::openstack::config::ceilometer_mongo_username
-  $mongo_password                = $::openstack::config::ceilometer_mongo_password
 
   $ceilometer_management_address = $::openstack::config::ceilometer_address_management
   $controller_management_address = $::openstack::config::controller_address_management
@@ -26,19 +24,18 @@ class openstack::profile::ceilometer::api (
       'rgw_admin_credentials/secret_key': value => $rgw_admin_secret_key;
     } 
 
+    ensure_packages(['python-pip'])
+    file { '/usr/bin/pip-python':
+      ensure => 'link',
+      target => '/usr/bin/pip',
+      require => Package['python-pip']
+    } ->
     package { 'requests-aws':
       ensure => 'present',
       provider => pip,
+      require => Package['python-pip'],
       tag    => ['openstack', 'ceilometer-package'],
     }
-  }
-  # Setup the ceilometer user in keystone and register endpoints (control)
-  class { '::ceilometer::keystone::auth':
-    password         => $::openstack::config::ceilometer_password,
-    public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8777",
-    admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8777",
-    internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8777",
-    region           => $::openstack::config::region,
   }
 
   # Setup ceilometer API service (control)
@@ -72,14 +69,6 @@ class openstack::profile::ceilometer::api (
   # Install central agent (deprecated)
    #class { 'ceilometer::agent::central':
    #}
-
-  # Purge 1 month old meters (wherever mongo service is (control))
-  class { '::ceilometer::expirer': }
-        #enable_cron => true,
-	# Expire on the first of January at 12:01 am
- 	#monthday => '1',
-        #month => '1',
-  #}
 
   # Install notification agent (with API (control))
   class { '::ceilometer::agent::notification':
@@ -115,7 +104,7 @@ class openstack::profile::ceilometer::api (
 
       class { '::ceilometer::alarm::evaluator':
       }
-	# CRITICAL: The collector service sends data to mongodb
+	# CRITICAL: The collector service sends data to ceilometer's backing db
       class { '::ceilometer::collector': }                                                                                                         
     }
     'RedHat': {
@@ -150,24 +139,4 @@ class openstack::profile::ceilometer::api (
     }
   }
 
-  mongodb_database { 'ceilometer':
-    ensure  => present,
-    tries   => 20,
-    require => Class['mongodb::server'],
-  }
-
-  if $mongo_username and $mongo_password {
-    mongodb_user { $mongo_username:
-      ensure        => present,
-      password_hash => mongodb_password($mongo_username, $mongo_password),
-      database      => 'ceilometer',
-      roles         => ['readWrite', 'dbAdmin'],
-      tries         => 10,
-      require       => [Class['mongodb::server'], Class['mongodb::client']],
-      before        => Exec['ceilometer-dbsync'],
-    }
-  }
-
-
-  Class['::mongodb::server'] -> Class['::mongodb::client'] -> Exec['ceilometer-dbsync']
 }

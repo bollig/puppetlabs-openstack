@@ -28,6 +28,15 @@ class openstack::profile::neutron::router {
       $start_l3_agent = true
   }
 
+  # TODO: find a place for this. the fwaas is needed to start bgp? 
+  if 'firewall' in $::openstack::config::neutron_service_plugins {
+    class { '::neutron::services::fwaas':
+      driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
+      enabled => true,
+    }
+  }
+
+
      # L3 Agent  (required)
   class { '::neutron::agents::l3':
     debug                   => $::openstack::config::debug,

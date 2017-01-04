@@ -97,7 +97,6 @@ class openstack::profile::glance::api (
   }
 
   if $enable_haproxy {
-	include ::openstack::profile::haproxy::init
 	include ::openstack::profile::haproxy::glance
 #	haproxy::listen { 'glance-api-in':
 # 	  bind => {

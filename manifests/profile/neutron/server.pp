@@ -3,8 +3,6 @@ class openstack::profile::neutron::server (
   $bgp_router_id = '127.0.0.1'
 ) {
   
-    # Defines ::neutron::db::mysql
-  openstack::resources::database { 'neutron': }
   openstack::resources::firewall { 'Neutron API': port => '9696', }
 
   class { '::openstack::common::neutron': enable_service => true }
@@ -68,7 +66,6 @@ class openstack::profile::neutron::server (
 #    'DEFAULT/bind_host': value => '127.0.0.1';
 #  }
   if $enable_haproxy {
-	include ::openstack::profile::haproxy::init
 	include ::openstack::profile::haproxy::neutron
   }
 

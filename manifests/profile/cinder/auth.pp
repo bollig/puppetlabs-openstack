@@ -2,6 +2,8 @@
 # Because of the include, api must come before auth if colocated
 class openstack::profile::cinder::auth {
 
+  openstack::resources::database { 'cinder': }
+
   # TODO: this auth could be through the storage_address_api or
   # storage_address_management, but we'd need to ensure the Cinder::API is also
   # distributed via the storage role, not the control role

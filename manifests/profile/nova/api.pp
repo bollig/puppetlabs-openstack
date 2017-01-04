@@ -5,32 +5,11 @@ class openstack::profile::nova::api (
 
   $controller_management_address = $::openstack::config::controller_address_management
 
-  openstack::resources::database { 'nova': }
   openstack::resources::firewall { 'Nova API': port => '8774', }
   openstack::resources::firewall { 'Nova Metadata': port => '8775', }
   openstack::resources::firewall { 'Nova EC2': port => '8773', }
   openstack::resources::firewall { 'Nova S3': port => '3333', }
   openstack::resources::firewall { 'Nova novnc': port => '6080', }
-
-  class { '::nova::keystone::auth':
-    password         => $::openstack::config::nova_password,
-# TODO: in subsequent versions of the puppet nova module we wont be able to
-# specify public_address. Use public_uri, or public_url and ec2_public_url
-    public_address   => $::openstack::config::controller_address_api,
-    internal_address => $::openstack::config::controller_address_management,
-    admin_address    => $::openstack::config::controller_address_management,
-# TODO: if needed replace the following 3 lines with public_uri
-    public_protocol  => $::openstack::config::http_protocol, 
-    admin_protocol  => $::openstack::config::http_protocol, 
-    internal_protocol  => $::openstack::config::http_protocol, 
-    public_url_v3    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8774/v3",
-    internal_url_v3  => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v3",
-    admin_url_v3     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v3",
-    public_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8774/v2",
-    internal_url  => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2",
-    admin_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2",
-    region           => $::openstack::config::region,
-  }
 
   include ::openstack::common::nova
 
@@ -107,7 +86,7 @@ class openstack::profile::nova::api (
     path => '/usr/lib/python2.7/site-packages/nova/crypto.py',
     match => "def generate_key_pair\(bits=2048\):.*",
     line  => "def generate_key_pair(bits=4096):",
-    after => Exec['refresh_horizon_django_cache'],
+    require => Package['python-nova']
   }
 
 }

@@ -4,13 +4,19 @@ class openstack::profile::mongodb (
 ) {
   $management_network = $::openstack::config::network_management
 
+  if $bind_address == 'ip_address' { 
+    $l_bind_address = $::ipaddress
+  } else {
+    $l_bind_address = $bind_address
+  }
+
   class { '::mongodb::globals':
     manage_package_repo => true,
   }
 
   class { '::mongodb::server':
     #bind_ip => ['127.0.0.1', $::openstack::config::controller_address_management],
-    bind_ip => ['127.0.0.1', $bind_address ],
+    bind_ip => ['127.0.0.1', $l_bind_address ],
   }
 
 # THIS IS NOW PART OF THE common/ceilometer.pp

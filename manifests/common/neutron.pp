@@ -39,7 +39,7 @@ class openstack::common::neutron (
   $data_address = ip_for_network($data_network)
 
   # neutron auth depends upon a keystone configuration
-  include ::openstack::common::keystone
+  #include ::openstack::common::keystone
   class { '::vswitch::ovs': }
 
 
@@ -66,26 +66,6 @@ class openstack::common::neutron (
 #    ca_file               => $::openstack::config::ssl_chainfile,
   }
 
-# Base Neutron authentication config (pointing to Keystone)
-  class { '::neutron::keystone::auth':
-    password         => $::openstack::config::neutron_password,
-# TODO: when neutron supports chain files and/or wsgi, enable ssl: 
-#    public_url       => "http://${::openstack::config::controller_address_api}:9696",
-#    admin_url        => "http://${::openstack::config::controller_address_management}:9696",
-#    internal_url     => "http://${::openstack::config::controller_address_management}:9696",
-    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
-    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
-    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
-    #public_address   => $::openstack::config::controller_address_api,
-    #internal_address => $::openstack::config::controller_address_management,
-    #admin_address    => $::openstack::config::controller_address_management,
-    #public_protocol  => $::openstack::config::http_protocol, 
-    #admin_protocol  => $::openstack::config::http_protocol, 
-    #internal_protocol  => $::openstack::config::http_protocol, 
-# END: when neutron supports chain files and/or wsgi, enable ssl: 
-    region           => $::openstack::config::region,
-  }
-
 
   $user                = $::openstack::config::mysql_user_neutron
   $pass                = $::openstack::config::mysql_pass_neutron
@@ -95,13 +75,6 @@ class openstack::common::neutron (
     $ensure_vpnaas_pkg = true
   } else {
     $ensure_vpnaas_pkg = false
-  }
-
-  if 'firewall' in $::openstack::config::neutron_service_plugins {
-    class { '::neutron::services::fwaas':
-      driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
-      enabled => true,
-    }
   }
 
   if "neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2" in $::openstack::config::neutron_service_plugins or 'lbaas' in $::openstack::config::neutron_service_plugins {
@@ -125,6 +98,16 @@ class openstack::common::neutron (
     ensure_fwaas_package  => false,
     ensure_lbaas_package  => $ensure_lbaas_pkg,
   }
+
+  # Note: bug in the neutron module. The neutron-fwaas package can either be installed by the 
+  # class { '::neutron::services::fwaas': } or by ensure_fwaas_package above. They can not both be used though.
+  # This ensure makes the fwaas package is present and does not conflict with the other driver
+  ensure_resource( 'package', 'neutron-fwaas', {
+      'name'   => 'openstack-neutron-fwaas',
+      'ensure' => 'present',
+      'tag'    => 'openstack'
+  })
+
   # This is a HUGE hack. The Neutron puppet module does not include a
   # wsgi::apache.pp class yet. I adapted from the nova class to ensure we are
   # consistently using wsgi endpoints for our apis. 

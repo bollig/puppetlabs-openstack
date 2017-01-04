@@ -55,10 +55,42 @@ class openstack::profile::horizon (
   openstack::resources::firewall { 'Apache SSL (Horizon)': port => '443' }
 
   if $::selinux and str2bool($::selinux) != false {
+    ensure_packages(['openstack-selinux','policycoreutils-python'], {'ensure' => 'present'})
+    exec { "fcontext_openstack-dashboard":
+        command => "semanage fcontext -a -t httpd_var_run_t '/usr/share/openstack-dashboard(/.*)?' && restorecon -R /usr/share/openstack-dashboard",
+        path    => ['/usr/sbin', '/sbin', '/usr/bin', '/bin'],
+        require => [Package['openstack-selinux'],Package['openstack-dashboard'],Package['policycoreutils-python']],
+        before  => Exec['refresh_horizon_django_cache'],
+        unless  => "test -b /usr/share/openstack || (semanage fcontext -l | grep /usr/share/openstack)",
+    }
     selboolean{'httpd_can_network_connect':
       value      => on,
       persistent => true,
     }
+    # For APIs to access DB
+    selboolean{'httpd_can_network_connect_db':
+      value      => on,
+      persistent => true,
+    }
+    selboolean{'httpd_can_network_memcache':
+      value      => on,
+      persistent => true,
+    }
+    selboolean{'httpd_use_openstack':
+      value      => on,
+      persistent => true,
+    }
+    selboolean{'httpd_verify_dns':
+      value      => on,
+      persistent => true,
+    } 
+    selboolean{'nis_enabled':
+      value      => on,
+      persistent => true,
+    } 
+    Selboolean<| |> -> Class['::horizon']
+
+    # TODO: need to figure out how to set the 8041 port allowed for httpd_t
   }
 
   # Override the openrc to get OS_TOKEN support out of box
@@ -69,8 +101,9 @@ class openstack::profile::horizon (
     mode    => '0644',
     #source  => "puppet:///modules/openstack/openrc.sh.template",
     content => template('openstack/openrc_shib.sh.erb'),
-    before => Exec['refresh_horizon_django_cache'],
+    require => Class['::horizon']
   } 
+
   # Override the openrc to get OS_TOKEN support out of box
   # NOTE: v2 is no longer truly V2 authentication. In order to support domains,
   # we have to bump everything to v3. This override intentionally uses the same
@@ -90,18 +123,17 @@ class openstack::profile::horizon (
     path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/api_access/tables.py',
     match => '        table_actions = \(DownloadOpenRCv2, DownloadOpenRC, DownloadEC2,.*',
     line => '        table_actions = ( DownloadOpenRC, DownloadEC2, ',
-    after => Exec['refresh_horizon_django_cache'],
+    require => Class['::horizon']
+  } 
+
+
+
+  # NOTE: this removes the Consistency Groups tab which is a feature not supported by CEPH RBD 
+  file_line { 'Disable consistency groups tab':
+    path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/volumes/tabs.py',
+    match => '.*, CGroupsTab\)',
+    line => '    tabs = (VolumeTab, SnapshotTab, BackupsTab) #, CGroupsTab)',
+    require => Class['::horizon']
   }
-
-
-
- # NOTE: this removes the Consistency Groups tab which is a feature not supported by CEPH RBD 
- file_line { 'Disable consistency groups tab':
-  path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/volumes/tabs.py',
-  match => '.*, CGroupsTab\)',
-  line => '    tabs = (VolumeTab, SnapshotTab, BackupsTab) #, CGroupsTab)',
-  after => Exec['refresh_horizon_django_cache'],
- }
-
 
 }

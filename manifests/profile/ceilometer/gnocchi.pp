@@ -15,14 +15,5 @@ class openstack::profile::ceilometer::gnocchi (
       database_connection => $database_connection,
     }
 
-    # Make the 'gnocchi' user in keystone: 
-    class { '::gnocchi::keystone::auth':
-        password => $::openstack::config::gnocchi_password,
-        public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
-        admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041",
-        internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041",
-        region           => $::openstack::config::region,
-    }
-
     include ::openstack::common::gnocchi
 }

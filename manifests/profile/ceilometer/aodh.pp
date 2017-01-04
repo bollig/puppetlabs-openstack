@@ -8,8 +8,6 @@ class openstack::profile::ceilometer::aodh (
       $pass                = $::openstack::config::mysql_pass_aodh
       $database_connection = "mysql://${user}:${pass}@${management_address}/aodh"
       
-	    # Make the mysql db user 'aodh' exists
-      openstack::resources::database { 'aodh': }
       openstack::resources::firewall { 'AODH API': port => '8042', }
 
 	if $gnocchi_enabled { 
@@ -28,15 +26,7 @@ class openstack::profile::ceilometer::aodh (
      	database_connection => $database_connection,
 	gnocchi_url 	    => $gnocchi_url,	
       }
-	    # Make the 'aodh' user in keystone: 
-      class { '::aodh::keystone::auth':
-        password => $::openstack::config::aodh_password,
-    	public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8042",
-    	admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
-    	internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
-    	region           => $::openstack::config::region,
-      }
-
+      
       # if Keystone is behind wsgi, we can put aodh there as well.   
       if $::openstack::config::keystone_use_httpd == true {
           # Setup the aodh service behind apache wsgi
@@ -77,6 +67,4 @@ class openstack::profile::ceilometer::aodh (
       class { '::aodh::notifier': }
       class { '::aodh::listener': }
       class { '::aodh::evaluator': }
-      class { '::aodh::db::sync': }
-
 }
