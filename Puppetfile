@@ -4,7 +4,7 @@ forge "http://forge.puppetlabs.com"
 mod "puppetlabs-openstack",
 	:git => "git://github.com/bollig/puppetlabs-openstack",
 	#:ref => "master"
-	:ref => "0a436e8"
+	:ref => "0419815"
 
 
 ## The core OpenStack modules
@@ -128,13 +128,14 @@ mod "nanliu/staging", :latest
 mod "puppetlabs/vcsrepo", :latest
 mod "puppetlabs/haproxy", :latest
 mod "dobbymoodge/acl", :latest
-
+mod 'spiette-selinux', :latest
 # indirect dependencies
 
 mod "puppetlabs/firewall", :latest
 mod "puppetlabs/apt", "1.8.0"
 mod "puppetlabs/corosync", :latest
 mod "puppetlabs/mongodb", :latest
-mod "puppetlabs/ntp", :latest
+mod "puppetlabs/ntp", '4.2.0'
 
 mod "jdowning/statsd", :latest
+
