@@ -5,6 +5,7 @@
 class openstack::profile::ceilometer::gnocchi_api ( 
   $enable_grafana_support = false,
   $cors_allowed_origin = 'http://localhost:3000',
+  $install_grafana = false,
   $storage_type = 'file',
 ) {
       openstack::resources::firewall { 'GNOCCHI API': port => '8041', }
@@ -17,11 +18,14 @@ class openstack::profile::ceilometer::gnocchi_api (
   # sudo yum install https://grafanarel.s3.amazonaws.com/builds/grafana-3.1.1-1470047149.x86_64.rpm
   # sudo grafana-cli plugins install sileht-gnocchi-datasource 
   # sudo systemctl start grafana-server
-      notify { "NOTE:   Grafana is not installed by default. Setup manually: 
-         sudo yum install https://grafanarel.s3.amazonaws.com/builds/grafana-3.1.1-1470047149.x86_64.rpm
-         sudo grafana-cli plugins install sileht-gnocchi-datasource 
-         sudo systemctl start grafana-server
-     ": }
+      if $install_grafana == true { 
+        notify { "NOTE:   Grafana is not installed by default. Setup manually: 
+           sudo yum install https://grafanarel.s3.amazonaws.com/builds/grafana-3.1.1-1470047149.x86_64.rpm
+           sudo grafana-cli plugins install sileht-gnocchi-datasource 
+           sudo systemctl start grafana-server
+         ": }
+        openstack::resources::firewall { 'GRAFANA PORTAL': port => '3000', }
+      }
 
       keystone_config { 
         "cors/allowed_origin": value => $cors_allowed_origin;
@@ -37,7 +41,6 @@ class openstack::profile::ceilometer::gnocchi_api (
       #gnocchi_api_paste_ini {
       #  "pipeline:main/pipeline": value => 'cors gnocchi+auth'; 
       #}
-      openstack::resources::firewall { 'GRAFANA PORTAL': port => '3000', }
     } 
 
     # Setup the gnocchi api endpoint

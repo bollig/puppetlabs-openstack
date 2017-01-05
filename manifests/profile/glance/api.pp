@@ -15,8 +15,8 @@ class openstack::profile::glance::api (
   $pass                = $::openstack::config::mysql_pass_glance
   $database_connection = "mysql://${user}:${pass}@${controller_address}/glance"
 
-  openstack::resources::firewall { 'Glance API (Test)': port      => '9293', }
-  openstack::resources::firewall { 'Glance Registry (Test)': port => '9192', }
+  #openstack::resources::firewall { 'Glance API (Test)': port      => '9293', }
+  #openstack::resources::firewall { 'Glance Registry (Test)': port => '9192', }
   openstack::resources::firewall { 'Glance API': port      => '9292', }
   openstack::resources::firewall { 'Glance Registry': port => '9191', }
 
@@ -139,7 +139,4 @@ class openstack::profile::glance::api (
     'taskflow_executor/conversion_format': value=>'raw';
   }
 
-  $images = $::openstack::config::images
-
-  create_resources('glance_image', $images)
 }

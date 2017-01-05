@@ -18,4 +18,10 @@ class openstack::profile::glance::auth {
 	# endpoint service name (defaults to Image Service)
 	service_name => 'glance',
   }
+
+  $images = $::openstack::config::images
+
+  create_resources('glance_image', $images)
+
 }
+
