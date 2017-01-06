@@ -22,6 +22,5 @@ class openstack::profile::glance::auth {
   $images = $::openstack::config::images
 
   create_resources('glance_image', $images)
-
 }
 

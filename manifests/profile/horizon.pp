@@ -61,7 +61,7 @@ class openstack::profile::horizon (
         path    => ['/usr/sbin', '/sbin', '/usr/bin', '/bin'],
         require => [Package['openstack-selinux'],Package['openstack-dashboard'],Package['policycoreutils-python']],
         before  => Exec['refresh_horizon_django_cache'],
-        unless  => "test -b /usr/share/openstack || (semanage fcontext -l | grep /usr/share/openstack)",
+        unless  => "test -b /usr/share/openstack-dashboard || (semanage fcontext -l | grep /usr/share/openstack-dashboard)",
     }
     selboolean{'httpd_can_network_connect':
       value      => on,

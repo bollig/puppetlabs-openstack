@@ -65,7 +65,7 @@ class openstack::profile::nova::api (
   class { '::nova::compute::neutron': }
 
   class { '::nova::vncproxy':
-    host    => $::openstack::controller_address_api,
+    host    => $::openstack::config::controller_address_api,
     enabled => true,
     vncproxy_protocol => $::openstack::config::http_protocol,
   }
