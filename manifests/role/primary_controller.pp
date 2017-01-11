@@ -12,10 +12,10 @@ class openstack::role::primary_controller inherits ::openstack::role {
 
   # It also manages service account creations
   class { '::openstack::profile::heat::auth': }
-  class { '::openstack::profile::cinder::auth': } 
   class { '::openstack::profile::keystone::auth': }
   class { '::openstack::profile::nova::auth': }
   class { '::openstack::profile::ceilometer::auth': }
+  class { '::openstack::profile::cinder::auth': } 
   class { '::openstack::profile::glance::auth': }
   class { '::openstack::profile::neutron::auth': } 
 }

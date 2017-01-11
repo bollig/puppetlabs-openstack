@@ -3,7 +3,6 @@ class openstack::role::controller inherits ::openstack::role {
 
   # Generic Controller has all API services
   class { '::openstack::profile::keystone': }
-  class { '::openstack::profile::neutron::server': } 
   class { '::openstack::profile::nova::api': } 
   class { '::openstack::profile::heat::api': }
   class { '::openstack::profile::ceilometer::api': }

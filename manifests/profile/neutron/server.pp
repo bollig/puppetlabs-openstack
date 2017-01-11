@@ -70,6 +70,13 @@ class openstack::profile::neutron::server (
   }
 
   if 'bgp' in $::openstack::config::neutron_service_plugins {
+
+      if $bgp_router_id == 'ip_address' { 
+        $l_bgp_router_id = $::ipaddress
+      } else {
+        $l_bgp_router_id = $bgp_router_id
+      }
+
       # Note: depends on the bgp_router_id to be set properly
       file { '/etc/neutron/conf.d/neutron-bgp-dragent/bgp_dragent.conf':
         content => template('openstack/etc__neutron__bgp_dragent.erb'),
