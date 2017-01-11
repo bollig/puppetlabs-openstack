@@ -9,6 +9,40 @@ class openstack::profile::base {
   # all nodes need the OpenStack repository
   class { '::openstack::resources::repo': }
 
+  if $::selinux and str2bool($::selinux) != false {
+    ensure_packages(['openstack-selinux','policycoreutils-python'], {'ensure' => 'present'})
+
+    selboolean{'httpd_can_network_connect':
+      value      => on,
+      persistent => true,
+    }
+    # For APIs to access DB
+    selboolean{'httpd_can_network_connect_db':
+      value      => on,
+      persistent => true,
+    }
+    selboolean{'httpd_can_network_memcache':
+      value      => on,
+      persistent => true,
+    }
+    selboolean{'httpd_use_openstack':
+      value      => on,
+      persistent => true,
+    }
+    selboolean{'httpd_verify_dns':
+      value      => on,
+      persistent => true,
+    } 
+    selboolean{'nis_enabled':
+      value      => on,
+      persistent => true,
+    }
+    # this was in horizon.pp but unsure now it's moved here... 
+    #Selboolean<| |> -> Class['::horizon']
+
+    # TODO: need to figure out how to set the 8041 port allowed for httpd_t
+  }
+
   # database anchor
   anchor { 'database-service': }
 

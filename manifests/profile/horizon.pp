@@ -55,42 +55,13 @@ class openstack::profile::horizon (
   openstack::resources::firewall { 'Apache SSL (Horizon)': port => '443' }
 
   if $::selinux and str2bool($::selinux) != false {
-    ensure_packages(['openstack-selinux','policycoreutils-python'], {'ensure' => 'present'})
     exec { "fcontext_openstack-dashboard":
         command => "semanage fcontext -a -t httpd_var_run_t '/usr/share/openstack-dashboard(/.*)?' && restorecon -R /usr/share/openstack-dashboard",
         path    => ['/usr/sbin', '/sbin', '/usr/bin', '/bin'],
-        require => [Package['openstack-selinux'],Package['openstack-dashboard'],Package['policycoreutils-python']],
+        require => [Package['openstack-selinux'],Package['horizon'],Package['policycoreutils-python']],
         before  => Exec['refresh_horizon_django_cache'],
         unless  => "test -b /usr/share/openstack-dashboard || (semanage fcontext -l | grep /usr/share/openstack-dashboard)",
     }
-    selboolean{'httpd_can_network_connect':
-      value      => on,
-      persistent => true,
-    }
-    # For APIs to access DB
-    selboolean{'httpd_can_network_connect_db':
-      value      => on,
-      persistent => true,
-    }
-    selboolean{'httpd_can_network_memcache':
-      value      => on,
-      persistent => true,
-    }
-    selboolean{'httpd_use_openstack':
-      value      => on,
-      persistent => true,
-    }
-    selboolean{'httpd_verify_dns':
-      value      => on,
-      persistent => true,
-    } 
-    selboolean{'nis_enabled':
-      value      => on,
-      persistent => true,
-    } 
-    Selboolean<| |> -> Class['::horizon']
-
-    # TODO: need to figure out how to set the 8041 port allowed for httpd_t
   }
 
   # Override the openrc to get OS_TOKEN support out of box

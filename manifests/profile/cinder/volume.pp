@@ -10,7 +10,6 @@ class openstack::profile::cinder::volume (
 
 
   include ::openstack::common::cinder
-  openstack::resources::firewall { 'ISCSI API': port => '3260', }
 
   class { '::cinder::setup_test_volume':
     volume_name => 'cinder-volumes',
@@ -28,6 +27,7 @@ class openstack::profile::cinder::volume (
 
   case $backend {
     'iscsi': {
+      openstack::resources::firewall { 'ISCSI API': port => '3260', }
       class { '::cinder::volume::iscsi':
         iscsi_ip_address => $management_address,
         volume_group     => 'cinder-volumes',
