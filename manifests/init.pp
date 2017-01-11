@@ -100,10 +100,16 @@
 #   The management IP address of the controller node. Must be in the network_management CIDR.
 #
 # [*storage_address_api*]
-#   The API IP address of the storage node. Must be in the network_api CIDR.
+#   The API IP address of the storage control node. Must be in the network_api CIDR.
 #
 # [*storage_address_management*]
-#   The management IP address of the storage node. Must be in the network_management CIDR.
+#   The management IP address of the storage control node. Must be in the network_management CIDR.
+#
+# [*network_address_api*]
+#   The API IP address of the network control node. Must be in the network_api CIDR.
+#
+# [*network_address_management*]
+#   The management IP address of the network control node. Must be in the network_management CIDR.
 #
 # == Database
 # [*mysql_root_password*]
@@ -441,6 +447,8 @@ class openstack (
   $controller_address_management = undef,
   $storage_address_api = undef,
   $storage_address_management = undef,
+  $network_address_api = undef,
+  $network_address_management = undef,
   $mysql_root_password = undef,
   $mysql_service_password = undef,
   $mysql_allowed_hosts = undef,
@@ -567,9 +575,11 @@ class openstack (
       network_management            => hiera(openstack::network::management),
       network_data                  => hiera(openstack::network::data),
       controller_address_api        => hiera(openstack::controller::address::api),
-      controller_address_management => hiera(openstack::controller::address::management),
-      storage_address_api           => hiera(openstack::storage::address::api),
-      storage_address_management    => hiera(openstack::storage::address::management),
+      controller_address_management => hiera(openstack::controller::address::management, hiera(openstack::controller::address::api)),
+      storage_address_api           => hiera(openstack::storage::address::api, hiera(openstack::controller::address::api)),
+      storage_address_management    => hiera(openstack::storage::address::management, hiera(openstack::storage::address::api)),
+      network_address_api           => hiera(openstack::network::address::api, hiera(openstack::controller::address::api)),
+      network_address_management    => hiera(openstack::network::address::management, hiera(openstack::network::address::api)),
       mysql_root_password           => hiera(openstack::mysql::root_password),
       mysql_service_password        => hiera(openstack::mysql::service_password),
       mysql_allowed_hosts           => hiera(openstack::mysql::allowed_hosts),
@@ -694,8 +704,10 @@ class openstack (
       network_neutron_private       => $network_neutron_private,
       controller_address_api        => $controller_address_api,
       controller_address_management => $controller_address_management,
-      storage_address_api           => $storage_address_api,
-      storage_address_management    => $storage_address_management,
+      storage_address_api           => pick($storage_address_api, $controller_address_api),
+      storage_address_management    => pick($storage_address_management, $controller_address_management),
+      network_address_api           => pick($network_address_api, $controller_address_api),
+      network_address_management    => pick($network_address_management, $controller_address_management),
       mysql_root_password           => $mysql_root_password,
       mysql_service_password        => $mysql_service_password,
       mysql_allowed_hosts           => $mysql_allowed_hosts,

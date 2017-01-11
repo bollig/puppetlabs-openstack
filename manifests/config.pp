@@ -40,6 +40,8 @@ class openstack::config (
   $controller_address_management = undef,
   $storage_address_api = undef,
   $storage_address_management = undef,
+  $network_address_api = undef,
+  $network_address_management = undef,
   $mysql_root_password = undef,
   $mysql_service_password = undef,
   $mysql_allowed_hosts = undef,

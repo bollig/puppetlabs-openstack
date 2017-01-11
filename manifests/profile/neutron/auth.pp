@@ -9,9 +9,9 @@ class openstack::profile::neutron::auth {
   class { '::neutron::keystone::auth':
     password         => $::openstack::config::neutron_password,
 # TODO: when neutron supports chain files and/or wsgi, enable ssl: 
-    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:9696",
-    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
-    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:9696",
+    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::network_address_api}:9696",
+    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::network_address_management}:9696",
+    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::network_address_management}:9696",
     region           => $::openstack::config::region,
   }
 
