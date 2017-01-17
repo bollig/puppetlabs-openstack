@@ -102,6 +102,8 @@ class openstack::profile::keystone (
       #"${ldap_user_domain}::assignment/driver": value => 'sql';
       "${ldap_user_domain}::ldap/group_members_are_ids": value => 'True';
     }
+  } else {
+    ensure_resource(file, "/etc/keystone/domains/keystone.${ldap_user_domain}.conf", {'ensure' => 'absent'})
   }
 
   if $enable_shib_domain == true {
@@ -123,10 +125,15 @@ class openstack::profile::keystone (
       # Yumrepo end
     }
 
+    if $enable_twofactor {
+      $auth_methods = ['password', 'token', $shib_protocol, $l_twofactor_protocol]
+    } else {
+      $auth_methods = ['password', 'token', $shib_protocol]
+    }
 
     class { 'keystone::federation::shibboleth': 
       #methods => ['password', 'token', 'oauth1', 'saml2'],
-      methods => ['password', 'token', $shib_protocol, $twofactor_protocol],
+      methods => $auth_methods, 
       main_port => true,
       admin_port => false,
       suppress_warning => true,

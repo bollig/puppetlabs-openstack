@@ -62,6 +62,7 @@ class openstack::profile::horizon (
         before  => Exec['refresh_horizon_django_cache'],
         unless  => "test -b /usr/share/openstack-dashboard || (semanage fcontext -l | grep /usr/share/openstack-dashboard)",
     }
+    #/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py
   }
 
   # Override the openrc to get OS_TOKEN support out of box

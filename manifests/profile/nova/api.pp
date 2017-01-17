@@ -13,27 +13,6 @@ class openstack::profile::nova::api (
 
   include ::openstack::common::nova
 
-
- # NOTE: (from Upgrade Notes on
- # http://docs.openstack.org/releasenotes/nova/unreleased.html): During an
- # upgrade to Mitaka, operators must create and initialize a database for the
- # API service. Configure this in [api_database]/connection, and then run
- # nova-manage api_db sync
-
-  class { '::nova::db::mysql_api':
-    user 	  => "${::openstack::config::mysql_user_nova}_api",
-    dbname 	  => "${::openstack::config::mysql_user_nova}_api",
-    password 	  => $::openstack::config::mysql_pass_nova,
-    allowed_hosts => $::openstack::config::mysql_allowed_hosts,
-  } 
-
-  #openstack::resources::database_grant { $real_allowed_hosts:
-#	user => 'nova',
-# 	password_hash => $::openstack::config::nova_password,	
-#	dbname => "nova_api",
-#	require       => Anchor['database-service'],
-#  }
-
   class { '::nova::api':
     admin_password                       => $::openstack::config::nova_password,
     identity_uri                         => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",

@@ -108,7 +108,7 @@ class openstack::profile::ceilometer::api (
       class { '::ceilometer::collector': }                                                                                                         
     }
     'RedHat': {
-      if $gnocchi_enabled { 
+      if $gnocchi_enabled == true { 
         #aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
         class { '::openstack::profile::ceilometer::gnocchi_api': }
         class { '::openstack::profile::ceilometer::gnocchi_metricd': }
