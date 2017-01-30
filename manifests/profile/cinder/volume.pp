@@ -13,8 +13,9 @@ class openstack::profile::cinder::volume (
 
   class { '::cinder::setup_test_volume':
     volume_name => 'cinder-volumes',
-    size        => $::openstack::config::cinder_volume_size
-  } ->
+    size        => $::openstack::config::cinder_volume_size,
+    require     => [Service['httpd'], Class['::cinder::wsgi::apache']],
+  }
 
   class { '::cinder::volume':
     package_ensure => present,
@@ -60,14 +61,17 @@ class openstack::profile::cinder::volume (
 	      os_tenant_name  => 'admin',
 	      os_username     => 'admin',
 	      os_auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/v2.0",
+              require => [Service['httpd'],Class['::cinder::wsgi::apache']],
 	  }
 	  cinder::type { "${extra_backend_name}":
             set_key => 'volume_backend_name',
             set_value => "${extra_backend_name}",
+            require => [Service['httpd'],Class['::cinder::wsgi::apache']],
 	  }
           cinder::type { 'DEFAULT':
             set_key => 'volume_backend_name',
             set_value => 'DEFAULT',
+            require => [Service['httpd'],Class['::cinder::wsgi::apache']],
 	  }
           cinder::backend::rbd { "DEFAULT_ANY":
 		  rbd_user        => 'cinder',
@@ -84,15 +88,18 @@ class openstack::profile::cinder::volume (
 	  cinder::type { 'ANY':
             set_key => 'volume_backend_name',
             set_value => ['ANY'],
+            require => [Service['httpd'],Class['::cinder::wsgi::apache']],
 	  }
 	  
 	  class { 'cinder::backends':
 		enabled_backends => ['DEFAULT', 'DEFAULT_ANY', "${extra_backend_name}_ANY", "${extra_backend_name}"],
+                notify => Service['httpd'],
 	  }  
-	  Class['Cinder::Backends'] -> Service['httpd']
+	  #Class['Cinder::Backends'] -> Service['httpd']
   } else {
 	  class { 'cinder::backends':
 		enabled_backends => ['DEFAULT'],
+                notify => Service['httpd'],
 	  }  
   }
 

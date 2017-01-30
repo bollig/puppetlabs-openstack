@@ -4,7 +4,8 @@
 # TODO: redirect http to SSL: http://stackoverflow.com/questions/13227544/haproxy-redirecting-http-to-https-ssl
 # TODO: consider switching to the "frontend" and "backend" resources
 class openstack::profile::haproxy::init(
-  $manage_certfile=false
+  $manage_certfile=true,
+  $haproxy_cert = $::openstack::config::haproxy_ssl_certfile
 ) {
   # NOTE: in modules/openstack/manifests/profile/neutron/router.pp, I set
   # "manage_haproxy_package=>false" for the lbaas service. If this gets
@@ -35,7 +36,7 @@ class openstack::profile::haproxy::init(
         'check 10s',
       ],
     'maxconn' => '8000',
-    },
+    }
   }
 
   # construct ssl cert using concat module
@@ -52,13 +53,14 @@ class openstack::profile::haproxy::init(
 
   if $manage_certfile {
 
-    $haproxy_cert = $::openstack::config::haproxy_ssl_certfile
     concat { $haproxy_cert:
       owner => 'root',
       group => 'haproxy',
       mode => '0640',
-      ensure_newline => true
+      ensure_newline => true,
+      notify => Service['haproxy']
     }
+    Concat["${haproxy_cert}"] -> Service['haproxy']
 
     concat::fragment { 'haproxy_cert':
       target => $haproxy_cert,

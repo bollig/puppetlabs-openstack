@@ -13,6 +13,7 @@ class openstack::profile::cinder::api {
   }
   class { '::cinder::scheduler::filter': }
 
+  include ::apache
   class { '::cinder::wsgi::apache':
       ssl             => $::openstack::config::enable_ssl,
       ssl_cert        => $::openstack::config::keystone_ssl_certfile,

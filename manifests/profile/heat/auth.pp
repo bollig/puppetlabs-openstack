@@ -10,9 +10,9 @@ class openstack::profile::heat::auth (
 
   class { '::heat::keystone::auth':
     password         => $::openstack::config::heat_password,
-    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8004/v1/%(tenant_id)s",
-    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8004/v1/%(tenant_id)s",
-    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8004/v1/%(tenant_id)s",
+    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8004/v1/%(tenant_id)s",
+    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8004/v1/%(tenant_id)s",
+    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8004/v1/%(tenant_id)s",
     region           => $::openstack::config::region,
 
 #NOTE: this is required to create the heat_stack_owner role. This role is
@@ -23,9 +23,9 @@ class openstack::profile::heat::auth (
 
   class { '::heat::keystone::auth_cfn':
     password         => $::openstack::config::heat_password,
-    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8000/v1",
-    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8000/v1",
-    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_management}:8000/v1",
+    public_url       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8000/v1",
+    admin_url        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8000/v1",
+    internal_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8000/v1",
     region           => $::openstack::config::region,
   }
 
