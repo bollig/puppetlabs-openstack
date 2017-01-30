@@ -4,7 +4,7 @@
 # TODO: redirect http to SSL: http://stackoverflow.com/questions/13227544/haproxy-redirecting-http-to-https-ssl
 # TODO: consider switching to the "frontend" and "backend" resources
 class openstack::profile::haproxy::init(
-  $manage_certfile=true,
+  $manage_certfile=false,
   $haproxy_cert = $::openstack::config::haproxy_ssl_certfile
 ) {
   # NOTE: in modules/openstack/manifests/profile/neutron/router.pp, I set
