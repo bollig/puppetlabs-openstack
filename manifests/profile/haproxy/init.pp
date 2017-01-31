@@ -58,7 +58,8 @@ class openstack::profile::haproxy::init(
       group => 'haproxy',
       mode => '0640',
       ensure_newline => true,
-      notify => Service['haproxy']
+      notify => Service['haproxy'],
+      require => [File[$::openstack::config::keystone_ssl_certfile], File[$::openstack::config::keystone_ssl_keyfile], File[$::openstack::config::ssl_chainfile]]
     }
     Concat["${haproxy_cert}"] -> Service['haproxy']
 
