@@ -207,7 +207,7 @@ and maintainable OpenStack deployments.
 
 ##Limitations
 
-* High availability and SSL-enabled endpoints are not provided by this module.
+* High availability (Bollig: Added BGP/DVR for HA routing) and ~~SSL-enabled endpoints~~(Added SSL 2016) are not provided by this module.
 
 ##License
 Puppet Labs OpenStack - A Puppet Module for a Multi-Node OpenStack Juno Installation.
@@ -217,6 +217,7 @@ Copyright (C) 2013, 2014 Puppet Labs, Inc. and Authors
 Copyright (C) 2016 University of Minnesota Regents and Authors
 
 Original Author - Christian Hoge
+
 Fork Author - Evan F. Bollig (bollig@gmail.com)
 
 Puppet Labs can be contacted at: info@puppetlabs.com
