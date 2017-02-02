@@ -29,6 +29,10 @@ mod "openstack-keystone",
 	#:ref => "stable/mitaka"
 	:ref => "f7d6d81"
 
+mod "openstack-murano",
+	:git => "git://github.com/openstack/puppet-murano",
+	:ref => "stable/mitaka"
+
 mod "openstack-aodh",
 	:git => "git://github.com/openstack/puppet-aodh",
 	#:ref => "stable/mitaka"
@@ -128,10 +132,11 @@ mod "nanliu/staging", :latest
 mod "puppetlabs/vcsrepo", :latest
 mod "puppetlabs/haproxy", :latest
 mod "dobbymoodge/acl", :latest
-mod 'spiette-selinux', :latest
+#mod 'spiette-selinux', :latest
+mod 'jfryman-selinux', :latest
 # indirect dependencies
 
-mod "puppetlabs/firewall", :latest
+mod "puppetlabs/firewall", '1.8.1'
 mod "puppetlabs/apt", "1.8.0"
 mod "puppetlabs/corosync", :latest
 mod "puppetlabs/mongodb", :latest
