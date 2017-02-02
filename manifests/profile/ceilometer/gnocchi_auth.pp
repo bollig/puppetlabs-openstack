@@ -2,6 +2,8 @@
 # For co-located api and worker nodes this appear
 # after openstack::profile::ceilometer::agent
 class openstack::profile::ceilometer::gnocchi_auth (
+  $enable_grafana_support = false,
+  $cors_allowed_origin = 'http://localhost:3000',
 ) {
 
     include ::openstack::common::gnocchi
@@ -23,4 +25,12 @@ class openstack::profile::ceilometer::gnocchi_auth (
         region       => $::openstack::config::region,
     }
 
+    if $enable_grafana_support { 
+      keystone_config { 
+        "cors/allowed_origin": value => $cors_allowed_origin;
+        # Append origin to headers to enable Safari support
+        "cors/allow_headers": value => "X-Auth-Token,X-Openstack-Request-Id,X-Subject-Token,X-Project-Id,X-Project-Name,X-Project-Domain-Id,X-Project-Domain-Name,X-Domain-Id,X-Domain-Name,origin";
+      }
+    }
+ 
 }
