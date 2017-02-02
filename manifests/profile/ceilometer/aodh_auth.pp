@@ -12,11 +12,10 @@ class openstack::profile::ceilometer::aodh_auth (
     # Make the 'aodh' user in keystone: 
     class { '::aodh::keystone::auth':
       password => $::openstack::config::aodh_password,
-      public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8042",
-      admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
-      internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8042",
+      public_url   => "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_api}:8042",
+      admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_management}:8042",
+      internal_url => "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_management}:8042",
       region           => $::openstack::config::region,
     }
 
-    class { '::aodh::db::sync': }
 }
