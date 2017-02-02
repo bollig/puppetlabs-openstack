@@ -11,7 +11,7 @@ class openstack::profile::ceilometer::aodh (
       openstack::resources::firewall { 'AODH API': port => '8042', }
 
 	if $gnocchi_enabled { 
-		$gnocchi_url = "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041"
+		$gnocchi_url = "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_management}:8041"
 	} else {
 		$gnocchi_url = undef
 	}
@@ -62,9 +62,11 @@ class openstack::profile::ceilometer::aodh (
         auth_url      => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/v2.0",
         auth_password => $::openstack::config::aodh_password,
       }
-      #package {'python2-aodhclient': ensure => 'present' } ->
-      class { '::aodh::client': } 
+
+      class { '::aodh::client': package_name => 'python2-aodhclient'} 
       class { '::aodh::notifier': }
       class { '::aodh::listener': }
       class { '::aodh::evaluator': }
+
+      class { '::aodh::db::sync': }
 }

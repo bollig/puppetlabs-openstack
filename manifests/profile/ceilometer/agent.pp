@@ -1,6 +1,5 @@
 #
 class openstack::profile::ceilometer::agent {
-  $controller_management_address = $::openstack::config::controller_address_management
 
   include ::openstack::common::ceilometer
 

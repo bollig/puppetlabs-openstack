@@ -3,6 +3,9 @@
 # after openstack::profile::ceilometer::agent
 class openstack::profile::ceilometer::gnocchi_auth (
 ) {
+
+    include ::openstack::common::gnocchi
+
     # Make the mysql db user 'gnocchi' exists
     openstack::resources::database { 'gnocchi': }
 
@@ -14,11 +17,10 @@ class openstack::profile::ceilometer::gnocchi_auth (
     # Make the 'gnocchi' user in keystone: 
     class { '::gnocchi::keystone::auth':
         password     => $::openstack::config::gnocchi_password,
-        public_url   => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
-        admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041",
-        internal_url => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8041",
+        public_url   => "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_api}:8041",
+        admin_url    => "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_management}:8041",
+        internal_url => "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_management}:8041",
         region       => $::openstack::config::region,
     }
 
-    class { '::gnocchi::db::sync': }
 }

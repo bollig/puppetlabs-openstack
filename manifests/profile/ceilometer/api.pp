@@ -10,7 +10,6 @@ class openstack::profile::ceilometer::api (
 ) {
 
 
-  $ceilometer_management_address = $::openstack::config::ceilometer_address_management
   $controller_management_address = $::openstack::config::controller_address_management
 
   openstack::resources::firewall { 'Ceilometer API': port => '8777' }
@@ -109,7 +108,7 @@ class openstack::profile::ceilometer::api (
     }
     'RedHat': {
       if $gnocchi_enabled == true { 
-        #aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::controller_management_address}:8041"; }
+        #aodh_config { 'DEFAULT/gnocchi_url': value => "${::openstack::config::http_protocol}://{::telemetry_management_address}:8041"; }
         class { '::openstack::profile::ceilometer::gnocchi_api': }
         class { '::openstack::profile::ceilometer::gnocchi_metricd': }
 	class { '::ceilometer::collector':
@@ -125,7 +124,7 @@ class openstack::profile::ceilometer::api (
 	  filter_service_activity   => false,
           # Note: this project must exist in keystone (openstack project create --or-show gnocchi)
 	  filter_project            => 'gnocchi',
-	  url                       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8041",
+	  url                       => "${::openstack::config::http_protocol}://${::openstack::config::telemetry_address_api}:8041",
 	  archive_policy            => 'medium',
 	  resources_definition_file => 'gnocchi_resources.yaml',
 	}
@@ -137,6 +136,18 @@ class openstack::profile::ceilometer::api (
     default: {
       fail("Unsupported osfamily (${::osfamily})")
     }
+  }
+
+  # Purge 1 month old meters (wherever mongo service is (control))
+  class { '::ceilometer::expirer': }
+        #enable_cron => true,
+	# Expire on the first of January at 12:01 am
+ 	#monthday => '1',
+        #month => '1',
+  #}
+
+  class { '::ceilometer::db::sync': 
+    require => Class['::mongodb::client'] 
   }
 
 }

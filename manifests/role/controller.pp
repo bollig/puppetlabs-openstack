@@ -5,7 +5,6 @@ class openstack::role::controller inherits ::openstack::role {
   class { '::openstack::profile::keystone': }
   class { '::openstack::profile::nova::api': } 
   class { '::openstack::profile::heat::api': }
-  class { '::openstack::profile::ceilometer::api': }
 
   # It also has the web server
   class { '::openstack::profile::horizon': }

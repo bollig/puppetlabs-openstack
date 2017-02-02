@@ -70,6 +70,7 @@ class openstack::profile::ceilometer::gnocchi_api (
       "storage/aggregation_workers_number": value => $::processorcount;
     }
 
+    class { '::gnocchi::db::sync': }
 
     require ::openstack::profile::ceilometer::gnocchi
 }

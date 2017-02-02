@@ -111,6 +111,12 @@
 # [*network_address_management*]
 #   The management IP address of the network control node. Must be in the network_management CIDR.
 #
+# [*telemetry_address_api*]
+#   The API IP address of the telemetry control node. Must be in the network_api CIDR.
+#
+# [*telemetry_address_management*]
+#   The management IP address of the telemetry control node. Must be in the network_management CIDR.
+#
 # == Database
 # [*mysql_root_password*]
 #   The root password for the MySQL database.
@@ -175,6 +181,12 @@
 #
 # [*mysql_pass_trove*]
 #   The database password for trove service.
+#
+# [*mysql_user_murano*]
+#   The database username for murano service.
+#
+# [*mysql_pass_murano*]
+#   The database password for murano service.
 #
 # [*mysql_user_cloudkitty*]
 #   The database username for cloudkitty service.
@@ -449,6 +461,8 @@ class openstack (
   $storage_address_management = undef,
   $network_address_api = undef,
   $network_address_management = undef,
+  $telemetry_address_api = undef,
+  $telemetry_address_management = undef,
   $mysql_root_password = undef,
   $mysql_service_password = undef,
   $mysql_allowed_hosts = undef,
@@ -512,6 +526,7 @@ class openstack (
   $aodh_password = undef,
   $gnocchi_password = undef,
   $trove_password = undef,
+  $murano_password = undef,
   $heat_password = undef,
   $heat_encryption_key = undef,
   $horizon_secret_key = undef,
@@ -580,6 +595,8 @@ class openstack (
       storage_address_management    => hiera(openstack::storage::address::management, hiera(openstack::storage::address::api)),
       network_address_api           => hiera(openstack::network::address::api, hiera(openstack::controller::address::api)),
       network_address_management    => hiera(openstack::network::address::management, hiera(openstack::network::address::api)),
+      telemetry_address_api         => hiera(openstack::telemetry::address::api, hiera(openstack::controller::address::api)),
+      telemetry_address_management  => hiera(openstack::telemetry::address::management, hiera(openstack::telemetry::address::api)),
       mysql_root_password           => hiera(openstack::mysql::root_password),
       mysql_service_password        => hiera(openstack::mysql::service_password),
       mysql_allowed_hosts           => hiera(openstack::mysql::allowed_hosts),
@@ -601,6 +618,8 @@ class openstack (
       mysql_pass_gnocchi            => pick(hiera(openstack::mysql::gnocchi::pass, undef), hiera(openstack::mysql::service_password)),
       mysql_user_trove              => pick(hiera(openstack::mysql::trove::user, undef), 'trove'),
       mysql_pass_trove              => pick(hiera(openstack::mysql::trove::pass, undef), hiera(openstack::mysql::service_password)),
+      mysql_user_murano              => pick(hiera(openstack::mysql::murano::user, undef), 'murano'),
+      mysql_pass_murano              => pick(hiera(openstack::mysql::murano::pass, undef), hiera(openstack::mysql::service_password)),
       mysql_user_cloudkitty         => pick(hiera(openstack::mysql::cloudkitty::user, undef), 'cloudkitty'),
       mysql_pass_cloudkitty         => pick(hiera(openstack::mysql::cloudkitty::pass, undef), hiera(openstack::mysql::service_password)),
       rabbitmq_hosts                => hiera(openstack::rabbitmq::hosts),
@@ -635,7 +654,6 @@ class openstack (
       neutron_type_drivers          => hiera(openstack::neutron::neutron_type_drivers, $neutron_type_drivers),
       neutron_mechanism_drivers     => hiera(openstack::neutron::neutron_mechanism_drivers, $neutron_mechanism_drivers),
       neutron_tunnel_id_ranges      => hiera(openstack::neutron::neutron_tunnel_id_ranges, $neutron_tunnel_id_ranges),
-      ceilometer_address_management => hiera(openstack::ceilometer::address::management),
       ceilometer_mongo_username     => hiera(openstack::ceilometer::mongo::username),
       ceilometer_mongo_password     => hiera(openstack::ceilometer::mongo::password),
       ceilometer_password           => hiera(openstack::ceilometer::password),
@@ -643,6 +661,7 @@ class openstack (
       aodh_password           	    => hiera(openstack::aodh::password),
       gnocchi_password          	=> hiera(openstack::gnocchi::password),
       trove_password           	    => hiera(openstack::trove::password),
+      murano_password           	    => hiera(openstack::murano::password),
       heat_password                 => hiera(openstack::heat::password),
       heat_encryption_key           => hiera(openstack::heat::encryption_key),
       horizon_secret_key            => hiera(openstack::horizon::secret_key),
@@ -708,6 +727,8 @@ class openstack (
       storage_address_management    => pick($storage_address_management, $controller_address_management),
       network_address_api           => pick($network_address_api, $controller_address_api),
       network_address_management    => pick($network_address_management, $controller_address_management),
+      telemetry_address_api         => pick($telemetry_address_api, $controller_address_api),
+      telemetry_address_management  => pick($telemetry_address_management, $controller_address_management),
       mysql_root_password           => $mysql_root_password,
       mysql_service_password        => $mysql_service_password,
       mysql_allowed_hosts           => $mysql_allowed_hosts,
@@ -757,7 +778,6 @@ class openstack (
       neutron_type_drivers          => $neutron_type_drivers,
       neutron_mechanism_drivers     => $neutron_mechanism_drivers,
       neutron_tunnel_id_ranges      => $neutron_tunnel_id_ranges,
-      ceilometer_address_management => $ceilometer_address_management,
       ceilometer_mongo_username     => $ceilometer_mongo_username,
       ceilometer_mongo_password     => $ceilometer_mongo_password,
       ceilometer_password           => $ceilometer_password,

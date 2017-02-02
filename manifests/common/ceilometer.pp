@@ -2,16 +2,17 @@
 # Private, and should not be used on its own
 class openstack::common::ceilometer {
 
+  include ::openstack::common::mongodb
+
   $mongo_username                = $::openstack::config::ceilometer_mongo_username
   $mongo_password                = $::openstack::config::ceilometer_mongo_password
 
-  $ceilometer_management_address = $::openstack::config::ceilometer_address_management
   $controller_management_address = $::openstack::config::controller_address_management
 
   if ! $mongo_username or ! $mongo_password {
-    $mongo_connection = "mongodb://${ceilometer_management_address}:27017/ceilometer"
+    $mongo_connection = "mongodb://${controller_management_address}:27017/ceilometer"
   } else {
-    $mongo_connection = "mongodb://${mongo_username}:${mongo_password}@${ceilometer_management_address}:27017/ceilometer"
+    $mongo_connection = "mongodb://${mongo_username}:${mongo_password}@${controller_management_address}:27017/ceilometer"
   }
 
     # Install ceilometer base classes and setup the [DEFAULT] and
@@ -35,8 +36,8 @@ class openstack::common::ceilometer {
 
   class { '::ceilometer::db':
     database_connection => $mongo_connection,
+    sync_db => false,
   }
 
-  class {'::mongodb::client':}
 }
 
