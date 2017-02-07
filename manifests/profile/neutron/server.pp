@@ -7,8 +7,8 @@ class openstack::profile::neutron::server (
 
   class { '::openstack::common::neutron': enable_service => true }
 
-  $tenant_network_type           = $::openstack::config::neutron_tenant_network_type # ['gre']
-  $type_drivers                  = $::openstack::config::neutron_type_drivers # ['gre']
+  $tenant_network_type           = $::openstack::config::neutron_tenant_network_type # ['vxlan']
+  $type_drivers                  = $::openstack::config::neutron_type_drivers # ['vxlan']
   $mechanism_drivers             = $::openstack::config::neutron_mechanism_drivers # ['openvswitch']
   $tunnel_id_ranges              = $::openstack::config::neutron_tunnel_id_ranges # ['1:1000']
   $network_management_address = $::openstack::config::network_address_management

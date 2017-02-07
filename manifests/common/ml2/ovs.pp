@@ -4,7 +4,7 @@ class openstack::common::ml2::ovs {
   $data_network        = $::openstack::config::network_data
   $data_address        = ip_for_network($data_network)
   $enable_tunneling    = $::openstack::config::neutron_tunneling # true
-  $tunnel_types        = $::openstack::config::neutron_tunnel_types #['gre']
+  $tunnel_types        = $::openstack::config::neutron_tunnel_types #['vxlan']
     
   $bridge_mappings  = []
   $bridge_uplinks   = []

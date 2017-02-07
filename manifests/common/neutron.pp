@@ -5,6 +5,7 @@
 # This follows the suggest deployment from the neutron Administrator Guide.
 class openstack::common::neutron (
   $enable_service = false,
+  $dhcp_agents_per_network = 1,
 ) {
 
   if $enable_service {
@@ -48,6 +49,7 @@ class openstack::common::neutron (
     rabbit_host           => $controller_management_address,
     core_plugin           => $::openstack::config::neutron_core_plugin,
     allow_overlapping_ips => true,
+    dhcp_agents_per_network => $dhcp_agents_per_network,
     rabbit_user           => $::openstack::config::rabbitmq_user,
     rabbit_password       => $::openstack::config::rabbitmq_password,
     rabbit_hosts          => $::openstack::config::rabbitmq_hosts,
