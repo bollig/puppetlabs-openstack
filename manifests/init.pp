@@ -31,7 +31,7 @@
 #     {
 #       'public' => {
 #         'tenant_name'              => 'services',
-#         'provider_network_type'    => 'gre',
+#         'provider_network_type'    => 'vxlan',
 #         'router_external'          => true,
 #         'provider_segmentation_id' => 3604,
 #         'shared'                   => true,
@@ -255,8 +255,9 @@
 #   The password for the glance user in Keystone.
 #
 # [*glance_api_servers*]
-#   Array of api servers, with port setting
-#   Example configuration: ['172.16.33.4:9292'] 
+#   Array of extra api servers. NOTE: assumes :9292 for port setting on all servers
+#   Defaults to value of $::openstack::storage::address::api
+#   Example configuration: ['172.16.33.4'] 
 #
 # ==Cinder
 # [*cinder_password*]
@@ -308,15 +309,15 @@
 #
 # [*neutron_tunnel_types*] (Deprecated)
 #   Array. Tunnel types to use
-#   Defaults to ['gre'],
+#   Defaults to ['vxlan'],
 #
 # [*neutron_tenant_network_type*] (Deprecated)
 #   Array. Tenant network type.
-#   Defaults to ['gre'],
+#   Defaults to ['vxlan'],
 #
 # [*neutron_type_drivers*] (Deprecated)
 #   Array. Neutron type drivers to use.
-#   Defaults to ['gre'],
+#   Defaults to ['vxlan'],
 #
 # [*neutron_mechanism_drivers*] (Deprecated)
 #   Defaults to ['openvswitch'].
@@ -513,9 +514,9 @@ class openstack (
   $plumgrid_username = undef,
   $plumgrid_password = undef,
   $neutron_tunneling = true,
-  $neutron_tunnel_types = ['gre','vxlan'],
-  $neutron_tenant_network_type = ['gre'],
-  $neutron_type_drivers = ['gre'],
+  $neutron_tunnel_types = ['vxlan'],
+  $neutron_tenant_network_type = ['vxlan'],
+  $neutron_type_drivers = ['vxlan'],
   $neutron_mechanism_drivers = ['openvswitch', 'l2population'],
   $neutron_tunnel_id_ranges = ['1:1000'],
   $ceilometer_address_management = undef,
@@ -633,7 +634,7 @@ class openstack (
       keystone_users                => hiera(openstack::keystone::users, {}),
       keystone_use_httpd            => hiera(openstack::keystone::use_httpd, false),
       glance_password               => hiera(openstack::glance::password),
-      glance_api_servers            => hiera(openstack::glance::api_servers),
+      glance_api_servers            => hiera(openstack::glance::api_servers, [ hiera(openstack::storage::address::api) ]),
       images                        => hiera(openstack::images),
       cinder_password               => hiera(openstack::cinder::password),
       cinder_volume_size            => hiera(openstack::cinder::volume_size),
