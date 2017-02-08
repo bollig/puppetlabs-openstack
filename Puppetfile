@@ -4,7 +4,7 @@ forge "http://forge.puppetlabs.com"
 mod "puppetlabs-openstack",
 	:git => "git://github.com/bollig/puppetlabs-openstack",
 	#:ref => "master"
-	:ref => "4d42cc2"
+	:ref => "3dbbd64"
 
 
 ## The core OpenStack modules
