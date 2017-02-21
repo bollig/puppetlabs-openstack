@@ -101,6 +101,15 @@ class openstack::common::neutron (
     ensure_lbaas_package  => $ensure_lbaas_pkg,
   }
 
+  # TODO: find a place for this. the fwaas is needed to start bgp? 
+  if 'firewall' in $::openstack::config::neutron_service_plugins {
+    class { '::neutron::services::fwaas':
+      driver => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
+      enabled => true,
+    }
+  }
+
+
   # Note: bug in the neutron module. The neutron-fwaas package can either be installed by the 
   # class { '::neutron::services::fwaas': } or by ensure_fwaas_package above. They can not both be used though.
   # This ensure makes the fwaas package is present and does not conflict with the other driver

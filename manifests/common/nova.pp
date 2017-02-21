@@ -71,7 +71,6 @@ class openstack::common::nova (
     neutron_admin_auth_url => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
 #TODO: when neutron supports chain files or WSGI, enable the http_protocol below: 
     neutron_url            => "${::openstack::config::http_protocol}://${network_management_address}:9696",
-    #neutron_url            => "http://${controller_management_address}:9696",
     vif_plugging_is_fatal  => false,
     vif_plugging_timeout   => '0',
   }
