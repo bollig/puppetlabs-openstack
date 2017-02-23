@@ -13,7 +13,7 @@ class openstack::profile::haproxy::init(
   class { 'haproxy':
     enable           => $enabled,
     global_options   => {
-      'log'     => "${::ipaddress} local0",
+      'log'     => "127.0.0.1 local0",
       'chroot'  => '/var/lib/haproxy',
       'pidfile' => '/var/run/haproxy.pid',
       'maxconn' => '4000',

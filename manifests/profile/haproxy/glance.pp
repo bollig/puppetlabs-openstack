@@ -1,17 +1,19 @@
-class openstack::profile::haproxy::glance {
+class openstack::profile::haproxy::glance (
+    $bind_address = pick($::ipaddress_br_ex, $::ipaddress),
+) {
   include openstack::profile::haproxy::init
 
   haproxy::listen { 'glance-api-in':
     bind => {
       # binding to a specific address, so the underlying service can bind to same port on localhost
-      "$::ipaddress:9292"	=> ['ssl', 'crt', $::openstack::config::haproxy_ssl_certfile],
+      "$bind_address:9292"	=> ['ssl', 'crt', $::openstack::config::haproxy_ssl_certfile],
     },
     require => Class['openstack::profile::haproxy::init'],
   }
 
   haproxy::listen { 'glance-registry-in':
     bind => {
-      "$::ipaddress:9191"	=> ['ssl', 'crt', $::openstack::config::haproxy_ssl_certfile],
+      "$bind_address:9191"	=> ['ssl', 'crt', $::openstack::config::haproxy_ssl_certfile],
     },
     require => Class['openstack::profile::haproxy::init'],
   }
