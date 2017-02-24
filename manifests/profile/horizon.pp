@@ -4,11 +4,17 @@ class openstack::profile::horizon (
   $session_timeout = 1800,
   $multi_domain_support = false,
   $user_domain = 'default',
+  $enable_sso = false,
   $enable_shib_openrc = false,
   $shib_ecp_idp_url = 'http://localhost/idp/profile/shibboleth',
+  $shib_ecp_id_provider = 'testshib',
+  $websso_initial_choice = "credentials",
+  $websso_choices = ::default,
+  $websso_idp_mappings = ::default,
 ) {
   $service_plugins  = $::openstack::config::neutron_service_plugins
   $enable_backups   = pick($::openstack::config::cinder_enable_backup, true)
+  $keystone_url    = "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000"
 
   if "router" in $service_plugins { $enable_router = true } else { $enable_router = false }
   if "firewall" in $service_plugins { $enable_firewall = true } else { $enable_firewall = false }
@@ -25,7 +31,7 @@ class openstack::profile::horizon (
   }
 
   class { '::horizon':
-    keystone_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    keystone_url    => $keystone_url,
     keystone_multidomain_support => $multi_domain_support,
     keystone_default_domain      => $user_domain,
     allowed_hosts   => concat([ '127.0.0.1', $::openstack::config::controller_address_api, $::fqdn ], $::openstack::config::horizon_allowed_hosts),
@@ -66,6 +72,21 @@ class openstack::profile::horizon (
     #/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py
   }
 
+  if $enable_sso == true {
+    concat::fragment { 'local_settings_shib.py':
+      target  => '/etc/openstack-dashboard/local_settings',
+      content => template('openstack/local_settings.py.erb'),
+      # Original is order 50, this puts it at the bottom
+      order   => '56',
+    }
+  }
+
+  if $enable_shib_openrc == true {
+    $shib_template = 'openstack/openrc_shib.sh.erb'
+  } else {
+    $shib_template = 'openstack/openrc.sh.erb'
+  } 
+
   # Override the openrc to get OS_TOKEN support out of box
   file { 'V3 OpenRC':
     path    => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/templates/access_and_security/api_access/openrc.sh.template',
@@ -73,7 +94,7 @@ class openstack::profile::horizon (
     group   => 'root',
     mode    => '0644',
     #source  => "puppet:///modules/openstack/openrc.sh.template",
-    content => template('openstack/openrc_shib.sh.erb'),
+    content => template($shib_template),
     require => Class['::horizon']
   } 
 
