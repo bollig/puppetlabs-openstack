@@ -41,7 +41,7 @@ if [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
 export OS_AUTH_TYPE=v3unscopedsaml
 unset OS_AUTH_STRATEGY
 
-export OS_IDENTITY_PROVIDER=testshib
+export OS_IDENTITY_PROVIDER=<%= @shib_ecp_id_provider %>
 export OS_PROTOCOL=saml2
 export OS_IDENTITY_PROVIDER_URL=<%= @shib_ecp_idp_url %>
 
