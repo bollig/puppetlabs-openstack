@@ -1,6 +1,6 @@
 # The profile to install the volume service
 class openstack::profile::cinder::volume (
-  $fixed_key = '2b1d0b36e5d1d2416a617a41eb46a488',
+  $fixed_key = '0000000000000000000000000000000000000000000000000000000000000000',
   $enable_extra_backend = false,
   $extra_backend_name = 'ssd',
   $extra_backend_pool = 'ssd',
@@ -111,6 +111,7 @@ class openstack::profile::cinder::volume (
   cinder_config {
     'DEFAULT/restore_discard_excess_bytes': value=> 'true';
 # For use in encrypted volumes
+    'KEYMGR/fixed_key': value => $fixed_key;
     'keymgr/fixed_key': value => $fixed_key;
   }
 
