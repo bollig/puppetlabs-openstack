@@ -59,11 +59,12 @@ class openstack::profile::neutron::router {
 
     # Metadata Agent
   class { '::neutron::agents::metadata':
-    auth_password => $::openstack::config::neutron_password,
+    # After mitaka, these are provided by the neutron::keystone::authtoken:
+    #auth_password => $::openstack::config::neutron_password,
+    #auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
     shared_secret => $::openstack::config::neutron_shared_secret,
-    auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
     debug         => $::openstack::config::debug,
-    auth_region   => $::openstack::config::region,
+    #auth_region   => $::openstack::config::region,
 # TODO: Offload metadata to network address
     metadata_ip   => $network_management_address,
     enabled       => true,

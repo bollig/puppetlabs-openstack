@@ -131,12 +131,12 @@ class openstack::profile::glance::api (
 
 
   # SETUP IMAGE CONVERSION WORKERS
-  glance_api_config { 
-    'task/task_executor': value=>'taskflow';
-    'task/work_dir': value=>'/tmp';
-    'taskflow_executor/engine_mode': value=>'serial';
-    'taskflow_executor/max_workers': value=>'10';
-    'taskflow_executor/conversion_format': value=>'raw';
-  }
+  #glance_api_config { 
+    #'task/task_executor': value=>'taskflow';
+    #'task/work_dir': value=>'/tmp';
+    #'taskflow_executor/engine_mode': value=>'serial';
+    #'taskflow_executor/max_workers': value=>'10';
+    #'taskflow_executor/conversion_format': value=>'raw';
+  #}
 
 }

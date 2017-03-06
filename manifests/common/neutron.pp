@@ -85,12 +85,19 @@ class openstack::common::neutron (
     $ensure_lbaas_pkg = false
   }
 
+  class { '::neutron::keystone::authtoken':
+    password            => $::openstack::config::neutron_password,
+    auth_uri            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    auth_url            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    region_name         => $::openstack::config::region,
+  }
+  
     # Neutron API
   class { '::neutron::server':
     auth_uri            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
     auth_url            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
-    identity_uri        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
-    auth_password       => $::openstack::config::neutron_password,
+    #identity_uri        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
+    #auth_password       => $::openstack::config::neutron_password,
     database_connection => $database_connection,
     enabled             => $enable_api_eventlet,
     #service_name 	=> $service_name,
@@ -113,11 +120,11 @@ class openstack::common::neutron (
   # Note: bug in the neutron module. The neutron-fwaas package can either be installed by the 
   # class { '::neutron::services::fwaas': } or by ensure_fwaas_package above. They can not both be used though.
   # This ensure makes the fwaas package is present and does not conflict with the other driver
-  ensure_resource( 'package', 'neutron-fwaas', {
-      'name'   => 'openstack-neutron-fwaas',
-      'ensure' => 'present',
-      'tag'    => 'openstack'
-  })
+  #ensure_resource( 'package', 'neutron-fwaas', {
+  #    'name'   => 'openstack-neutron-fwaas',
+  #    'ensure' => 'present',
+  #    'tag'    => 'openstack'
+  #})
 
   # This is a HUGE hack. The Neutron puppet module does not include a
   # wsgi::apache.pp class yet. I adapted from the nova class to ensure we are

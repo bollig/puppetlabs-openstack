@@ -56,6 +56,11 @@ class openstack::common::glance (
     # NOTE: this is required to enable copy-on-write cloning of images
     #pipeline 		=> 'keystone+cachemanagement',
     show_image_direct_url => 'True',
+    task_executor       => 'taskflow',
+    task_work_dir       => '/tmp',
+    taskflow_engine_mode=> 'serial',
+    taskflow_max_workers=> '10',
+    conversion_format   => 'raw',
   }
 
   if $::openstack::config::insecure_ssl == true {

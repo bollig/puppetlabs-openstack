@@ -11,11 +11,11 @@ class openstack::profile::cinder::volume (
 
   include ::openstack::common::cinder
 
-  class { '::cinder::setup_test_volume':
-    volume_name => 'cinder-volumes',
-    size        => $::openstack::config::cinder_volume_size,
-    require     => [Service['httpd'], Class['::cinder::wsgi::apache']],
-  }
+  #class { '::cinder::setup_test_volume':
+  #  volume_name => 'cinder-volumes',
+  #  size        => $::openstack::config::cinder_volume_size,
+    #require     => [Service['httpd'], Class['::cinder::wsgi::apache']],
+  #}
 
   class { '::cinder::volume':
     package_ensure => present,
