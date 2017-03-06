@@ -4,7 +4,7 @@
 # This is to handle dependency
 # depends on openstack::profile::base having been added to a node
 class openstack::common::nova (
-  $fixed_key = '82EFC15AA8E15ED96F84B6DCF6684947',
+  $fixed_key = '0000000000000000000000000000000000000000000000000000000000000000',
 ) {
 
   $management_network = $::openstack::config::network_management
@@ -74,4 +74,11 @@ class openstack::common::nova (
     vif_plugging_is_fatal  => false,
     vif_plugging_timeout   => '0',
   }
+
+  # ONLY FOR LVM types; not for RBD. 
+  #nova_config { 
+  #  'ephemeral_storage_encryption/enabled': value => true;
+  #  'ephemeral_storage_encryption/cipher': value => 'aes-xts-plain64';
+  #  'ephemeral_storage_encryption/key_size': value => '512';
+  #}
 }
