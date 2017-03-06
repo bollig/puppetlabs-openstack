@@ -39,9 +39,9 @@ class openstack::profile::ceilometer::api (
 
   # Setup ceilometer API service (control)
   class { '::ceilometer::api':
-    keystone_password     => $::openstack::config::ceilometer_password,
-    keystone_identity_uri => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
-    keystone_auth_uri     => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
+    #keystone_password     => $::openstack::config::ceilometer_password,
+    #keystone_identity_uri => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
+    #keystone_auth_uri     => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
 # TODO: on new version of ceilometer puppet module we should be able to track
 # the httpd service (see aodh below). Until then, assume that ceilometer will
 # follow httpd cycles

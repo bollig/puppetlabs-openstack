@@ -1,5 +1,7 @@
 class openstack::profile::neutron::compute_dvr {
 
+  $network_management_address = $::openstack::config::network_address_management
+
   # Packstack establishes this
   if defined(Class['neutron::services::fwaas']) {
     Class['neutron::services::fwaas'] -> Class['neutron::agents::l3']
@@ -18,15 +20,17 @@ class openstack::profile::neutron::compute_dvr {
   }
   # Metadata Agent
   class { '::neutron::agents::metadata':
-    auth_password => $::openstack::config::neutron_password,
+    # After mitaka, these are provided by the neutron::keystone::authtoken:
+    #auth_password => $::openstack::config::neutron_password,
+    #auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
     shared_secret => $::openstack::config::neutron_shared_secret,
-    auth_url      => "${::openstack::config::http_protocol}://${controller_management_address}:35357/v3",
     debug         => $::openstack::config::debug,
-    auth_region   => $::openstack::config::region,
+    #auth_region   => $::openstack::config::region,
 # TODO: Offload metadata to network address
-    metadata_ip   => hiera("openstack::controller::address::api"),
+    metadata_ip   => $network_management_address,
     enabled       => true,
   }
+
   ::sysctl::value { 'net.ipv4.ip_forward':
     value     => '1',
   }

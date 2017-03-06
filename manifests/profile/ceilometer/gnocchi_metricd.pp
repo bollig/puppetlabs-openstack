@@ -6,9 +6,10 @@ class openstack::profile::ceilometer::gnocchi_metricd (
 #    Class['openstack::common::gnocchi'] -> Class['openstack::profile::ceilometer::gnocchi']
 #    Class['openstack::profile::ceilometer::gnocchi'] -> Class['openstack::profile::ceilometer::gnocchi_metricd']
 
-    class { '::gnocchi::metricd': }
-    gnocchi_config { 
-      "metricd/workers": value => $::processorcount ;
+    class { '::gnocchi::metricd': 
     }
+    #gnocchi_config { 
+    #  "metricd/workers": value => $::processorcount ;
+    #}
 
 }

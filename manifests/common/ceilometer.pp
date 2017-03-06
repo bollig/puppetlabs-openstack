@@ -34,6 +34,12 @@ class openstack::common::ceilometer {
     auth_endpoint_type => 'publicURL',
   }
 
+  class { '::ceilometer::keystone::authtoken':
+    password     => $::openstack::config::ceilometer_password,
+    auth_uri     => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
+    auth_url     => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
+  }
+
   class { '::ceilometer::db':
     database_connection => $mongo_connection,
     sync_db => false,
