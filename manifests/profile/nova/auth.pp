@@ -40,9 +40,9 @@ class openstack::profile::nova::auth (
       public_url_v3    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8774/v3",
       internal_url_v3  => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v3",
       admin_url_v3     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v3",
-      public_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8774/v2",
-      internal_url  => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2",
-      admin_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2",
+      public_url    => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_api}:8774/v2.1",
+      internal_url  => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2.1",
+      admin_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:8774/v2.1",
       region           => $::openstack::config::region,
   }
 }

@@ -69,7 +69,7 @@ class openstack::profile::neutron::server (
 	include ::openstack::profile::haproxy::neutron
   }
 
-  if 'bgp' in $::openstack::config::neutron_service_plugins {
+  if 'neutron_dynamic_routing.services.bgp.bgp_plugin.BgpPlugin' in $::openstack::config::neutron_service_plugins {
 
       if $bgp_router_id == 'ip_address' { 
         $l_bgp_router_id = $::ipaddress
@@ -85,24 +85,31 @@ class openstack::profile::neutron::server (
         mode    => '640',
       }
 
-      Package['neutron-bgp-dragent'] -> Service['neutron-bgp-dragent']
-      Package['neutron-bgp-dragent'] -> File['/etc/neutron/conf.d/neutron-bgp-dragent/bgp_dragent.conf']
-      package { 'neutron-bgp-dragent':
-        ensure  => 'present',
-        name    => 'openstack-neutron-bgp-dragent',
-        require => Package['neutron'],
-        tag     => ['openstack', 'neutron-package'],
-      }
+      #Package['neutron-bgp-dragent'] -> Service['neutron-bgp-dragent']
+      #Package['neutron-bgp-dragent'] -> File['/etc/neutron/conf.d/neutron-bgp-dragent/bgp_dragent.conf']
+      #package { 'neutron-bgp-dragent':
+      #  ensure  => 'present',
+      #  name    => 'openstack-neutron-bgp-dragent',
+      #  require => Package['neutron'],
+      #  tag     => ['openstack', 'neutron-package'],
+      #}
+
+      file { '/usr/lib/systemd/system/neutron-bgp-dragent.service':
+        source => 'puppet:///modules/openstack/neutron-bgp-dragent.service',
+        owner => 'root',
+        group => 'root',
+        mode => '644',
+      } 
 
       Package['neutron'] ~> Service['neutron-bgp-dragent']
-      Package['neutron-bgp-dragent'] ~> Service['neutron-bgp-dragent']
+      #Package['neutron-bgp-dragent'] ~> Service['neutron-bgp-dragent']
 
       service { 'neutron-bgp-dragent':
         ensure  => 'running',
         name    => 'neutron-bgp-dragent',
         enable  => true,
-        require => Class['neutron'],
         tag     => 'neutron-service',
+        require => [File['/usr/lib/systemd/system/neutron-bgp-dragent.service'],Class['neutron']]
       }
   }
 
