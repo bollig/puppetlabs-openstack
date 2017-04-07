@@ -13,20 +13,27 @@ class openstack::common::cinder {
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
     debug               => $::openstack::config::debug,
-    verbose             => $::openstack::config::verbose,
-
+    #verbose             => $::openstack::config::verbose,
   }
 
 #  cinder_config { 
 #    'keymgr/fixed_key': value => '0000000000000000000000000000000000000000000000000000000000000000';
 #  }
-
+  class { '::cinder::keystone::authtoken':
+      password      => $::openstack::config::cinder_password,
+      auth_uri      => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+      auth_url      => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+      region_name   => $::openstack::config::region,
+      #auth_version  => 'v2.0',
+      user_domain_name => 'Default',
+      project_domain_name => 'Default',
+  }
 
   class { '::cinder::api':
-    keystone_password  => $::openstack::config::cinder_password,
+    #keystone_password  => $::openstack::config::cinder_password,
 #    keystone_auth_host => $::openstack::config::controller_address_management,
-    identity_uri       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
-    auth_uri           => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    #identity_uri       => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+    #auth_uri           => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
     public_endpoint    => "${::openstack::config::http_protocol}://${::openstack::config::storage_address_api}:8776", 
     enabled            => true,
     service_name       => 'httpd',

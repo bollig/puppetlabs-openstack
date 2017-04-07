@@ -35,13 +35,32 @@ class openstack::common::glance (
 
   $glance_stores = concat($http_store, $backend_store)
 
+  class { '::glance::registry::authtoken':
+    password => $::openstack::config::glance_password, 
+    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    region_name         => $::openstack::config::region,
+    user_domain_name  => 'Default',
+    project_domain_name  => 'Default',
+  }
+
+
+  class { '::glance::api::authtoken':
+    password => $::openstack::config::glance_password, 
+    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    region_name         => $::openstack::config::region,
+    user_domain_name  => 'Default',
+    project_domain_name  => 'Default',
+  }
+
 # NOTE: this is in common for Tempest. Might be able to avoid this.
   class { '::glance::api':
-    keystone_password   => $::openstack::config::glance_password,
-    identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
-    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
-    keystone_tenant     => 'services',
-    keystone_user       => 'glance',
+    #keystone_password   => $::openstack::config::glance_password,
+    #identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+    #auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    #keystone_tenant     => 'services',
+    #keystone_user       => 'glance',
     known_stores	=> $glance_stores,
     database_connection => $database_connection,
     bind_port		=> $api_port,
@@ -49,7 +68,7 @@ class openstack::common::glance (
     registry_client_protocol => $::openstack::config::http_protocol,
     registry_host       => $::openstack::config::storage_address_management,
     registry_port	=> $registry_port, 
-    verbose             => $::openstack::config::verbose,
+    #verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,
     enabled             => $enable_service,
     os_region_name      => $::openstack::config::region,
