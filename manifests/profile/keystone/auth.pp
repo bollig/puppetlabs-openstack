@@ -21,6 +21,7 @@ class openstack::profile::keystone::auth(
     region       => $::openstack::config::region,
 # If set to '' then the API version is detected at runtime
     #version      => 'v3',
+    version      => '',
     require      => Class['::openstack::common::keystone']
   }
 

@@ -43,11 +43,19 @@ class openstack::profile::ceilometer::gnocchi_api (
       #}
     } 
 
+
+    class { '::gnocchi::keystone::authtoken':
+      password => $::openstack::config::gnocchi_password, 
+      auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+      auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+      region_name         => $::openstack::config::region,
+    }
+
     # Setup the gnocchi api endpoint
     class { '::gnocchi::api':
-        keystone_password     => $::openstack::config::gnocchi_password,
-        keystone_identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
-        keystone_auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+        #keystone_password     => $::openstack::config::gnocchi_password,
+        #keystone_identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+        #keystone_auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
         service_name          => 'httpd',
         #manage_service        => false,
         enabled               => true,

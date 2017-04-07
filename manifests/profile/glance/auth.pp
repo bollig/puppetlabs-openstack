@@ -19,8 +19,7 @@ class openstack::profile::glance::auth {
 	service_name => 'glance',
   }
 
-  $images = $::openstack::config::images
-
-  create_resources('glance_image', $images)
+  #$images = $::openstack::config::images
+  #create_resources('glance_image', $images)
 }
 

@@ -29,7 +29,7 @@ class openstack::common::keystone (
   class { '::keystone':
     admin_token         => $::openstack::config::keystone_admin_token,
     database_connection => $database_connection,
-    verbose             => $::openstack::config::verbose,
+    #verbose             => $::openstack::config::verbose,
     debug               => $::openstack::config::debug,
     enabled             => $enable_service,
     admin_bind_host     => $admin_bind_host,
@@ -44,6 +44,13 @@ class openstack::common::keystone (
 # FOR CEILOMETER:
     #notification_format => 'cadf',  
     #notification_driver => 'messagingv2',
+    cache_enabled => true,
+    token_caching => true,
+    memcache_servers   => ["${::openstack::config::controller_address_management}:11211"],
+    cache_backend  => 'oslo_cache.memcache_pool',
+    token_driver => 'memcache',
+    # for fernet, 255; uuid = 32
+    max_token_size => 512,
   }
 
 }

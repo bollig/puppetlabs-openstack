@@ -35,7 +35,7 @@ class openstack::profile::neutron::router {
     #external_network_bridge => 'br-ex',
     # NOTE: this is empty otherwise l3 wont start with mutliple external networks
     # defined
-    external_network_bridge => '',
+    #external_network_bridge => '',
     enabled                 => $start_l3_agent,
     manage_service          => $start_l3_agent, 
     agent_mode              => 'dvr_snat',
@@ -80,8 +80,8 @@ class openstack::profile::neutron::router {
   class { '::neutron::agents::lbaas':
     debug   => $::openstack::config::debug,
     enabled => true,
-    enable_v2 => true,
-    enable_v1 => false,
+    #enable_v2 => true,
+    #enable_v1 => false,
     #interface_driver => 'neutron.agent.linux.interface.OVSInterfaceDriver',
     #interface_driver => 'openvswitch',
     #device_driver => 'neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver',

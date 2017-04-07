@@ -20,16 +20,24 @@ class openstack::profile::heat::api (
     'DEFAULT/key': value => $::openstack::config::horizon_ssl_keyfile;
   }
 
+  class { '::heat::keystone::authtoken':
+    password => $::openstack::config::heat_password,
+    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    region_name         => $::openstack::config::region,
+  }
+
   class { '::heat':
     database_connection => $database_connection,
     rabbit_host         => $::openstack::config::controller_address_management,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
     debug               => $::openstack::config::debug,
-    verbose             => $::openstack::config::verbose,
-    keystone_password     => $::openstack::config::heat_password,
-    identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
-    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    #verbose             => $::openstack::config::verbose,
+    #keystone_password     => $::openstack::config::heat_password,
+    #identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+    #auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    keystone_ec2_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/v3/ec2tokens",
     #mysql_module        => '2.2',
   }
 

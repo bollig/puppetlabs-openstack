@@ -54,7 +54,7 @@ class openstack::common::neutron (
     rabbit_password       => $::openstack::config::rabbitmq_password,
     rabbit_hosts          => $::openstack::config::rabbitmq_hosts,
     debug                 => $::openstack::config::debug,
-    verbose               => $::openstack::config::verbose,
+    #verbose               => $::openstack::config::verbose,
     service_plugins       => $::openstack::config::neutron_service_plugins,
     bind_host => '127.0.0.1',
 # NOTE: http://miroslav.suchy.cz/blog/archives/2015/03/05/how_to_enable_ssl_for_neutron_and_other_openstack_services/index.html
@@ -94,8 +94,8 @@ class openstack::common::neutron (
   
     # Neutron API
   class { '::neutron::server':
-    auth_uri            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
-    auth_url            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    #auth_uri            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
+    #auth_url            => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000",
     #identity_uri        => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357",
     #auth_password       => $::openstack::config::neutron_password,
     database_connection => $database_connection,

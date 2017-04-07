@@ -44,6 +44,8 @@ LimitNOFILE=${max_file_limit}
 # TODO: comment this out when we have a proper set of IPs. Until then, avoid
 # DNS resolution from preventing mysql client connections
 #		    'skip-name-resolve'      => true,
+                    # Alleviate huge ibd files and make it easier to restore individual databases 
+                    'innodb_file_per_table' => 1, 
                   }
     }
   }

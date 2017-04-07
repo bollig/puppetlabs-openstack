@@ -35,13 +35,19 @@ class openstack::profile::cinder::volume (
       }
     }
     'rbd': {
-      class { '::cinder::volume::rbd':
-        rbd_user        => 'cinder',
-        rbd_pool        => 'volumes',
-        rbd_flatten_volume_from_snapshot => false,
-        volume_tmp_dir  => '/tmp',
-        rbd_ceph_conf   => '/etc/ceph/ceph-nova.conf',
-      }
+      #class { '::cinder::volume::rbd':
+      #  rbd_user        => 'cinder',
+      #  rbd_pool        => 'volumes',
+      #  rbd_flatten_volume_from_snapshot => false,
+      #  volume_tmp_dir  => '/tmp',
+      #  rbd_ceph_conf   => '/etc/ceph/ceph-nova.conf',
+      #}
+        cinder::backend::rbd { "RBD_DEFAULT":
+              rbd_user        => 'cinder',
+              rbd_pool        => "volumes",
+              rbd_flatten_volume_from_snapshot => false,
+              volume_backend_name => "DEFAULT",
+        }
     }
     default: {
       fail("Unsupported cinder backend (${backend})")
@@ -92,13 +98,13 @@ class openstack::profile::cinder::volume (
 	  }
 	  
 	  class { 'cinder::backends':
-		enabled_backends => ['DEFAULT', 'DEFAULT_ANY', "${extra_backend_name}_ANY", "${extra_backend_name}"],
+		enabled_backends => ['RBD_DEFAULT', 'DEFAULT_ANY', "${extra_backend_name}_ANY", "${extra_backend_name}"],
                 notify => Service['httpd'],
 	  }  
 	  #Class['Cinder::Backends'] -> Service['httpd']
   } else {
 	  class { 'cinder::backends':
-		enabled_backends => ['DEFAULT'],
+		enabled_backends => ['RBD_DEFAULT'],
                 notify => Service['httpd'],
 	  }  
   }
