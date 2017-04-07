@@ -11,7 +11,26 @@ class openstack::profile::nova::compute (
   $management_address            = ip_for_network($management_network)
   $controller_management_address = $::openstack::config::controller_address_management
 
-  include ::openstack::common::nova
+  class {'::openstack::common::nova': vhost => 'api_vhost' }
+
+  class { '::nova::cells':
+    cell_name => 'cell1',
+    cell_type => 'child',
+    cell_parent_name => 'default',
+  }
+  nova_config { 
+    'DEFAULT/quota_driver': value => 'nova.quota.NoopQuotaDriver';
+  }
+
+#  $user                = $::openstack::config::mysql_user_nova
+#  $pass                = $::openstack::config::mysql_pass_nova
+#  $controller_management_address = $::openstack::config::controller_address_management
+#
+#  nova::cell_v2::cell { "${::hostname}":
+#    database_connection => "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova",
+#    transport_url => "rabbit://${openstack::config::rabbitmq_user}:${openstack::config::rabbitmq_password}@${controller_management_address}:5672/",
+#  }
+
 
   class { '::nova::compute':
     enabled                       => true,
@@ -48,6 +67,7 @@ class openstack::profile::nova::compute (
     # This requires images to have properties set: 
     # and it requires QEMU 1.6.0+ (CentOS 7 is only 1.5.3) 
     #libvirt_hw_disk_discard => 'ignore',
+    libvirt_snapshot_image_format => 'raw',
   }
 
   if $libvirt_use_rbd {
@@ -66,16 +86,18 @@ class openstack::profile::nova::compute (
 	  #auth                 => 'none',
 	# From: http://www.tcpcloud.eu/en/blog/2014/11/20/block-live-migration-openstack-environment/
         # http://docs.openstack.org/releasenotes/nova/mitaka.html
-	  live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE',
-	  block_migration_flag => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_SHARED_INC',
+	  #live_migration_flag  => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE',
+	  #block_migration_flag => 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_SHARED_INC',
 	  #block_migration_flag => true,
+    live_migration_tunnelled          => true,
+    live_migration_completion_timeout => 0,
+    live_migration_progress_timeout   => 0,
   } -> 
   nova_config {
     # FORCE THE USE OF RBD LIVE MIGRATION
     'libvirt/live_migration_tunneled': value => 'False';
-    'libvirt/snapshot_image_format': value => 'raw';
-  }
-
+    #'libvirt/snapshot_image_format': value => 'raw';
+  } 
   file { '/etc/libvirt/qemu.conf':
     ensure => present,
     source => 'puppet:///modules/openstack/qemu.conf',

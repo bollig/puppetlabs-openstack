@@ -10,7 +10,7 @@ class openstack::profile::ceilometer::gnocchi (
       $database_connection = "mysql://${user}:${pass}@${management_address}/gnocchi"
 
     class { '::gnocchi':
-      verbose             => false,
+      #verbose             => false,
       debug               => false,
       database_connection => $database_connection,
     }

@@ -16,7 +16,7 @@ class openstack::profile::keystone (
   $ldap_group_name_attribute        = 'cn',
   $ldap_group_member_attribute      = 'member',
   $ldap_group_desc_attribute        = 'description',
-  $ldap_use_tls                     = 'True',
+  $ldap_use_tls                     = 'False',
   $ldap_tls_req_cert                = 'ask',
   $ldap_use_pool                    = 'True',
   $ldap_use_auth_pool               = 'True',
@@ -175,7 +175,8 @@ class openstack::profile::keystone (
       }
       keystone_config { 
         "${twofactor_protocol}/remote_id_attribute": value => 'Shib-Identity-Provider'; 
-        "auth/${twofactor_protocol}": value => 'keystone.auth.plugins.mapped.Mapped';
+        #"auth/${twofactor_protocol}": value => 'keystone.auth.plugins.mapped.Mapped';
+        "auth/${twofactor_protocol}": value => 'keystone.auth.saml2';
       }
     }
 

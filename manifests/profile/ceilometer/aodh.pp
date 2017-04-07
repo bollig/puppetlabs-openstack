@@ -19,7 +19,7 @@ class openstack::profile::ceilometer::aodh (
       class { '::aodh':
         rabbit_userid       => $::openstack::config::rabbitmq_user,
         rabbit_password     => $::openstack::config::rabbitmq_password,
-        verbose             => true,
+        #verbose             => true,
         debug               => false,
         rabbit_hosts         => $::openstack::config::rabbitmq_hosts,
             # TODO: update to mongo when possible
@@ -48,11 +48,17 @@ class openstack::profile::ceilometer::aodh (
           # TODO: have not tested this branch
       }
 
+      class { '::aodh::keystone::authtoken':
+        password => $::openstack::config::aodh_password,
+        auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+        auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+        region_name         => $::openstack::config::region,
+      }
         # Setup the aodh api endpoint
       class { '::aodh::api':
-        keystone_password     => $::openstack::config::aodh_password,
-        keystone_identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
-        keystone_auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+        #keystone_password     => $::openstack::config::aodh_password,
+        #keystone_identity_uri => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
+        #keystone_auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/",
         #service_name          => 'httpd',
         manage_service        => $service_enabled,
         enabled               => $service_managed,

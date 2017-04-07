@@ -5,6 +5,7 @@
 # depends on openstack::profile::base having been added to a node
 class openstack::common::nova (
   $fixed_key = '0000000000000000000000000000000000000000000000000000000000000000',
+  $vhost = 'cell1_vhost',
 ) {
 
   $management_network = $::openstack::config::network_management
@@ -18,22 +19,33 @@ class openstack::common::nova (
   $pass                = $::openstack::config::mysql_pass_nova
   $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova"
   $api_database_connection = "mysql+pymysql://${user}_api:${pass}@${controller_management_address}/nova_api"
+  # NOTE: nova_cell0 is the default name created by nova_manage 
+  $placement_database_connection = $api_database_connection
 
   # TODO: when glance support SSL, enable http_protocol
   $glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "${::openstack::config::http_protocol}://")
   #$glance_api_servers_w_proto = prefix($::openstack::config::glance_api_servers, "http://")
   $glance_api_servers_with_ports = suffix($glance_api_servers_w_proto, ':9292')
 
+  class { '::nova::placement':
+    auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:35357/v3",
+    password => $::openstack::config::nova_password,
+    #username => 'nova_placement',
+    os_region_name => $::openstack::config::region,
+  }
+
   class { '::nova':
     database_connection => $database_connection,
     api_database_connection => $api_database_connection,
+    #placement_database_connectio => $placement_database_connection,
+    default_transport_url => "rabbit://${openstack::config::rabbitmq_user}:${openstack::config::rabbitmq_password}@${controller_management_address}:5672/",
     glance_api_servers  => join($glance_api_servers_with_ports, ','),
-    memcached_servers   => ["${controller_management_address}:11211"],
+    #memcached_servers   => ["${controller_management_address}:11211"],
     rabbit_hosts        => $::openstack::config::rabbitmq_hosts,
     rabbit_userid       => $::openstack::config::rabbitmq_user,
     rabbit_password     => $::openstack::config::rabbitmq_password,
     debug               => $::openstack::config::debug,
-    verbose             => $::openstack::config::verbose,
+    #verbose             => $::openstack::config::verbose,
 # FOR CEILOMETER NOTIFICATIONS: 
     notify_on_state_change => 'vm_and_task_state', 
     notification_driver    => 'messagingv2',
@@ -76,9 +88,9 @@ class openstack::common::nova (
   }
 
   # ONLY FOR LVM types; not for RBD. 
-  #nova_config { 
-  #  'ephemeral_storage_encryption/enabled': value => true;
-  #  'ephemeral_storage_encryption/cipher': value => 'aes-xts-plain64';
-  #  'ephemeral_storage_encryption/key_size': value => '512';
-  #}
+  nova_config { 
+    'ephemeral_storage_encryption/enabled': value => false;
+    'ephemeral_storage_encryption/cipher': value => 'aes-xts-plain64';
+    'ephemeral_storage_encryption/key_size': value => '512';
+  }
 }

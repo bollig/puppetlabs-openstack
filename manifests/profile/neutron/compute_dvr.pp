@@ -13,7 +13,7 @@ class openstack::profile::neutron::compute_dvr {
     #external_network_bridge => 'br-ex',
     # NOTE: this is empty otherwise l3 wont start with mutliple external networks
     # defined
-    external_network_bridge => '',
+    #external_network_bridge => '',
     enabled                 => $start_l3_agent,
     manage_service          => $start_l3_agent,
     agent_mode              => 'dvr',

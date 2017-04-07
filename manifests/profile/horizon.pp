@@ -13,7 +13,7 @@ class openstack::profile::horizon (
   $websso_idp_mappings = ::default,
 ) {
   $service_plugins  = $::openstack::config::neutron_service_plugins
-  $enable_backups   = pick($::openstack::config::cinder_enable_backup, true)
+  $enable_backups   = pick($::openstack::config::cinder_enable_backup, false)
   $keystone_url    = "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000"
 
   if "router" in $service_plugins { $enable_router = true } else { $enable_router = false }
@@ -39,8 +39,9 @@ class openstack::profile::horizon (
     server_aliases  => concat([ '127.0.0.1', $::openstack::config::controller_address_api, $::fqdn ], $::openstack::config::horizon_server_aliases),
     secret_key      => $::openstack::config::horizon_secret_key,
     cache_server_ip => $::openstack::config::controller_address_management,
+    django_session_engine => "django.contrib.sessions.backends.cache", 
     cache_backend   => "django.core.cache.backends.memcached.MemcachedCache",
-    secure_cookies  => true,
+    secure_cookies  => false,
     session_timeout => $session_timeout,
     neutron_options => { 
         'enable_lb'                 => $enable_lbaas,

@@ -6,6 +6,7 @@ class openstack::profile::nova::api (
   $controller_management_address = $::openstack::config::controller_address_management
 
   openstack::resources::firewall { 'Nova API': port => '8774', }
+  openstack::resources::firewall { 'Nova Placement': port => '8778', }
   openstack::resources::firewall { 'Nova Metadata': port => '8775', }
   openstack::resources::firewall { 'Nova EC2': port => '8773', }
   openstack::resources::firewall { 'Nova S3': port => '3333', }
@@ -13,11 +14,18 @@ class openstack::profile::nova::api (
 
   include ::openstack::common::nova
 
+  class { '::nova::keystone::authtoken':
+    password => $::openstack::config::nova_password,
+    auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
+    region_name         => $::openstack::config::region,
+  }
+
   class { '::nova::api':
-    admin_password                       => $::openstack::config::nova_password,
-    identity_uri                         => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
-    auth_uri                             => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
-    osapi_v3                             => true,
+    #admin_password                       => $::openstack::config::nova_password,
+    #identity_uri                         => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
+    #auth_uri                             => "${::openstack::config::http_protocol}://${controller_management_address}:5000/",
+    #osapi_v3                             => true,
     neutron_metadata_proxy_shared_secret => $::openstack::config::neutron_shared_secret,
     default_floating_pool                => 'public',
     sync_db_api                          => true,
@@ -32,7 +40,20 @@ class openstack::profile::nova::api (
       ssl_cert        => $::openstack::config::keystone_ssl_certfile,
       ssl_key         => $::openstack::config::keystone_ssl_keyfile,
       ssl_chain       => $::openstack::config::ssl_chainfile,
-      #ssl_ca          => $::openstack::config::ssl_chainfile,
+    }
+#    class {'::nova::wsgi::apache_api':
+#      api_port  => '8774',
+#      ssl             => $::openstack::config::enable_ssl,
+#      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+#      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+#      ssl_chain       => $::openstack::config::ssl_chainfile,
+#    }
+    class {'::nova::wsgi::apache_placement':
+      api_port  => '8778',
+      ssl             => $::openstack::config::enable_ssl,
+      ssl_cert        => $::openstack::config::keystone_ssl_certfile,
+      ssl_key         => $::openstack::config::keystone_ssl_keyfile,
+      ssl_chain       => $::openstack::config::ssl_chainfile,
     }
   }
 
