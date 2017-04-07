@@ -4,15 +4,15 @@ forge "http://forge.puppetlabs.com"
 mod "puppetlabs-openstack",
 	:git => "git://github.com/bollig/puppetlabs-openstack",
 	#:ref => "master"
-	:ref => "3dbbd64"
-
+	:ref => "newton"
 
 ## The core OpenStack modules
 
 mod 'oslo',
         :git => 'https://git.openstack.org/openstack/puppet-oslo',
         #:ref => 'master'
-        :ref => '712515a'
+        #:ref => '712515a'
+	:ref => "stable/newton"
 
 mod "openstack-ceph",
 	:git => "git://github.com/openstack/puppet-ceph",
@@ -21,100 +21,121 @@ mod "openstack-ceph",
 
 mod "openstack-ec2api",
 	:git => "git://github.com/openstack/puppet-ec2api",
-	#:ref => "master"
-	:ref => "b1bafda"
+	:ref => "master"
+	#:ref => "b1bafda"
+	#:ref => "stable/newton"
 
 mod "openstack-keystone",
 	:git => "git://github.com/openstack/puppet-keystone",
 	#:ref => "stable/mitaka"
-	:ref => "f7d6d81"
+	#:ref => "f7d6d81"
+	:ref => "stable/newton"
 
 mod "openstack-murano",
 	:git => "git://github.com/openstack/puppet-murano",
-	:ref => "stable/mitaka"
+	:ref => "stable/newton"
+
+mod "openstack-barbican",
+	:git => "git://github.com/openstack/puppet-barbican",
+	:ref => "stable/newton"
 
 mod "openstack-aodh",
 	:git => "git://github.com/openstack/puppet-aodh",
 	#:ref => "stable/mitaka"
-	:ref => "d958b17"
+	#:ref => "d958b17"
+	:ref => "stable/newton"
 
 mod "openstack-trove",
 	:git => "git://github.com/openstack/puppet-trove",
 	#:ref => "stable/mitaka"
-	:ref => "706e354"
+	#:ref => "706e354"
+	:ref => "stable/newton"
 
 mod "openstack-gnocchi",
 	:git => "git://github.com/openstack/puppet-gnocchi",
 	#:ref => "stable/mitaka"
-	:ref => "132c85f"
+	#:ref => "132c85f"
+	:ref => "stable/newton"
 
 mod "openstack-swift",
 	:git => "git://github.com/openstack/puppet-swift",
 	#:ref => "stable/mitaka"
-	:ref => "b61475a"
+	#:ref => "b61475a"
+	:ref => "stable/newton"
 
 mod "openstack-glance",
 	:git => "git://github.com/openstack/puppet-glance",
 	#:ref => "stable/mitaka"
-	:ref => "659f1de"
+	#:ref => "659f1de"
+	:ref => "stable/newton"
 
 mod "openstack-cinder",
 	:git => "git://github.com/openstack/puppet-cinder",
 	#:ref => "stable/mitaka"
 	#:ref => "stable/newton"
-	:ref => "bf971fd"
+	#:ref => "bf971fd"
+	:ref => "stable/newton"
 	#:ref => "master"
 
 mod "openstack-neutron",
 	:git => "git://github.com/openstack/puppet-neutron",
 	#:ref => "stable/mitaka"
-	:ref => "3af5e9a"
+	#:ref => "3af5e9a"
+	:ref => "stable/newton"
 
 mod "openstack-nova",
 	:git => "git://github.com/openstack/puppet-nova",
 	#:ref => "stable/mitaka"
-	:ref => "fc2cd20"
+	#:ref => "fc2cd20"
+	:ref => "stable/newton"
 
 mod "openstack-heat",
 	:git => "git://github.com/openstack/puppet-heat",
 	#:ref => "stable/mitaka"
-	:ref => "2c5dc33"
+	#:ref => "2c5dc33"
+	:ref => "stable/newton"
 
 mod "openstack-ceilometer",
 	:git => "git://github.com/openstack/puppet-ceilometer",
 	#:ref => "stable/mitaka"
-	:ref => "ebc384a"
+	#:ref => "ebc384a"
+	:ref => "stable/newton"
 
 mod "openstack-horizon",
 	:git => "git://github.com/openstack/puppet-horizon",
 	#:ref => "stable/mitaka"
-	:ref => "4e9c6ef"
+	#:ref => "4e9c6ef"
+	:ref => "stable/newton"
 
 mod "openstack-openstacklib",
 	:git => "git://github.com/openstack/puppet-openstacklib",
 	#:ref => "master"
-	:ref => "a5f39c6"
+	#:ref => "a5f39c6"
+	:ref => "stable/newton"
 
 mod "openstack-openstack_extras",
 	:git => "git://github.com/openstack/puppet-openstack_extras",
 	#:ref => "stable/mitaka"
-	:ref => "c4692d5"
+	#:ref => "c4692d5"
+	:ref => "stable/newton"
 
 mod "openstack-tempest",
 	:git => "git://github.com/openstack/puppet-tempest",
 	#:ref => "stable/mitaka"
-	:ref => "64afed1"
+	#:ref => "64afed1"
+	:ref => "stable/newton"
 
 mod "openstack-vswitch",
 	:git => "git://github.com/openstack/puppet-vswitch",
 	#:ref => "stable/mitaka"
-	:ref => "c64d07a"
+	#:ref => "c64d07a"
+	:ref => "stable/newton"
 
 ## R10K doesn't handle dependencies, so let's handle them here
 # pointing to as many stable projects as possible
 # TODO automate this dependency list
 
-mod "puppetlabs/apache", :latest
+mod "puppetlabs/apache", '1.10.0'
 mod "stahnma/epel", :latest
 mod "garethr/erlang", :latest
 mod "puppetlabs/inifile", :latest
