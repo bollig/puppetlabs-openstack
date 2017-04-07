@@ -48,6 +48,7 @@ class openstack::profile::nova::compute (
     # This requires images to have properties set: 
     # and it requires QEMU 1.6.0+ (CentOS 7 is only 1.5.3) 
     #libvirt_hw_disk_discard => 'ignore',
+    libvirt_snapshot_image_format => 'raw',
   }
 
   if $libvirt_use_rbd {
@@ -73,7 +74,7 @@ class openstack::profile::nova::compute (
   nova_config {
     # FORCE THE USE OF RBD LIVE MIGRATION
     'libvirt/live_migration_tunneled': value => 'False';
-    'libvirt/snapshot_image_format': value => 'raw';
+    #'libvirt/snapshot_image_format': value => 'raw';
   }
 
   file { '/etc/libvirt/qemu.conf':
