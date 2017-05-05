@@ -7,6 +7,11 @@ class openstack::profile::ceilometer::gnocchi_api (
   $cors_allowed_origin = 'http://localhost:3000',
   $install_grafana = false,
   $storage_type = 'file',
+  $storage_endpoint_url = $::os_service_default,
+  $storage_region_name = $::os_service_default,
+  $storage_access_key_id = $::os_service_default,
+  $storage_secret_access_key = $::os_service_default,
+  $storage_bucket_prefix = $::os_service_default,
 ) {
       openstack::resources::firewall { 'GNOCCHI API': port => '8041', }
 # NOTE: set the ceilometer polling interval to 20 seconds:
@@ -73,7 +78,20 @@ class openstack::profile::ceilometer::gnocchi_api (
     class { '::gnocchi::storage': }
     #class { '::gnocchi::storage::file': }
     #class { '::gnocchi::storage::ceph': }
-    class { "::gnocchi::storage::${storage_type}": }
+  
+    if $storage_type == 's3' { 
+      gnocchi_config { 
+        "storage/driver":               value => 's3';
+        "storage/s3_endpoint_url":      value => $storage_endpoint_url;
+        "storage/s3_region_name":       value => $storage_region_name;
+        "storage/s3_access_key_id":     value => $storage_access_key_id;
+        "storage/s3_secret_access_key": value => $storage_secret_access_key;
+        "storage/s3_bucket_prefix":     value => $storage_bucket_prefix;
+      }
+    } else {
+      class { "::gnocchi::storage::${storage_type}": }
+    }
+
     gnocchi_config { 
       "storage/aggregation_workers_number": value => $::processorcount;
     }

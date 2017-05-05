@@ -1,6 +1,8 @@
 # The profile to set up the Nova controller (several services)
 class openstack::profile::nova::api (
 	$nova_use_httpd = true,
+        $vendordata = $::os_service_default,
+        $vendordata_providers = $::os_service_default,
 ) {
 
   $controller_management_address = $::openstack::config::controller_address_management
@@ -21,6 +23,19 @@ class openstack::profile::nova::api (
     region_name         => $::openstack::config::region,
   }
 
+  if $vendordata != $::os_service_default {
+    $vendordata_jsonfile_path = "/etc/nova/vendordata.json"
+    file { "$vendordata_jsonfile_path": 
+      source => $vendordata,
+      ensure => 'present',
+      owner   => 'root',
+      group   => 'nova',
+      mode => '640',
+    }
+    
+    File['/etc/nova/vendordata.json'] -> Class['::nova::api']
+  }
+
   class { '::nova::api':
     #admin_password                       => $::openstack::config::nova_password,
     #identity_uri                         => "${::openstack::config::http_protocol}://${controller_management_address}:35357/",
@@ -31,6 +46,8 @@ class openstack::profile::nova::api (
     sync_db_api                          => true,
     service_name                         => 'httpd',
     enabled                              => true,
+    vendordata_jsonfile_path             => $vendordata_jsonfile_path,
+    vendordata_providers                 => $vendordata_providers,
   }
 
   if $nova_use_httpd {

@@ -45,19 +45,29 @@ export OS_IDENTITY_PROVIDER=<%= @shib_ecp_id_provider %>
 export OS_PROTOCOL=saml2
 export OS_IDENTITY_PROVIDER_URL=<%= @shib_ecp_idp_url %>
 
+if [ "$TRACE_ENABLED" == "on" ]; then 
+  set +x
+fi
+
 # With Keystone you pass the keystone password.
-read -t 30 -p "Please enter your Shibboleth Password:" -sr OS_PASSWORD_INPUT
-export OS_PASSWORD=$OS_PASSWORD_INPUT
+read -t 30 -p "Please enter your Shibboleth Password:" -sr OS_PASSWORD
+export OS_PASSWORD
 # Delete the previous token to prevent the openstack token command from trying to use it
 unset OS_TOKEN
-export OS_TOKEN=$( openstack token issue -c id -f value 2> /dev/null )
+
+if [ "$TRACE_ENABLED" == "on" ]; then 
+  set -x
+  DEBUG_TOKEN="--debug"
+fi
+
+export OS_TOKEN=$( openstack token issue -c id -f value $DEBUG_TOKEN )
+unset OS_PASSWORD
 if [ -z $OS_TOKEN ]; then
   echo -e "\nERROR: Bad authentication"
   unset OS_TOKEN
 else
   echo -e "\nAuthenticated."
 fi
-unset OS_PASSWORD
 unset OS_USER_DOMAIN_NAME
 
 export OS_AUTH_TYPE=v3token
