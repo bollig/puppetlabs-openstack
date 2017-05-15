@@ -4,6 +4,7 @@
 # NOTE: only override registry_port if the registry endpoint in Keystone is different
 class openstack::common::glance (
 	$enable_service = false,
+        $rbd_store_pool = 'images',
 	$api_bind_host = '0.0.0.0',
 	$api_port = '9292',
 	$registry_port = '9191',
@@ -25,7 +26,7 @@ class openstack::common::glance (
 	'rbd': {
 		class { '::glance::backend::rbd': 
 		  rbd_store_user => 'glance',
-		  rbd_store_pool => 'images',
+		  rbd_store_pool => $rbd_store_pool,
 		}
 	}
 	default: {

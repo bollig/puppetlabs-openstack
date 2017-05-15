@@ -1,6 +1,7 @@
 class openstack::profile::neutron::compute_dvr {
 
   $network_management_address = $::openstack::config::network_address_management
+  $controller_management_address = $::openstack::config::controller_address_management
 
   # Packstack establishes this
   if defined(Class['neutron::services::fwaas']) {
@@ -27,7 +28,7 @@ class openstack::profile::neutron::compute_dvr {
     debug         => $::openstack::config::debug,
     #auth_region   => $::openstack::config::region,
 # TODO: Offload metadata to network address
-    metadata_ip   => $network_management_address,
+    metadata_ip   => $controller_management_address,
     enabled       => true,
   }
 

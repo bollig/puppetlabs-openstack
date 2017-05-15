@@ -2,6 +2,7 @@
 class openstack::profile::cinder::volume (
   $fixed_key = '0000000000000000000000000000000000000000000000000000000000000000',
   $enable_extra_backend = false,
+  $rbd_pool_name = 'volumes',
   $extra_backend_name = 'ssd',
   $extra_backend_pool = 'ssd',
 ) {
@@ -44,7 +45,7 @@ class openstack::profile::cinder::volume (
       #}
         cinder::backend::rbd { "RBD_DEFAULT":
               rbd_user        => 'cinder',
-              rbd_pool        => "volumes",
+              rbd_pool        => $rbd_pool_name,
               rbd_flatten_volume_from_snapshot => false,
               volume_backend_name => "DEFAULT",
         }
@@ -81,7 +82,7 @@ class openstack::profile::cinder::volume (
 	  }
           cinder::backend::rbd { "DEFAULT_ANY":
 		  rbd_user        => 'cinder',
-		  rbd_pool        => "volumes",
+		  rbd_pool        => $rbd_pool_name,
                   rbd_flatten_volume_from_snapshot => false,
                   volume_backend_name => "ANY",
 	  }
