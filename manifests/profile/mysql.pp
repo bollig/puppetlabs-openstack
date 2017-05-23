@@ -58,11 +58,4 @@ LimitNOFILE=${max_file_limit}
 
   class { 'mysql::server::account_security': }
 
-  class { 'mysql::server::backup': 
-    backupuser     => 'root',
-    backuppassword => $::openstack::config::mysql_root_password,
-    backupdir     => '/tmp/backup',
-    provider      => 'xtrabackup',
-  }
-  Class['mysql::server'] -> Class['mysql::server::backup']
 }

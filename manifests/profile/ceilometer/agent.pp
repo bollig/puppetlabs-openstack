@@ -3,6 +3,22 @@ class openstack::profile::ceilometer::agent {
 
   include ::openstack::common::ceilometer
 
+  # systemd drop-in to add dependency on libvirtd...
+  file { '/etc/systemd/system/openstack-ceilometer-compute.service.d':
+    ensure => 'directory',
+    owner   => '0',
+    group   => '0',
+    mode    => '0755',
+  } ->
+  file {'/etc/systemd/system/openstack-ceilometer-compute.service.d/after.conf':
+    owner   => '0',
+    group   => '0',
+    mode    => '0644',
+    notify  => Service['openstack-ceilometer-compute'],
+    content => "[Unit]
+After=syslog.target network.target libvirtd.service
+"
+  }
     # install the ceilometer-compute service
     # see http://www.server-world.info/en/note?os=CentOS_7&p=openstack_liberty2&f=14
   # http://docs.openstack.org/developer/ceilometer/architecture.html
