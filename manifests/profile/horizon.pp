@@ -115,12 +115,13 @@ class openstack::profile::horizon (
 
   # Disable v2.0 OpenRC files. This is to guarantee all users authenticate with v3 and the right domains
   file_line { 'Disable OpenStack RC File v2.0':
-    path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/api_access/tables.py',
-    match => '        table_actions = \(DownloadOpenRCv2, DownloadOpenRC, DownloadEC2,.*',
-    line => '        table_actions = ( DownloadOpenRC, DownloadEC2, ',
-    require => Class['::horizon']
+    ensure             => present,
+    path               => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/access_and_security/api_access/tables.py',
+    match              => '        table_actions = \(DownloadOpenRCv2, DownloadOpenRC, DownloadEC2,.*',
+    line               => '        table_actions = ( DownloadOpenRC, DownloadEC2, ViewCredentials, RecreateCredentials)',
+    append_on_no_match =>  false,
+    require            => Class['::horizon']
   } 
-
 
 
   # NOTE: this removes the Consistency Groups tab which is a feature not supported by CEPH RBD 
