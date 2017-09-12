@@ -100,10 +100,11 @@ class openstack::profile::nova::api (
 	#ram_allocation_ratio => $ram_allocation_ratio,
 
   file_line { 'Increase default keypair bits to 4096':
-    path => '/usr/lib/python2.7/site-packages/nova/crypto.py',
-    match => "def generate_key_pair\(bits=2048\):.*",
-    line  => "def generate_key_pair(bits=4096):",
-    require => Package['python-nova']
+    ensure             => present,
+    path               => '/usr/lib/python2.7/site-packages/nova/crypto.py',
+    match              => "def generate_key_pair\(bits=2048\):.*",
+    line               => "def generate_key_pair(bits=4096):",
+    append_on_no_match =>  false,
+    require            => Package['python-nova']
   }
-
 }
