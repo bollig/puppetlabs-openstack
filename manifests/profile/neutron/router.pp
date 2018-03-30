@@ -50,7 +50,9 @@ class openstack::profile::neutron::router {
   }
 
   file { '/etc/neutron/dnsmasq-neutron.conf':
-    content => 'dhcp-option-force=26,1400',
+    ensure  => 'file',
+    #content => 'dhcp-option-force=26,1500',
+    content => '',
     owner   => 'root',
     group   => 'neutron',
     mode    => '0640',

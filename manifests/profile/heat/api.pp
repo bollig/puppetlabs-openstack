@@ -12,6 +12,8 @@ class openstack::profile::heat::api (
   $user                          = $::openstack::config::mysql_user_heat
   $pass                          = $::openstack::config::mysql_pass_heat
   $database_connection           = "mysql://${user}:${pass}@${controller_management_address}/heat"
+  $heat_domain_admin             = 'heat_domain_admin'
+  $keystone_users                = hiera('openstack::heat::domain')
 
   heat_config { 
     #'DEFAULT/default_floating_pool': value => 'public';
@@ -26,6 +28,13 @@ class openstack::profile::heat::api (
     auth_uri     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
     auth_url     => "${::openstack::config::http_protocol}://${::openstack::config::controller_address_management}:5000/",
     region_name  => $::openstack::config::region,
+  }
+
+  class { '::heat::keystone::domain':
+    domain_admin       => $heat_domain_admin,
+    domain_admin_email => $keystone_users['email'],
+    domain_password    => $keystone_users['password'],
+    domain_name        => $keystone_users['domain'],
   }
 
   class { '::heat':

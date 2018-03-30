@@ -124,7 +124,6 @@ class openstack::profile::horizon (
   } 
 
 
-
   # NOTE: this removes the Consistency Groups tab which is a feature not supported by CEPH RBD 
   file_line { 'Disable consistency groups tab':
     path => '/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/volumes/tabs.py',
