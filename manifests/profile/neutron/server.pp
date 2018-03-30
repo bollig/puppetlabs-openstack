@@ -77,12 +77,19 @@ class openstack::profile::neutron::server (
         $l_bgp_router_id = $bgp_router_id
       }
 
+      file { '/etc/neutron/conf.d/neutron-bgp-dragent':
+        ensure => 'directory',
+        owner  => 'root',
+        group  => 'root',
+        mode   => '755',
+      }
       # Note: depends on the bgp_router_id to be set properly
       file { '/etc/neutron/conf.d/neutron-bgp-dragent/bgp_dragent.conf':
         content => template('openstack/etc__neutron__bgp_dragent.erb'),
         owner   => 'root',
         group   => 'neutron',
         mode    => '640',
+        require => File['/etc/neutron/conf.d/neutron-bgp-dragent'],
       }
 
       #Package['neutron-bgp-dragent'] -> Service['neutron-bgp-dragent']
