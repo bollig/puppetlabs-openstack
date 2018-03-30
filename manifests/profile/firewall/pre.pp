@@ -17,7 +17,7 @@ class openstack::profile::firewall::pre {
     proto  => 'gre',
     action => 'accept',
     source => $::openstack::config::network_data,
-    before => [ Class['::firewall'] ],
+    #before => [ Class['::firewall'] ],
   } -> 
   firewall { '0002 - Accept GRE traffic (EXTERNAL)':
     proto  => 'gre',
