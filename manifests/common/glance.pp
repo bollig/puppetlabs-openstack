@@ -13,7 +13,7 @@ class openstack::common::glance (
   $controller_address  = $::openstack::config::controller_address_management
   $user                = $::openstack::config::mysql_user_glance
   $pass                = $::openstack::config::mysql_pass_glance
-  $database_connection = "mysql://${user}:${pass}@${controller_address}/glance"
+  $database_connection = "mysql+pymysql://${user}:${pass}@${controller_address}/glance"
 
   $backend_store = 'rbd'
 
