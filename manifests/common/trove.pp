@@ -5,7 +5,7 @@ class openstack::common::trove {
   $management_address  = $::openstack::config::controller_address_management
   $user                = $::openstack::config::mysql_user_trove
   $pass                = $::openstack::config::mysql_pass_trove
-  $database_connection = "mysql://${user}:${pass}@${management_address}/trove"
+  $database_connection = "mysql+pymysql://${user}:${pass}@${management_address}/trove"
 
   class { '::trove::client': }
 

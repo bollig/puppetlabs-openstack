@@ -71,7 +71,7 @@ class openstack::common::neutron (
 
   $user                = $::openstack::config::mysql_user_neutron
   $pass                = $::openstack::config::mysql_pass_neutron
-  $database_connection = "mysql://${user}:${pass}@${controller_management_address}/neutron"
+  $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/neutron"
 
   if 'vpnaas' in $::openstack::config::neutron_service_plugins {
     $ensure_vpnaas_pkg = true

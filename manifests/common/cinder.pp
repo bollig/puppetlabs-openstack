@@ -5,7 +5,7 @@ class openstack::common::cinder {
   $management_address  = $::openstack::config::controller_address_management
   $user                = $::openstack::config::mysql_user_cinder
   $pass                = $::openstack::config::mysql_pass_cinder
-  $database_connection = "mysql://${user}:${pass}@${management_address}/cinder"
+  $database_connection = "mysql+pymysql://${user}:${pass}@${management_address}/cinder"
 
   class { '::cinder':
     database_connection => $database_connection,
